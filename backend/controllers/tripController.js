@@ -63,10 +63,11 @@ export const updateTrip = async (req, res) => {
     }
 
     const updatedTrip = await Trip.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id }, // ensure only owner can update
-      req.body,
-      { new: true }
-    );
+  { _id: req.params.id, userId: req.user.userId },
+  updateData, 
+  { new: true }
+);
+
 
     if (!updatedTrip)
       return res
