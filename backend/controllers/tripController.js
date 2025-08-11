@@ -1,5 +1,10 @@
 import Trip from "../models/Trip.js";
-import mongoose from "mongoose";
+import cloudinary from "../utils/cloudinary.js";
+import fs from "fs";
+
+// Updated multer to store locally first (for Cloudinary upload)
+import multer from "multer";
+const upload = multer({ dest: "uploads/" });
 
 export const createTrip = async (req, res) => {
   try {
@@ -47,11 +52,18 @@ export const updateTrip = async (req, res) => {
     const updateData = { ...req.body };
 
     if (req.file) {
-      updateData.coverPhoto = `/uploads/${req.file.filename}`;
+      // Assuming you upload to Cloudinary here
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "trip_covers",
+      });
+      updateData.coverPhoto = result.secure_url;
+
+      // Delete temp file if needed
+      fs.unlinkSync(req.file.path);
     }
 
     const updatedTrip = await Trip.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id },
+      { _id: req.params.id },
       updateData,
       { new: true }
     );
@@ -63,6 +75,7 @@ export const updateTrip = async (req, res) => {
 
     res.json(updatedTrip);
   } catch (error) {
+    console.error("Update trip error:", error);
     res.status(500).json({ message: error.message });
   }
 };

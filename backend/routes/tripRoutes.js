@@ -8,10 +8,10 @@ const router = express.Router();
 router.post("/", authenticate, createTrip);
 router.get("/get/:id", getTripById);
 // router.put("/update/:id",authenticate, updateTrip);
+router.put("/edit/:id", authenticate, upload.single("coverPhoto"), updateTrip);
 router.delete("/:id",authenticate, deleteTrip);
 router.get("/user", authenticate, getTripsByUserId);
 router.post("/:tripId/activities",authenticate, addActivityToTrip);
 router.delete("/:tripId/activities/:activityId",authenticate, removeActivityFromTrip);
-router.put("/:id", authenticate, upload.single("coverPhoto"), updateTrip);
 
 export default router;

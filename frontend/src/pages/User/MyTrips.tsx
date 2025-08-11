@@ -27,7 +27,8 @@ function getTripStatus(trip: Trip): Trip["status"] {
 
 const MyTrips: React.FC = () => {
   const [search, setSearch] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<typeof tabNames[number]>("upcoming");
+  const [activeTab, setActiveTab] =
+    useState<(typeof tabNames)[number]>("upcoming");
   const [sortKey, setSortKey] = useState<"date" | "name">("date");
   const [trips, setTrips] = useState<Trip[]>([]);
   const [error, setError] = useState<string>("");
@@ -66,7 +67,9 @@ const MyTrips: React.FC = () => {
     )
     .sort((a, b) => {
       if (sortKey === "date") {
-        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        return (
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        );
       } else {
         return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
       }
@@ -96,10 +99,14 @@ const MyTrips: React.FC = () => {
       formData.append("coverPhoto", updateFile);
     }
 
+    console.log("Update trip ID:", updateTrip._id);
+
     try {
-      const response = await api.put(`/trips/${updateTrip._id}`, formData, {
-  headers: { "Content-Type": "multipart/form-data" },
-});
+      const response = await api.put(`/trips/edit/${updateTrip._id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Update response:", response.data);
 
       setTrips((prev) =>
         prev.map((t) => (t._id === updateTrip._id ? response.data : t))
@@ -214,8 +221,7 @@ const MyTrips: React.FC = () => {
             <div
               key={tab}
               style={tabStyle(tab === activeTab)}
-              onClick={() => setActiveTab(tab)}
-            >
+              onClick={() => setActiveTab(tab)}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </div>
           ))}
@@ -229,8 +235,7 @@ const MyTrips: React.FC = () => {
             marginLeft: 0,
           }}
           onClick={() => setSortKey("date")}
-          title="Sort by Date"
-        >
+          title="Sort by Date">
           Sort Date
         </button>
         <button
@@ -240,8 +245,7 @@ const MyTrips: React.FC = () => {
             color: sortKey === "name" ? "#fff" : "#aaa",
           }}
           onClick={() => setSortKey("name")}
-          title="Sort by Name"
-        >
+          title="Sort by Name">
           Sort Name
         </button>
       </div>
@@ -249,22 +253,29 @@ const MyTrips: React.FC = () => {
       {loading && <p>Loading trips...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {!loading && filteredTrips.length === 0 && <p>No {activeTab} trips found.</p>}
+      {!loading && filteredTrips.length === 0 && (
+        <p>No {activeTab} trips found.</p>
+      )}
 
       {filteredTrips.map((trip) => (
         <div key={trip._id} style={cardStyle}>
           <img
-            src={trip.coverPhoto || "https://via.placeholder.com/120x80.png?text=No+Image"}
+            src={
+              trip.coverPhoto ||
+              "https://via.placeholder.com/120x80.png?text=No+Image"
+            }
             alt={trip.title}
             style={imgStyle}
           />
           <div style={{ flex: 1 }}>
             <h3>{trip.title}</h3>
             <p>
-              <strong>Start Date:</strong> {new Date(trip.startDate).toLocaleDateString()}
+              <strong>Start Date:</strong>{" "}
+              {new Date(trip.startDate).toLocaleDateString()}
             </p>
             <p>
-              <strong>End Date:</strong> {new Date(trip.endDate).toLocaleDateString()}
+              <strong>End Date:</strong>{" "}
+              {new Date(trip.endDate).toLocaleDateString()}
             </p>
             <p>{trip.description}</p>
 
@@ -273,14 +284,12 @@ const MyTrips: React.FC = () => {
               <div style={{ marginTop: 10 }}>
                 <button
                   onClick={() => handleDelete(trip._id)}
-                  style={buttonStyle("red")}
-                >
+                  style={buttonStyle("red")}>
                   Delete
                 </button>
                 <button
                   onClick={() => setUpdateTrip(trip)}
-                  style={buttonStyle("green")}
-                >
+                  style={buttonStyle("green")}>
                   Update
                 </button>
               </div>
@@ -304,8 +313,7 @@ const MyTrips: React.FC = () => {
             alignItems: "center",
             zIndex: 1000,
           }}
-          onClick={() => setUpdateTrip(null)}
-        >
+          onClick={() => setUpdateTrip(null)}>
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
@@ -316,8 +324,7 @@ const MyTrips: React.FC = () => {
               maxHeight: "90vh",
               overflowY: "auto",
               color: "#eee",
-            }}
-          >
+            }}>
             <h2 style={{ marginBottom: 20 }}>Update Trip</h2>
 
             <label>
@@ -392,10 +399,7 @@ const MyTrips: React.FC = () => {
               />
             </label>
 
-            <label
-              htmlFor="coverPhotoUpload"
-              style={fileInputLabelStyle}
-            >
+            <label htmlFor="coverPhotoUpload" style={fileInputLabelStyle}>
               {updateFile ? updateFile.name : "Choose Cover Photo"}
             </label>
             <input
@@ -414,23 +418,20 @@ const MyTrips: React.FC = () => {
                 justifyContent: "flex-end",
                 gap: 10,
                 marginTop: 15,
-              }}
-            >
+              }}>
               <button
                 onClick={() => setUpdateTrip(null)}
                 style={{
                   ...buttonStyle("#555"),
                   backgroundColor: "#555",
-                }}
-              >
+                }}>
                 Cancel
               </button>
               <button
                 onClick={handleUpdateSubmit}
                 style={{
                   ...buttonStyle("green"),
-                }}
-              >
+                }}>
                 Save
               </button>
             </div>
