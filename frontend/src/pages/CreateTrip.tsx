@@ -154,7 +154,7 @@ const CreateTrip: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`{import.meta.env.VITE_BACKEND_URL}/trips`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/trips`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
