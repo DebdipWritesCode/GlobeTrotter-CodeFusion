@@ -10,6 +10,8 @@ import sectionRoutes from "./routes/sectionRoutes.js";
 import tripRoutes from './routes/tripRoutes.js';
 import activityRoutes from './routes/activityRoutes.js'
 import cityRoutes from "./routes/cityRoutes.js";
+import communityRoutes from './routes/communityRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
 
 dotenv.config();
 
@@ -29,6 +31,8 @@ app.use("/api/sections", sectionRoutes);
 app.use('/api/trips', tripRoutes); 
 app.use('/api/activities',activityRoutes);
 app.use('/api/cities', cityRoutes);
+app.use('/api/community', communityRoutes);
+app.use('/api/uploads', uploadRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is working!');
