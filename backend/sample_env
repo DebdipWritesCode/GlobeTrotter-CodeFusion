@@ -1,6 +1,0 @@
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/sample_env
-JWT_SECRET=myvesecretkey
-REFRESH_SECRET=myrefreshsecretkey
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
