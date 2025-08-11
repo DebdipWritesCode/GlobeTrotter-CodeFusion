@@ -44,9 +44,9 @@ export const updateUser = async (req, res) => {
 export const getUserTrips = async (req, res) => {
   try {
     const trips = await Trip.find({ userId: req.params.id })
-      .select("name startDate endDate coverPhoto destinations")
+      .select("title coverPhoto startDate endDate status") // fix incorrect fields
       .lean();
-    res.json(trips);
+    res.json(Array.isArray(trips) ? trips : []);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
