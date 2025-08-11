@@ -11,7 +11,6 @@ export const createTrip = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Create trip
     const trip = await Trip.create({
       userId,
       title,
@@ -45,17 +44,26 @@ export const getTripById = async (req, res) => {
 
 export const updateTrip = async (req, res) => {
   try {
+    const updateData = { ...req.body };
+
+    if (req.file) {
+      updateData.coverPhoto = `/uploads/${req.file.filename}`;
+    }
+
     const updatedTrip = await Trip.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id }, // ensure only owner can update
-      req.body,
+      { _id: req.params.id, userId: req.user.id },
+      updateData,
       { new: true }
     );
+
     if (!updatedTrip) return res.status(404).json({ message: "Trip not found or not authorized" });
+
     res.json(updatedTrip);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const deleteTrip = async (req, res) => {
   try {
