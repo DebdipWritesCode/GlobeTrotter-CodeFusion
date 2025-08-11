@@ -20,10 +20,15 @@ const GoogleLoginButton: React.FC = () => {
         idToken: credentialResponse.credential,
       });
 
+      if (res.data?.profileIncomplete) {
+        navigate("/complete-profile", {
+          state: { user: res.data.user }, // pass user info to form
+        });
+        return;
+      }
+
       if (res.data?.jwt_token) {
         dispatch(setAccessToken(res.data));
-        console.log("Google login success:", res.data);
-
         navigate("/dashboard");
       } else {
         console.error("No JWT token returned from backend");

@@ -5,6 +5,11 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import sectionRoutes from "./routes/sectionRoutes.js";
+import tripRoutes from './routes/tripRoutes.js';
+import activityRoutes from './routes/activityRoutes.js'
+import cityRoutes from "./routes/cityRoutes.js";
 
 dotenv.config();
 
@@ -19,6 +24,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use("/api/sections", sectionRoutes);
+app.use('/api/trips', tripRoutes); 
+app.use('/api/activities',activityRoutes);
+app.use('/api/cities', cityRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is working!');

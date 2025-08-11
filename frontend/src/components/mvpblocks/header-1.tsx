@@ -236,8 +236,8 @@ export default function Header1(): JSX.Element {
             </Link>
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
               <Link
-                to="/register"
-                className="inline-flex items-center space-x-2 rounded-full px-5 py-2.5 font-medium text-white transition-all duration-150 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
+                to="/signup"
+                className="inline-flex items-center space-x-2 rounded-full px-6 py-2.5 font-medium text-white transition-all duration-200 hover:shadow-lg"
                 style={{
                   backgroundImage: theme === "dark"
                     ? `linear-gradient(to right, ${colors.lilacMedium}, ${colors.lilacDeep})`
@@ -383,7 +383,6 @@ export default function Header1(): JSX.Element {
                       Plan Your Trip
                     </Link>
                   </div>
-
                 </div>
               </div>
             </motion.div>
