@@ -98,6 +98,10 @@ export const deleteTrip = async (req, res) => {
 
 export const getTripsByUserId = async (req, res) => {
   try {
+
+    const trips = await Trip.find({ userId: req?.user.userId }).populate("cities.cityId");
+    console.log("Trips found for user:", req.user.id, trips.length);
+
     const { userId } = req.query;
 
     if (!userId) {
@@ -107,6 +111,7 @@ export const getTripsByUserId = async (req, res) => {
     }
 
     const trips = await Trip.find({ userId }).populate("cities.cityId");
+
 
     res.json(trips);
   } catch (error) {
