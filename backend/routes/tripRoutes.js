@@ -12,8 +12,4 @@ router.get("/user", authenticate, getTripsByUserId);
 router.post("/:tripId/activities",authenticate, addActivityToTrip);
 router.delete("/:tripId/activities/:activityId",authenticate, removeActivityFromTrip);
 
-// AI generated route for trending trips
-// router.get("/trending", getTrendingTrips);
-
-
 export default router;
