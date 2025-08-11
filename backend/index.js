@@ -1,59 +1,3 @@
-// import express from 'express';
-// import mongoose from 'mongoose';
-// import cors from 'cors';
-// import cookieParser from 'cookie-parser';
-// import dotenv from 'dotenv';
-// import http from "http";
-// import { Server } from "socket.io";
-
-// import authRoutes from './routes/authRoutes.js';
-// import userRoutes from './routes/userRoutes.js';
-// import sectionRoutes from "./routes/sectionRoutes.js";
-// import tripRoutes from './routes/tripRoutes.js';
-// import activityRoutes from './routes/activityRoutes.js'
-// import cityRoutes from "./routes/cityRoutes.js";
-// import communityRoutes from './routes/communityRoutes.js';
-// import uploadRoutes from './routes/uploadRoutes.js';
-
-// dotenv.config();
-
-// const app = express();
-// const PORT = process.env.PORT || 5000;
-
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] } // change if different port
-// });
-
-// app.use(cors({
-//   origin: 'http://localhost:5173',
-//   credentials: true,
-// }));
-// app.use(express.json());
-// app.use(cookieParser());
-
-// app.use('/api/auth', authRoutes);
-// app.use('/api/users', userRoutes);
-// app.use("/api/sections", sectionRoutes);
-// app.use('/api/trips', tripRoutes); 
-// app.use('/api/activities',activityRoutes);
-// app.use('/api/cities', cityRoutes);
-// app.use('/api/community', communityRoutes);
-// app.use('/api/uploads', uploadRoutes);
-
-// app.get('/', (req, res) => {
-//   res.send('API is working!');
-// });
-
-// mongoose.connect(process.env.MONGO_URI)
-//   .then(() => {
-//     console.log('Connected to MongoDB');
-//     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-//   })
-//   .catch(err => console.error(err));
-
-
-// server.js
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -69,11 +13,8 @@ import sectionRoutes from "./routes/sectionRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import cityRoutes from "./routes/cityRoutes.js";
-
-import communityRoutes from './routes/communityRoutes.js';
-import uploadRoutes from './routes/uploadRoutes.js';
-import path from "path";
-
+import communityRoutes from "./routes/communityRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 dotenv.config();
 
@@ -90,14 +31,13 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// serve uploads (if you store images locally)
+// Serve uploads folder statically
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // Mount API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sections", sectionRoutes);
-
 app.use("/api/trips", tripRoutes);
 app.use("/api/activities", activityRoutes);
 app.use("/api/cities", cityRoutes);
@@ -128,11 +68,12 @@ const genAvatar = (id) => `https://i.pravatar.cc/150?u=${encodeURIComponent(id)}
 
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
+
   const username = genUsername();
   const avatar = genAvatar(socket.id);
   connectedUsers[socket.id] = { username, avatar };
 
-  // notify all clients with the updated user list
+  // Emit updated user list to all clients
   io.emit(
     "userList",
     Object.keys(connectedUsers).map((sid) => ({
@@ -142,15 +83,14 @@ io.on("connection", (socket) => {
     }))
   );
 
-  // notify others that someone joined (optional)
+  // Notify others someone joined
   socket.broadcast.emit("systemMessage", {
     text: `${username} joined the chat`,
     time: new Date().toISOString(),
   });
 
-  // listen for chat messages from this socket
+  // Listen for chat messages
   socket.on("chatMessage", (payload) => {
-    // payload may be just text or { text, ... }
     const text = typeof payload === "string" ? payload : payload.text;
     const message = {
       text,
@@ -159,12 +99,10 @@ io.on("connection", (socket) => {
       avatar: connectedUsers[socket.id].avatar,
       socketId: socket.id,
     };
-
-    // broadcast message to all clients
     io.emit("chatMessage", message);
   });
 
-  // optional: allow the client to set a custom display name
+  // Allow setting a custom display name
   socket.on("setDisplayName", (name) => {
     connectedUsers[socket.id].username = name || connectedUsers[socket.id].username;
     io.emit(
@@ -179,10 +117,9 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("Socket disconnected:", socket.id);
-    const left = connectedUsers[socket.id];
+    const leftUser = connectedUsers[socket.id];
     delete connectedUsers[socket.id];
 
-    // notify all clients
     io.emit(
       "userList",
       Object.keys(connectedUsers).map((sid) => ({
@@ -192,25 +129,13 @@ io.on("connection", (socket) => {
       }))
     );
 
-    if (left) {
+    if (leftUser) {
       socket.broadcast.emit("systemMessage", {
-        text: `${left.username} left the chat`,
+        text: `${leftUser.username} left the chat`,
         time: new Date().toISOString(),
       });
     }
   });
-
-app.use('/api/trips', tripRoutes); 
-app.use('/api/activities',activityRoutes);
-app.use('/api/cities', cityRoutes);
-app.use('/api/community', communityRoutes);
-app.use('/api/uploads', uploadRoutes);
-
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-
-app.get('/', (req, res) => {
-  res.send('API is working!');
-
 });
 
 // Connect to MongoDB and start server

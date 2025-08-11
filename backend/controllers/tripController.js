@@ -84,7 +84,7 @@ export const deleteTrip = async (req, res) => {
   try {
     const deletedTrip = await Trip.findOneAndDelete({
       _id: req.params.id,
-      userId: req.user.id,
+      userId: req.user.userId,
     });
     if (!deletedTrip)
       return res
@@ -100,17 +100,17 @@ export const getTripsByUserId = async (req, res) => {
   try {
 
     const trips = await Trip.find({ userId: req?.user.userId }).populate("cities.cityId");
-    console.log("Trips found for user:", req.user.id, trips.length);
+    console.log("Trips found for user:", req.user.userId, trips.length);
 
-    const { userId } = req.query;
+    // const { userId } = req.query;
 
-    if (!userId) {
-      return res
-        .status(400)
-        .json({ message: "Missing required query parameter: userId" });
-    }
+    // if (!userId) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "Missing required query parameter: userId" });
+    // }
 
-    const trips = await Trip.find({ userId }).populate("cities.cityId");
+    // const trips = await Trip.find({ userId }).populate("cities.cityId");
 
 
     res.json(trips);
