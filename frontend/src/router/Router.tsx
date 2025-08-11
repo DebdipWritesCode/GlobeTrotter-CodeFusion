@@ -22,6 +22,7 @@ import AdminDashboard from "@/pages/Admin/Dashboard";
 import Analytics from "@/pages/Admin/Analytics";
 import AdminRoute from "./AdminRoute";
 import AdminLayout from "@/layouts/AdminLayout";
+import Community from "@/pages/Community";
 
 const Router = () => {
   return (
@@ -44,6 +45,7 @@ const Router = () => {
         <Route path="/trips" element={<MyTrips />} />
         <Route path="/create-trip" element={<CreateTrip/>} />
         <Route path="/build-itinerary" element={<ItineraryBuild/>} />
+        <Route path="/community" element={<Community/>}/>
       </Route>
 
       <Route

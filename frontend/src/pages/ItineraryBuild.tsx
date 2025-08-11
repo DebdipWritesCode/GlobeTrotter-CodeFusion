@@ -510,24 +510,51 @@ const ItineraryBuild: React.FC = () => {
 
             <div className="flex items-center gap-2 border border-gray-700 rounded px-2 bg-[rgba(253,253,253,0.15)] flex-wrap min-w-[220px]">
               <Calendar className="w-4 h-4 text-gray-400" />
+
+              {/* Start Date (IST) */}
               <DatePicker
                 selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                onChange={(date) => {
+                  if (date) {
+                    const istDate = new Date(
+                      date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+                    );
+                    setStartDate(istDate);
+                  }
+                }}
                 selectsStart
                 startDate={startDate}
                 endDate={endDate}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="Pp"
                 placeholderText="Start"
-                className="p-1 outline-none bg-transparent text-white min-w-[90px]"
+                className="p-1 outline-none bg-transparent text-white min-w-[140px]"
               />
+
               <span className="text-gray-400">-</span>
+
+              {/* End Date (IST) */}
               <DatePicker
                 selected={endDate}
-                onChange={(date) => setEndDate(date)}
+                onChange={(date) => {
+                  if (date) {
+                    const istDate = new Date(
+                      date.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+                    );
+                    setEndDate(istDate);
+                  }
+                }}
                 selectsEnd
                 startDate={startDate}
                 endDate={endDate}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="Pp"
                 placeholderText="End"
-                className="p-1 outline-none bg-transparent text-white min-w-[90px]"
+                className="p-1 outline-none bg-transparent text-white min-w-[140px]"
               />
             </div>
           </div>
