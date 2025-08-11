@@ -131,7 +131,7 @@ export const refreshAccessToken = async (req, res) => {
     const user = await User.findById(payload.userId);
     res.json({
       jwt_token: newAccessToken,
-      user: { name: user.name, email: user.email, role: user.role },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });

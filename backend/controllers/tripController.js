@@ -46,7 +46,7 @@ export const getTripById = async (req, res) => {
 export const updateTrip = async (req, res) => {
   try {
     const updatedTrip = await Trip.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id }, // ensure only owner can update
+  { _id: req.params.id, userId: req.user.userId }, // ensure only owner can update
       req.body,
       { new: true }
     );
@@ -59,7 +59,7 @@ export const updateTrip = async (req, res) => {
 
 export const deleteTrip = async (req, res) => {
   try {
-    const deletedTrip = await Trip.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+  const deletedTrip = await Trip.findOneAndDelete({ _id: req.params.id, userId: req.user.userId });
     if (!deletedTrip) return res.status(404).json({ message: "Trip not found or not authorized" });
     res.json({ message: "Trip deleted successfully" });
   } catch (error) {
@@ -69,7 +69,7 @@ export const deleteTrip = async (req, res) => {
 
 export const getTripsByUserId = async (req, res) => {
   try {
-    const trips = await Trip.find({ userId: req?.user.id }).populate("cities.cityId");
+  const trips = await Trip.find({ userId: req?.user?.userId }).populate("cities.cityId");
     res.json(trips);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -86,7 +86,7 @@ export const addActivityToTrip = async (req, res) => {
       return res.status(400).json({ message: "Missing required city fields" });
     }
 
-    const trip = await Trip.findOne({ _id: tripId, userId: req.user.id });
+  const trip = await Trip.findOne({ _id: tripId, userId: req.user.userId });
     if (!trip) return res.status(404).json({ message: "Trip not found or not authorized" });
 
     trip.cities.push({ cityId, startDate, endDate, order });
@@ -103,7 +103,7 @@ export const removeActivityFromTrip = async (req, res) => {
   try {
     const { tripId, activityId } = req.params;
 
-    const trip = await Trip.findOne({ _id: tripId, userId: req.user.id });
+  const trip = await Trip.findOne({ _id: tripId, userId: req.user.userId });
     if (!trip) return res.status(404).json({ message: "Trip not found or not authorized" });
 
     trip.cities = trip.cities.filter(city => city._id.toString() !== activityId);
