@@ -69,7 +69,8 @@ export const deleteTrip = async (req, res) => {
 
 export const getTripsByUserId = async (req, res) => {
   try {
-    const trips = await Trip.find({ userId: req?.user.id }).populate("cities.cityId");
+    const trips = await Trip.find({ userId: req?.user.userId }).populate("cities.cityId");
+    console.log("Trips found for user:", req.user.id, trips.length);
     res.json(trips);
   } catch (error) {
     res.status(500).json({ message: error.message });
