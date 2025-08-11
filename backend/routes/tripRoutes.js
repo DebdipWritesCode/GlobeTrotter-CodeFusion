@@ -6,7 +6,7 @@ import upload from "../middleware/uploadMiddleware.js";
 const router = express.Router();
 
 router.post("/", authenticate, createTrip);
-// router.get("/:id", getTripById);
+router.get("/get/:id", getTripById);
 // router.put("/update/:id",authenticate, updateTrip);
 router.delete("/:id",authenticate, deleteTrip);
 router.get("/user", authenticate, getTripsByUserId);
