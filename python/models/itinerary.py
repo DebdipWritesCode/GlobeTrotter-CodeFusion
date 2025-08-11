@@ -13,9 +13,12 @@ class Activity(BaseModel):
     images: Optional[List[str]] = []
     
 class ActivityRef(BaseModel):
-    activityId: str = Field(..., description="MongoDB ObjectId as string")
+    activityIndex: int  # Index of the activity in the input activities list
     name: Optional[str] = None
-    
+
+    class Config:
+        extra = "forbid"
+
 class Section(BaseModel):
     tripId: str = Field(..., description="MongoDB ObjectId as string")
     name: str

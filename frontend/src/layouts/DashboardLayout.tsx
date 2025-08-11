@@ -27,12 +27,10 @@ const DashboardLayout = () => {
         <main className="flex-1 p-6">
           <Outlet />
         </main>
-      <div className=" absolute top-8 right-0">
-        <LogoutDialog />
-        <ChatBubble />
-      </div>
-      <div className="flex-1 mt-20 ml-15">
-        <Outlet />
+        <div className="absolute top-8 right-0">
+          <LogoutDialog />
+          <ChatBubble />
+        </div>
       </div>
     </div>
   );

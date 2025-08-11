@@ -1,6 +1,6 @@
 // frontend/src/pages/ItineraryBuild.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { useSearchParams, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
