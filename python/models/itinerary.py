@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from datetime   import datetime
 
 class Activity(BaseModel):
+    id: Optional[str] = Field(None, alias="_id", description="MongoDB ObjectId as string")
     name: str
     description: Optional[str] = None
     cityId: str = Field(..., description="MongoDB ObjectId as string")

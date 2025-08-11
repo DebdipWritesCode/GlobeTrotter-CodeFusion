@@ -86,7 +86,7 @@ const SidebarContent = ({
               variant="ghost"
               className="w-full justify-start"
               onClick={onNavigate}>
-              <Link to="/see-sheets">Dashboard</Link>
+              <Link to="/dashboard">Dashboard</Link>
             </Button>
           </li>
 

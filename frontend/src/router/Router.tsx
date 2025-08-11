@@ -46,7 +46,7 @@ const Router = () => {
         <Route path="/profile" element={<MyProfile />} />
         <Route path="/trips" element={<MyTrips />} />
         <Route path="/create-trip" element={<CreateTrip/>} />
-        <Route path="/build-itinerary" element={<ItineraryBuild/>} />
+        <Route path="/build-itinerary/:tripId" element={<ItineraryBuild/>} />
         <Route path="/community" element={<Community/>}/>
         <Route path="/calendar" element={<MyTripsCalendar/>} />
       </Route>

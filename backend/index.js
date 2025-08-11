@@ -69,8 +69,11 @@ import sectionRoutes from "./routes/sectionRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import cityRoutes from "./routes/cityRoutes.js";
-import communityRoutes from "./routes/communityRoutes.js";
-import uploadRoutes from "./routes/uploadRoutes.js";
+
+import communityRoutes from './routes/communityRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import path from "path";
+
 
 dotenv.config();
 
@@ -94,6 +97,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sections", sectionRoutes);
+
 app.use("/api/trips", tripRoutes);
 app.use("/api/activities", activityRoutes);
 app.use("/api/cities", cityRoutes);
@@ -195,6 +199,18 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+app.use('/api/trips', tripRoutes); 
+app.use('/api/activities',activityRoutes);
+app.use('/api/cities', cityRoutes);
+app.use('/api/community', communityRoutes);
+app.use('/api/uploads', uploadRoutes);
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+app.get('/', (req, res) => {
+  res.send('API is working!');
+
 });
 
 // Connect to MongoDB and start server
