@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import sectionRoutes from "./routes/sectionRoutes.js";
 import tripRoutes from './routes/tripRoutes.js';
+import activityRoutes from './routes/activityRoutes.js'
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use("/api/sections", sectionRoutes);
 app.use('/api/trips', tripRoutes); 
+app.use('/api/activities',activityRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is working!');
