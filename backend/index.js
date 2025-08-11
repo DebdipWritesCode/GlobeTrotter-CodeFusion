@@ -15,6 +15,7 @@ import activityRoutes from "./routes/activityRoutes.js";
 import cityRoutes from "./routes/cityRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use("/api/activities", activityRoutes);
 app.use("/api/cities", cityRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/search", searchRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is working!");
@@ -67,7 +69,7 @@ const genUsername = () => `traveler${Math.floor(Math.random() * 9000 + 1000)}`;
 const genAvatar = (id) => `https://i.pravatar.cc/150?u=${encodeURIComponent(id)}`;
 
 io.on("connection", (socket) => {
-  console.log("Socket connected:", socket.id);
+  // console.log("Socket connected:", socket.id);
 
   const username = genUsername();
   const avatar = genAvatar(socket.id);
@@ -116,7 +118,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Socket disconnected:", socket.id);
+    // console.log("Socket disconnected:", socket.id);
     const leftUser = connectedUsers[socket.id];
     delete connectedUsers[socket.id];
 

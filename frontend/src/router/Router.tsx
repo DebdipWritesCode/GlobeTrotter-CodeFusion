@@ -25,6 +25,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import Community from "@/pages/Community";
 import Calendar from "@/pages/Calendar";
 import MyTripsCalendar from "@/pages/Calendar";
+import SearchActivity from "../pages/SearchActivity";
 
 const Router = () => {
   return (
@@ -49,6 +50,7 @@ const Router = () => {
         <Route path="/build-itinerary/:tripId" element={<ItineraryBuild/>} />
         <Route path="/community" element={<Community/>}/>
         <Route path="/calendar" element={<MyTripsCalendar/>} />
+        <Route path="/search" element={<SearchActivity />} />
       </Route>
 
       <Route
