@@ -216,7 +216,8 @@ const ItineraryBuild: React.FC = () => {
       setLoading(true); // Start loading
 
       // 1️⃣ Fetch trip details
-      const tripRes = await api.get(`/trips/${tripId}`);
+      console.log("tripId:", tripId);
+      const tripRes = await api.get(`/trips/get/${tripId}`);
       const trip = tripRes.data;
 
       // 2️⃣ Prepare payload
