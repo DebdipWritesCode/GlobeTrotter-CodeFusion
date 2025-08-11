@@ -1,45 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import Earth from '@/components/ui/globe';
-import { SparklesCore } from '@/components/ui/sparkles';
-import { Label } from '@/components/ui/label';
-import { Check, Loader2 } from 'lucide-react';
+import { useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import Earth from "@/components/ui/globe";
+import { SparklesCore } from "@/components/ui/sparkles";
+import { Label } from "@/components/ui/label";
+import { Check, Loader2 } from "lucide-react";
 
 export default function ContactUs1() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSubmitting] = useState(false);
+  const [isSubmitted] = useState(false);
 
   const formRef = useRef(null);
   const isInView = useInView(formRef, { once: true, amount: 0.3 });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      console.log('Form submitted:', { name, email, message });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setName('');
-      setEmail('');
-      setMessage('');
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 5000);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const handleSubmit = async (e: React.FormEvent) => {};
 
   return (
     <section className="relative w-full overflow-hidden py-16 md:py-24">
@@ -77,10 +58,11 @@ export default function ContactUs1() {
             <div className="relative p-6 md:p-10" ref={formRef}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                animate={
+                  isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+                }
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="flex w-full gap-2"
-              >
+                className="flex w-full gap-2">
                 <h2 className="from-foreground to-foreground/80 mb-2 bg-gradient-to-r bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl">
                   Contact
                 </h2>
@@ -100,18 +82,18 @@ export default function ContactUs1() {
 
               <motion.form
                 initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                animate={
+                  isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+                }
                 transition={{ duration: 0.5, delay: 0.3 }}
                 onSubmit={handleSubmit}
-                className="mt-8 space-y-6"
-              >
+                className="mt-8 space-y-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <motion.div
                     className="space-y-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
+                    transition={{ delay: 0.4 }}>
                     <Label htmlFor="name">Name</Label>
                     <Input
                       id="name"
@@ -126,8 +108,7 @@ export default function ContactUs1() {
                     className="space-y-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                  >
+                    transition={{ delay: 0.5 }}>
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
@@ -144,8 +125,7 @@ export default function ContactUs1() {
                   className="space-y-2"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                >
+                  transition={{ delay: 0.6 }}>
                   <Label htmlFor="message">Message</Label>
                   <Textarea
                     id="message"
@@ -160,13 +140,12 @@ export default function ContactUs1() {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full"
-                >
+                  className="w-full">
                   <Button
                     type="submit"
+                    onSubmit={handleSubmit}
                     disabled={isSubmitting}
-                    className="w-full bg-gradient-to-b from-blue-600 to-blue-800 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] dark:from-purple-500 dark:to-purple-700"
-                  >
+                    className="w-full bg-gradient-to-b from-blue-600 to-blue-800 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] dark:from-purple-500 dark:to-purple-700">
                     {isSubmitting ? (
                       <span className="flex items-center justify-center">
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -189,17 +168,16 @@ export default function ContactUs1() {
               initial={{ opacity: 0, x: 20 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="relative my-8 flex items-center justify-center overflow-hidden pr-8"
-            >
+              className="relative my-8 flex items-center justify-center overflow-hidden pr-8">
               <div className="flex flex-col items-center justify-center overflow-hidden">
                 <article className="relative mx-auto h-[350px] min-h-60 max-w-[450px] overflow-hidden rounded-3xl border bg-gradient-to-b from-blue-600 to-blue-100/10 p-6 text-3xl tracking-tight text-white dark:from-purple-500 dark:to-purple-100/10 md:h-[450px] md:min-h-80 md:p-8 md:text-4xl md:leading-[1.05] lg:text-5xl">
-                  Presenting you with the best UI possible.
+                  Presenting you with the best Travel Experience Ever.
                   <div className="absolute -right-20 -bottom-20 z-10 mx-auto flex h-full w-full max-w-[300px] items-center justify-center transition-all duration-700 hover:scale-105 md:-right-28 md:-bottom-28 md:max-w-[550px]">
                     <Earth
                       scale={1.1}
                       baseColor={[0.15, 0.4, 0.9]} // Blue base
                       markerColor={[0, 0, 0]}
-                      glowColor={[0.6, 0.3, 1]} 
+                      glowColor={[0.6, 0.3, 1]}
                     />
                   </div>
                 </article>
