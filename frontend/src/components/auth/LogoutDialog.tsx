@@ -12,13 +12,22 @@ import ToastComponent from "../ToastComponent";
 import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
 import { clearAccessToken } from "@/slices/authSlice";
+import api from "@/api/axios";
+import { toast } from "react-toastify";
 
 const LogoutDialog = () => {
   const dispatch = useDispatch();
 
-  const handleLogout = () => {
-    dispatch(clearAccessToken());
-  }
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout"); // Call backend logout API
+      dispatch(clearAccessToken()); // Clear Redux state
+      toast.success("Logged out successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to logout");
+    }
+  };
 
   return (
     <>
