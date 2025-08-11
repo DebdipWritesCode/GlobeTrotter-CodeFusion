@@ -55,7 +55,7 @@ const Sparkline: React.FC<SparkProps> = ({ points, ariaLabel }) => {
         />
         <polygon
           fill="url(#sparklineGradient)"
-          points={`0,40 ${norm.map((n, i) => `${(i / Math.max(1, norm.length - 1)) * 100},${40 - n * 36}`).join(' ')} 100,40`}
+          points={`0,40 ${norm.map((n, i) => `${(i / Math.max(1, norm.length - 1)) * 100},{40 - n * 36}`).join(' ')} 100,40`}
         />
       </svg>
     </div>

@@ -9,9 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-md p-6 shadow-lg">
@@ -30,6 +32,12 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           <LoginForm />
+          <button
+            onClick={() => navigate("/forgot-password")}
+            className="mt-2 text-sm text-blue-600 hover:underline text-center w-full"
+          >
+            Forgot Password?
+          </button>
           <div className="flex items-center my-4">
             <div className="flex-1 h-px bg-gray-300"></div>
             <span className="px-3 text-sm text-gray-500">OR</span>

@@ -9,6 +9,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import CompleteProfile from "@/pages/Auth/CompleteProfile";
+import ResetPassword from "@/pages/Auth/ResetPassword";
+import ForgotPassword from "@/pages/Auth/ForgotPassword";
 
 import MyProfile from "@/pages/User/MyProfile";
 import MyTrips from "@/pages/User/MyTrips";
@@ -23,7 +25,6 @@ import Analytics from "@/pages/Admin/Analytics";
 import AdminRoute from "./AdminRoute";
 import AdminLayout from "@/layouts/AdminLayout";
 import Community from "@/pages/Community";
-import Calendar from "@/pages/Calendar";
 import MyTripsCalendar from "@/pages/Calendar";
 import SearchActivity from "../pages/SearchActivity";
 
@@ -35,21 +36,22 @@ const Router = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/verify" element={<VerifyEmail />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route
         element={
           <ProtectedRoute>
             <DashboardLayout />
           </ProtectedRoute>
-        }
-      >
+        }>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<MyProfile />} />
         <Route path="/trips" element={<MyTrips />} />
-        <Route path="/create-trip" element={<CreateTrip/>} />
-        <Route path="/build-itinerary/:tripId" element={<ItineraryBuild/>} />
-        <Route path="/community" element={<Community/>}/>
-        <Route path="/calendar" element={<MyTripsCalendar/>} />
+        <Route path="/create-trip" element={<CreateTrip />} />
+        <Route path="/build-itinerary/:tripId" element={<ItineraryBuild />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/calendar" element={<MyTripsCalendar />} />
         <Route path="/search" element={<SearchActivity />} />
       </Route>
 
@@ -58,8 +60,7 @@ const Router = () => {
           <AdminRoute>
             <AdminLayout />
           </AdminRoute>
-        }
-      >
+        }>
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/analytics" element={<Analytics />} />
         <Route path="/admin/cities" element={<ManageCities />} />
