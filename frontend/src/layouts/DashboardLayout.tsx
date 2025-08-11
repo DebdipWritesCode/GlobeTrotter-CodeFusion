@@ -2,12 +2,12 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import LogoutDialog from '@/components/auth/LogoutDialog';
 import ThemeToggle from '@/components/ThemeToggle';
+import ChatBubble from '@/components/ChatBubble';
 
 const DashboardLayout = () => {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -27,6 +27,12 @@ const DashboardLayout = () => {
         <main className="flex-1 p-6">
           <Outlet />
         </main>
+      <div className=" absolute top-8 right-0">
+        <LogoutDialog />
+        <ChatBubble />
+      </div>
+      <div className="flex-1 mt-20 ml-15">
+        <Outlet />
       </div>
     </div>
   );
