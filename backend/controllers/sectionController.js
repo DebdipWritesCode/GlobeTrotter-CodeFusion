@@ -2,12 +2,22 @@ import Section from "../models/Section.js";
 
 export const createSection = async (req, res) => {
   try {
-    const { tripId, name, description, budget } = req.body;
-    if (!tripId || !name || !description) {
+    const { tripId, name, description, budget, startDate, endDate, activities } = req.body;
+
+    if (!tripId || !name || !description || !startDate || !endDate) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const section = await Section.create({ tripId, name, description, budget });
+    const section = await Section.create({
+      tripId,
+      name,
+      description,
+      budget,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      activities: activities || []
+    });
+
     res.status(201).json(section);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -35,7 +45,13 @@ export const getSectionById = async (req, res) => {
 
 export const updateSection = async (req, res) => {
   try {
-    const section = await Section.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updateData = { ...req.body };
+
+    if (updateData.startDate) updateData.startDate = new Date(updateData.startDate);
+    if (updateData.endDate) updateData.endDate = new Date(updateData.endDate);
+
+    const section = await Section.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
     if (!section) return res.status(404).json({ message: "Section not found" });
     res.json(section);
   } catch (err) {
