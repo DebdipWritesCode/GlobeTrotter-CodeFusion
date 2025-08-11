@@ -10,6 +10,9 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import CompleteProfile from "@/pages/Auth/CompleteProfile";
 
+import MyProfile from "@/pages/User/MyProfile";
+import MyTrips from "@/pages/User/MyTrips";
+
 const Router = () => {
   return (
     <Routes>
@@ -27,6 +30,8 @@ const Router = () => {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<MyProfile />} />
+        <Route path="/trips" element={<MyTrips />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

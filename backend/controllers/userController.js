@@ -16,3 +16,9 @@ export const completeProfile = async (req, res) => {
     res.status(500).json({ message: "Server error updating profile" });
   }
 };
+
+export const getUserById = async (req, res) => {}
+
+export const getUserTrips = async (req, res) => {}
+
+export const updateUser = async (req, res) => {}
