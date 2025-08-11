@@ -32,7 +32,7 @@ export const createTrip = async (req, res) => {
 export const getTripById = async (req, res) => {
   try {
     const trip = await Trip.findById(req.params.id)
-      .populate("userId", "name email") // limit user fields
+      .populate("userId", "name email") 
       .populate("cities.cityId");
 
     if (!trip) return res.status(404).json({ message: "Trip not found" });
