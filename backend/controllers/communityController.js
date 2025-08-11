@@ -36,7 +36,7 @@ export const getAllPosts = async (req, res) => {
 export const toggleLike = async (req, res) => {
   try {
     const { postId } = req.params;
-    const userId = req.user._id;
+    const userId = req.user.userId;
 
     const post = await CommunityPost.findById(postId);
     if (!post) return res.status(404).json({ success: false, message: "Post not found" });
@@ -74,3 +74,37 @@ export const addComment = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+
+
+// DELETE comment from a post
+export const deleteComment = async (req, res) => {
+  try {
+    const { postId, commentId } = req.params;
+
+    // Find the post
+    const post = await CommunityPost.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Find the comment
+    const commentIndex = post.comments.findIndex(
+      (c) => c._id.toString() === commentId
+    );
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Remove the comment
+    post.comments.splice(commentIndex, 1);
+    await post.save();
+
+    res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+

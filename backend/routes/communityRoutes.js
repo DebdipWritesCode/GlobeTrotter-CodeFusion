@@ -3,7 +3,8 @@ import {
   createPost,
   getAllPosts,
   toggleLike,
-  addComment
+  addComment,
+  deleteComment
 } from "../controllers/communityController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
@@ -13,5 +14,6 @@ router.post("/", authenticate, createPost);
 router.get("/", getAllPosts);
 router.post("/:postId/like", authenticate, toggleLike);
 router.post("/:postId/comment", authenticate, addComment);
+router.delete("/:postId/comments/:commentId", deleteComment);
 
 export default router;
