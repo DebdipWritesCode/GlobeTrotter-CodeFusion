@@ -15,6 +15,14 @@ import MyTrips from "@/pages/User/MyTrips";
 import CreateTrip from "@/pages/CreateTrip";
 import ItineraryBuild from "@/pages/ItineraryBuild";
 
+import ManageUsers from "@/pages/Admin/ManageUsers";
+import ManageActivities from "@/pages/Admin/ManageActivities";
+import ManageCities from "@/pages/Admin/ManageCities";
+import AdminDashboard from "@/pages/Admin/Dashboard";
+import Analytics from "@/pages/Admin/Analytics";
+import AdminRoute from "./AdminRoute";
+import AdminLayout from "@/layouts/AdminLayout";
+
 const Router = () => {
   return (
     <Routes>
@@ -36,6 +44,20 @@ const Router = () => {
         <Route path="/trips" element={<MyTrips />} />
         <Route path="/create-trip" element={<CreateTrip/>} />
         <Route path="/build-itinerary" element={<ItineraryBuild/>} />
+      </Route>
+
+      <Route
+        element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }
+      >
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/analytics" element={<Analytics />} />
+        <Route path="/admin/cities" element={<ManageCities />} />
+        <Route path="/admin/activities" element={<ManageActivities />} />
+        <Route path="/admin/users" element={<ManageUsers />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
