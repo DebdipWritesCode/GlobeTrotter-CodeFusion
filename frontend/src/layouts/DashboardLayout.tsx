@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar';
 import LogoutDialog from '@/components/auth/LogoutDialog';
+import ChatBubble from '@/components/ChatBubble';
 
 const DashboardLayout = () => {
   return (
@@ -8,6 +9,7 @@ const DashboardLayout = () => {
       <Sidebar />
       <div className=" absolute top-8 right-0">
         <LogoutDialog />
+        <ChatBubble />
       </div>
       <div className="flex-1 mt-20 ml-15">
         <Outlet />

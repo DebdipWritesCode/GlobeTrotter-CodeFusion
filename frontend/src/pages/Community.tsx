@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import api from "@/api/axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
+import Chat from "@/components/Chat";
 import {
   Send,
   MessageSquare,
@@ -44,7 +45,7 @@ const formatDate = (iso?: string) =>
 
 const Community: React.FC = () => {
   const token = useSelector((s: RootState) => s.auth.accessToken);
-  const currentUser = useSelector((s: RootState) => (s as any).auth.user); // adjust shape if you store differently
+  const currentUser = useSelector((s: RootState) => (s as any).auth.user); 
 
   // state
   const [posts, setPosts] = useState<PostT[]>([]);
@@ -279,7 +280,7 @@ const Community: React.FC = () => {
       </div>
 
       {/* Chat Drawer (placeholder) */}
-      {chatOpen && (
+      {/* {chatOpen && (
         <aside className="fixed right-4 bottom-20 w-80 h-96 bg-gray-900 border border-gray-800 rounded-xl shadow-xl p-3 z-50">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -291,7 +292,7 @@ const Community: React.FC = () => {
             </button>
           </div>
           <div className="flex-1 border border-gray-800 rounded p-2 text-sm text-gray-300 overflow-y-auto">
-            {/* placeholder messages */}
+          
             <div className="text-xs text-gray-500 mb-2">Chat will appear here when connected</div>
           </div>
 
@@ -302,7 +303,9 @@ const Community: React.FC = () => {
             </button>
           </div>
         </aside>
-      )}
+      )} */}
+
+      {chatOpen && <Chat onClose={() => setChatOpen(false)} />}
 
       <main className="max-w-5xl mx-auto">
         {/* Create quick composer */}
