@@ -44,7 +44,7 @@ export default function Globe3D() {
 
           <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:mb-0 sm:flex-row">
             <Link
-              to="/register"
+              to="/signup"
               className="neumorphic-button relative w-full sm:w-auto overflow-hidden rounded-full border px-8 py-4 text-gray-700 dark:text-white shadow-lg transition-all duration-300
                         bg-gradient-to-b from-white/80 to-white/60 hover:border-gray-300 hover:shadow-md
                         dark:bg-gradient-to-b dark:from-white/10 dark:to-white/5 dark:border-white/10 dark:hover:border-[#9b87f5]/30 dark:hover:shadow-[0_0_20px_rgba(155,135,245,0.5)]">
