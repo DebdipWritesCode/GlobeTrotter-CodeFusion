@@ -1,4 +1,6 @@
 import Section from "../models/Section.js";
+import axios from "axios";
+import Activity from "../models/Activity.js";
 
 export const createSection = async (req, res) => {
   try {
@@ -66,5 +68,40 @@ export const deleteSection = async (req, res) => {
     res.json({ message: "Section deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const createItineraryByAI = async (req, res) => {
+  try {
+    const { name, description, start_date, end_date } = req.body;
+
+    if (!name || !description || !start_date || !end_date) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // 1️⃣ Fetch all activities from DB
+    const activities = await Activity.find({}); // adjust DB query as needed
+
+    // 2️⃣ Prepare payload for FastAPI
+    const itineraryPayload = {
+      name,
+      description,
+      start_date,
+      end_date,
+      activities // Should match the FastAPI `Activity` model shape
+    };
+
+    // 3️⃣ Send to FastAPI
+    const { data: itineraryResponse } = await axios.post(
+      "http://localhost:8000/v1/itinerary",
+      itineraryPayload
+    );
+
+    // 4️⃣ Return FastAPI response to client
+    return res.status(200).json(itineraryResponse);
+
+  } catch (error) {
+    console.error("Error creating itinerary by AI:", error.message);
+    return res.status(500).json({ error: "Failed to create itinerary" });
   }
 };
