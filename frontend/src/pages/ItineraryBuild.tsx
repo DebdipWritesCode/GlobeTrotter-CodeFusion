@@ -34,6 +34,8 @@ import {
 
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
+import api from "@/api/axios";
+import Loading from "@/components/Loading";
 
 interface Activity {
   id: number;
@@ -62,8 +64,7 @@ const TimelineDot = ({ number }: { number: number }) => {
       className="absolute -left-8 top-6 w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 
       shadow-[0_0_12px_rgba(139,92,246,0.8)] flex items-center justify-center 
       text-white font-bold text-base select-none
-      hover:scale-105 transition-transform duration-300"
-    >
+      hover:scale-105 transition-transform duration-300">
       {number}
     </div>
   );
@@ -124,16 +125,14 @@ const SortableSection = ({
       {...attributes}
       {...listeners}
       className="relative mb-12 pl-14 rounded-2xl bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-900
-    border border-purple-700 shadow-lg hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all duration-300"
-    >
+    border border-purple-700 shadow-lg hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all duration-300">
       {/* Numbered Timeline Dot */}
       <TimelineDot number={index + 1} />
 
       {/* Header */}
       <div
         className="flex justify-between items-center p-5 cursor-pointer select-none hover:bg-gray-700 rounded-2xl"
-        onClick={() => toggleExpand(section._id)}
-      >
+        onClick={() => toggleExpand(section._id)}>
         <div className="flex items-center font-semibold text-lg text-white">
           <CardIcon index={index} />
           {section.name}
@@ -145,8 +144,7 @@ const SortableSection = ({
               openModalForEdit(section);
             }}
             title="Edit Section"
-            className="hover:text-purple-400 transition"
-          >
+            className="hover:text-purple-400 transition">
             <Edit className="w-5 h-5" />
           </button>
           <button
@@ -155,8 +153,7 @@ const SortableSection = ({
               handleDeleteSection(section._id);
             }}
             title="Delete Section"
-            className="hover:text-red-500 transition"
-          >
+            className="hover:text-red-500 transition">
             <Trash2 className="w-5 h-5" />
           </button>
           {section.expanded ? (
@@ -183,8 +180,7 @@ const SortableSection = ({
             {section.activities?.map((act) => (
               <span
                 key={act.id}
-                className="bg-purple-700 px-4 py-1 rounded-full text-white font-semibold shadow-md"
-              >
+                className="bg-purple-700 px-4 py-1 rounded-full text-white font-semibold shadow-md">
                 {act.name}
               </span>
             ))}
@@ -200,12 +196,8 @@ const ItineraryBuild: React.FC = () => {
 
   const [sections, setSections] = useState<Section[]>([]);
   const [mode, setMode] = useState<"ai" | "manual">("manual");
-
-  // Modal states
   const [modalOpen, setModalOpen] = useState(false);
   const [editSection, setEditSection] = useState<Section | null>(null);
-
-  // Form states for modal
   const [sectionName, setSectionName] = useState("");
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");
@@ -214,7 +206,43 @@ const ItineraryBuild: React.FC = () => {
   const [activityInput, setActivityInput] = useState("");
   const [activities, setActivities] = useState<Activity[]>([]);
 
-  const tripId = "6899d016db3fd59dd8ee47d1"; // replace with real tripId from props/context
+  const [loading, setLoading] = useState(false); // ⬅ Loading state
+
+  const tripId = "6899d016db3fd59dd8ee47d1"; // Replace with real tripId from props/context
+
+  const onGenerateNowClick = async () => {
+    try {
+      setLoading(true); // Start loading
+
+      // 1️⃣ Fetch trip details
+      const tripRes = await api.get(`/trips/${tripId}`);
+      const trip = tripRes.data;
+
+      // 2️⃣ Prepare payload
+      const payload = {
+        name: trip.title,
+        description: trip.description,
+        start_date: trip.startDate,
+        end_date: trip.endDate,
+        tripId: tripId,
+      };
+
+      // 3️⃣ Send POST request
+      const itineraryRes = await api.post(
+        "/sections/create-itinerary-by-ai",
+        payload
+      );
+
+      console.log("Itinerary created successfully:", itineraryRes.data);
+
+      // 4️⃣ Refresh page or trigger re-fetch
+      window.location.reload();
+    } catch (error) {
+      console.error("Error generating itinerary:", error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -385,6 +413,12 @@ const ItineraryBuild: React.FC = () => {
     );
   };
 
+  if (loading) {
+    return (
+      <Loading />
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-5xl mx-auto">
@@ -394,16 +428,14 @@ const ItineraryBuild: React.FC = () => {
             onClick={() => setMode("manual")}
             className={`px-4 py-2 rounded-lg border ${
               mode === "manual" ? "border-white" : "border-gray-700"
-            } transition`}
-          >
+            } transition`}>
             <Plus className="inline-block w-4 h-4 mr-2" /> Manual
           </button>
           <button
             onClick={() => setMode("ai")}
             className={`px-4 py-2 rounded-lg border ${
               mode === "ai" ? "border-white" : "border-gray-700"
-            } transition`}
-          >
+            } transition`}>
             <Sparkles className="inline-block w-4 h-4 mr-2" /> AI
           </button>
         </div>
@@ -417,9 +449,8 @@ const ItineraryBuild: React.FC = () => {
               preferences.
             </p>
             <button
-              onClick={() => alert("AI generation in progress...")}
-              className="bg-gray-800 px-5 py-2 rounded-lg hover:bg-gray-700 transition"
-            >
+              onClick={onGenerateNowClick}
+              className="bg-gray-800 px-5 py-2 rounded-lg hover:bg-gray-700 transition">
               Generate Now
             </button>
           </div>
@@ -431,8 +462,7 @@ const ItineraryBuild: React.FC = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={openModalForAdd}
-                className="bg-purple-600 px-6 py-3 rounded-full hover:bg-purple-700 inline-flex items-center gap-3 font-semibold tracking-wide shadow-lg"
-              >
+                className="bg-purple-600 px-6 py-3 rounded-full hover:bg-purple-700 inline-flex items-center gap-3 font-semibold tracking-wide shadow-lg">
                 <Plus className="w-6 h-6" /> Add New Section
               </button>
             </div>
@@ -442,14 +472,12 @@ const ItineraryBuild: React.FC = () => {
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
-              onDragEnd={onDragEnd}
-            >
+              onDragEnd={onDragEnd}>
               <SortableContext
                 items={sections.map(
                   (sec) => sec._id || sec.id?.toString() || ""
                 )}
-                strategy={verticalListSortingStrategy}
-              >
+                strategy={verticalListSortingStrategy}>
                 <div className="relative mt-10 ml-6">
                   {/* Center glowing vertical line */}
                   <div className="absolute top-0 left-[1.4rem] w-1 bg-gradient-to-b from-purple-500 via-purple-400 to-transparent rounded-full shadow-[0_0_10px_rgba(168,85,247,0.7)]"></div>
@@ -477,8 +505,7 @@ const ItineraryBuild: React.FC = () => {
           onRequestClose={closeModal}
           contentLabel="Add/Edit Section"
           className="max-w-xl mx-auto mt-24 bg-gray-900 p-6 rounded-xl shadow-lg outline-none"
-          overlayClassName="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center z-50"
-        >
+          overlayClassName="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center z-50">
           <h2 className="text-xl font-semibold mb-4">
             {editSection ? "Edit Section" : "Add New Section"}
           </h2>
@@ -571,8 +598,7 @@ const ItineraryBuild: React.FC = () => {
               />
               <button
                 onClick={handleAddActivity}
-                className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600"
-              >
+                className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600">
                 Add
               </button>
             </div>
@@ -580,8 +606,7 @@ const ItineraryBuild: React.FC = () => {
               {activities.map((act) => (
                 <span
                   key={act.id}
-                  className="bg-gray-700 px-3 py-1 rounded-full flex items-center gap-2"
-                >
+                  className="bg-gray-700 px-3 py-1 rounded-full flex items-center gap-2">
                   {act.name}
                   <X
                     className="w-4 h-4 cursor-pointer text-red-400"
@@ -595,14 +620,12 @@ const ItineraryBuild: React.FC = () => {
           <div className="flex justify-end gap-4 mt-4">
             <button
               onClick={closeModal}
-              className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700"
-            >
+              className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700">
               Cancel
             </button>
             <button
               onClick={handleSaveSection}
-              className="px-4 py-2 rounded bg-purple-600 hover:bg-purple-700"
-            >
+              className="px-4 py-2 rounded bg-purple-600 hover:bg-purple-700">
               Save
             </button>
           </div>
