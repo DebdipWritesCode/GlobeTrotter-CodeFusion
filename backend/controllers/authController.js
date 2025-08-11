@@ -10,9 +10,13 @@ const REFRESH_TOKEN_EXPIRY = "48h";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const signupUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, city, country, role } = req.body;
 
   try {
+    if (!name || !email || !password || !city || !country) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "Email already in use" });
@@ -24,11 +28,14 @@ export const signupUser = async (req, res) => {
       name,
       email,
       passwordHash,
+      city,
+      country,
+      role: role || "user"
     });
 
     res.status(200).json({
       message: "User created successfully",
-      user: { name: user.name, email: user.email },
+      user: { name: user.name, email: user.email, city: user.city, country: user.country, role: user.role },
     });
   } catch (err) {
     console.error(err);
@@ -168,6 +175,15 @@ export const googleAuth = async (req, res) => {
         name,
         email,
         passwordHash,
+        city: "Not provided",
+        country: "Not provided",
+      });
+
+      // Tell frontend: profile is incomplete
+      return res.status(201).json({
+        message: "New Google user. Please complete profile.",
+        profileIncomplete: true,
+        user: { id: user.id, name: user.name, email: user.email }
       });
     }
 
@@ -199,19 +215,22 @@ export const googleAuth = async (req, res) => {
     });
 
     res.status(200).json({
-    message: "Login successful",
-    jwt_token: accessToken,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      created_at: user.created_at,
-    },
-    metadata: {
-      user_agent: "RandomBrowser/1.0",
-      client_ip: "123.45.67.89",
-    },
-  });
+      message: "Login successful",
+      jwt_token: accessToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        city: user.city,
+        country: user.country,
+        role: user.role,
+        created_at: user.created_at,
+      },
+      metadata: {
+        user_agent: "RandomBrowser/1.0",
+        client_ip: "123.45.67.89",
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Google authentication failed" });

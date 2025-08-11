@@ -22,6 +22,8 @@ const signupFormSchema = z
     email: z.string().email("Invalid email"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+    city: z.string().min(1, "City is required"),
+    country: z.string().min(1, "Country is required"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -38,6 +40,8 @@ const SignupForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      city: "",
+      country: "",
     },
   });
 
@@ -50,6 +54,7 @@ const SignupForm = () => {
 
       if (response.status === 200) {
         toast.success("Account created successfully! Please log in.");
+        form.reset();
       } else {
         throw new Error("Unexpected response from server");
       }
@@ -76,7 +81,9 @@ const SignupForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-md mx-auto flex flex-col gap-6">
+        className="max-w-md mx-auto flex flex-col gap-6"
+      >
+        {/* Name */}
         <FormField
           control={form.control}
           name="name"
@@ -91,6 +98,7 @@ const SignupForm = () => {
           )}
         />
 
+        {/* Email */}
         <FormField
           control={form.control}
           name="email"
@@ -105,6 +113,37 @@ const SignupForm = () => {
           )}
         />
 
+        {/* City */}
+        <FormField
+          control={form.control}
+          name="city"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>City</FormLabel>
+              <FormControl>
+                <Input placeholder="Mumbai" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Country */}
+        <FormField
+          control={form.control}
+          name="country"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Country</FormLabel>
+              <FormControl>
+                <Input placeholder="India" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Password */}
         <FormField
           control={form.control}
           name="password"
@@ -119,6 +158,7 @@ const SignupForm = () => {
           )}
         />
 
+        {/* Confirm Password */}
         <FormField
           control={form.control}
           name="confirmPassword"
@@ -133,6 +173,7 @@ const SignupForm = () => {
           )}
         />
 
+        {/* Submit */}
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Signing up..." : "Sign Up"}
         </Button>

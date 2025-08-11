@@ -8,6 +8,7 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
+import CompleteProfile from "@/pages/Auth/CompleteProfile";
 
 const Router = () => {
   return (
@@ -16,6 +17,7 @@ const Router = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/verify" element={<VerifyEmail />} />
+      <Route path="/complete-profile" element={<CompleteProfile />} />
 
       <Route
         element={
