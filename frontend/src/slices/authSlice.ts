@@ -6,6 +6,7 @@ interface AuthState {
   name: string | null;
   email: string | null;
   user_id: string | null;
+  role: string | null;
   loading: boolean;
 }
 
@@ -15,6 +16,7 @@ interface Payload {
     id: string;
     name: string;
     email: string;
+    role: string | null;
     created_at: string;
   };
   metadata: {
@@ -28,6 +30,7 @@ const initialState: AuthState = {
   name: null,
   email: null,
   user_id: null,
+  role: null,
   loading: true,
 };
 
@@ -40,6 +43,7 @@ const authSlice = createSlice({
       state.name = action.payload.user.name;
       state.email = action.payload.user.email;
       state.user_id = action.payload.user.id;
+      state.role = action.payload.user.role || "user"; // Default to 'user' if role is not provided
       state.loading = false;
     },
     clearAccessToken: (state) => {

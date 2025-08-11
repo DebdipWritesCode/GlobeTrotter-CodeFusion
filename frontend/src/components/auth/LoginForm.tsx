@@ -25,19 +25,19 @@ interface Payload {
     id: string;
     name: string;
     email: string;
+    role: string;
     created_at: string;
   };
   metadata: {
     user_agent: string;
     client_ip: string;
-  }
+  };
 }
 
-const loginFormSchema = z
-  .object({
-    email: z.string().email("Invalid email"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-  });
+const loginFormSchema = z.object({
+  email: z.string().email("Invalid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,7 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
     setLoading(true);
     try {
-      const { ...loginData } = values;
+      const loginData = { ...values };
 
       const response = await api.post("/auth/login", loginData);
 
@@ -67,6 +67,7 @@ const LoginForm = () => {
             id: response.data.user.id,
             name: response.data.user.name,
             email: response.data.user.email,
+            role: response.data.user.role, // ✅ role is captured
             created_at: response.data.user.created_at,
           },
           metadata: {
@@ -81,7 +82,11 @@ const LoginForm = () => {
         console.log("Response data:", response.data);
 
         setTimeout(() => {
-          navigate("/dashboard");
+          if (response.data.user.role === "admin") {
+            navigate("/admin/");
+          } else {
+            navigate("/dashboard");
+          }
         }, 1500);
       } else {
         throw new Error("Unexpected response from server");
