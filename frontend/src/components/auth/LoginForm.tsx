@@ -91,12 +91,13 @@ const LoginForm = () => {
       } else {
         throw new Error("Unexpected response from server");
       }
-    } catch (err: any) {
-      if (err.response) {
-        if (err.response.status === 401) {
+    } catch (err: unknown) {
+      const e = err as { response?: { status?: number; data?: { message?: string } } } | undefined
+      if (e?.response) {
+        if (e.response.status === 401) {
           toast.error("Invalid email or password. Please try again.");
-        } else if (err.response.data?.message) {
-          toast.error(err.response.data.message);
+        } else if (e.response.data?.message) {
+          toast.error(e.response.data.message);
         } else {
           toast.error("An unexpected error occurred. Please try again later.");
         }

@@ -17,13 +17,12 @@ import { IoAirplaneOutline } from "react-icons/io5";
 export const SmoothScrollHero: FC = () => {
   return (
     <div className="bg-zinc-950">
-      <ReactLenis
+  <ReactLenis
         root
         options={{
           lerp: 0.05,
           wheelMultiplier: 0.8,
           touchMultiplier: 1.5,
-          smoothTouch: true,
         }}
       >
         <Hero />
@@ -60,10 +59,7 @@ const Hero: FC = () => {
 const CenterImage: FC = () => {
   const { scrollY } = useScroll();
 
-  // keep clip if you use it; set to neutral if not
-  const clip1 = useTransform(scrollY, [0, SECTION_HEIGHT * 0.7], [5, 0]);
-  const clip2 = useTransform(scrollY, [0, SECTION_HEIGHT * 0.7], [95, 100]);
-  const clipPath = useMotionTemplate`polygon(${clip1}% ${clip1}%, ${clip2}% ${clip1}%, ${clip2}% ${clip2}%, ${clip1}% ${clip2}%)`;
+  // clip path removed to avoid unused variables; keep transform examples minimal
 
   // Start quite large so it always fills viewport on launch (adjust 1.4 as needed)
   const bgScale = useTransform(scrollY, [0, SECTION_HEIGHT * 0.9], [1.40, 1.00]);
@@ -85,7 +81,7 @@ const CenterImage: FC = () => {
       {/* Full-bleed background FIXED to viewport so it fills regardless of parent container */}
       <motion.div
         aria-hidden
-        style={{
+  style={{
           position: "absolute",
           inset: 0,
           zIndex: 0,
@@ -313,3 +309,5 @@ const ParallaxImg: FC<ParallaxImgProps> = ({
     />
   );
 };
+
+// Removed helper components (TravelMap, InspirationCarousel, DestinationCategories, NextTripCountdown, TravelStats)

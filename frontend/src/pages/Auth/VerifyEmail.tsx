@@ -14,12 +14,12 @@ const VerifyEmail = () => {
   useEffect(() => {
     const tokenParam = searchParams.get("token")
     if (tokenParam) {
-      handleVerifyEmail(tokenParam)
+      void handleVerifyEmail(tokenParam)
     } else {
       setError("Token not found in URL")
       setVerifying(false)
     }
-  }, [])
+  }, [searchParams])
 
   const handleVerifyEmail = async (queryToken: string) => {
     setVerifying(true)
@@ -34,8 +34,9 @@ const VerifyEmail = () => {
       } else {
         throw new Error("Verification failed")
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Unknown error")
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } }; message?: string } | undefined
+      setError(e?.response?.data?.message || e?.message || "Unknown error")
       setSuccess(false)
     } finally {
       setVerifying(false)
