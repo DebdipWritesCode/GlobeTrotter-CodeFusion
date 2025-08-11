@@ -169,8 +169,8 @@ const CreateTrip: React.FC = () => {
       const data = res.data;
 
       console.log("Trip Created:", data);
-      alert("Trip created successfully!");
-      navigate(`/trips/${data.id}`); // Redirect to the newly created trip page
+      alert("Trip created successfullyyyyyyy!");
+      navigate(`/build-itinerary/${data._id}`); // Redirect to the newly created trip page
       // Optionally clear the form or redirect to trip page
       setTrip({ title: "", description: "", startDate: undefined, endDate: undefined });
     } catch (err: any) {
