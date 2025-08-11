@@ -2,27 +2,49 @@ import Section from "../models/Section.js";
 
 export const createSection = async (req, res) => {
   try {
-    const { tripId, name, description, budget, startDate, endDate, activities } = req.body;
+    let sectionsData = req.body;
 
-    if (!tripId || !name || !description || !startDate || !endDate) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // Convert to array if single object
+    if (!Array.isArray(sectionsData)) {
+      sectionsData = [sectionsData];
     }
 
-    const section = await Section.create({
-      tripId,
-      name,
-      description,
-      budget,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      activities: activities || []
-    });
+    // Validate required fields for each section
+    for (const sec of sectionsData) {
+      if (!sec.tripId || !sec.name || !sec.description || !sec.startDate || !sec.endDate) {
+        return res.status(400).json({ message: "Missing required fields in one or more sections" });
+      }
+    }
 
-    res.status(201).json(section);
+    // Prepare sections for DB insert (convert dates, set defaults)
+    const preparedSections = sectionsData.map(sec => ({
+      tripId: sec.tripId,
+      name: sec.name,
+      description: sec.description,
+      budget: sec.budget || 0,
+      startDate: new Date(sec.startDate),
+      endDate: new Date(sec.endDate),
+      activities: sec.activities || []
+    }));
+
+    // Insert many if multiple, or create single if one
+    let createdSections;
+    if (preparedSections.length === 1) {
+      createdSections = await Section.create(preparedSections[0]);
+      return res.status(201).json(createdSections);
+    } else {
+      createdSections = await Section.insertMany(preparedSections);
+      return res.status(201).json({
+        message: `${createdSections.length} sections created successfully`,
+        data: createdSections
+      });
+    }
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 export const getSectionsByTripId = async (req, res) => {
   try {
