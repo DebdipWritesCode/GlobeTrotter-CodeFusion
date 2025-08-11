@@ -1,3 +1,4 @@
+import LogoutDialog from '@/components/auth/LogoutDialog';
 import { Outlet, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
@@ -13,6 +14,7 @@ const AdminLayout = () => {
           >
             Go to Dashboard
           </Link>
+          <LogoutDialog />
         </div>
       </header>
 
