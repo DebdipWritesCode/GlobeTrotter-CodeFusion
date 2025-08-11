@@ -1149,7 +1149,7 @@ function Highlights({
             <DollarSign className="h-4 w-4" /> Est. total budget
           </div>
           <div className="text-2xl font-semibold">
-            $ {totalBudget.toLocaleString()}
+            ₹ {totalBudget.toLocaleString()}
           </div>
         </CardContent>
       </Card>

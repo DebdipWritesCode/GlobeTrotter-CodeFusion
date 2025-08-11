@@ -58,6 +58,24 @@ export const createSection = async (req, res) => {
 export const getSectionsByTripId = async (req, res) => {
   try {
     const sections = await Section.find({ tripId: req.params.tripId });
+
+    // Loop through sections and manually fetch each activity document
+    for (const section of sections) {
+      for (let i = 0; i < section.activities.length; i++) {
+        const activityId = section.activities[i]._id;
+        console.log(
+          "Fetching activity for section:",
+          section._id,
+          "Activity ID:",
+          activityId
+        );
+        const activityDoc = await Activity.findById(activityId);
+        // Replace _id with full activity document or add a new field if preferred
+        section.activities[i].activityDetails = activityDoc;
+      }
+    }
+
+    console.log("Sections found for trip:", sections.activities);
     res.json(sections);
   } catch (err) {
     res.status(500).json({ message: err.message });
