@@ -30,12 +30,18 @@ export const signupUser = async (req, res) => {
       passwordHash,
       city,
       country,
-      role: role || "user"
+      role: role || "user",
     });
 
     res.status(200).json({
       message: "User created successfully",
-      user: { name: user.name, email: user.email, city: user.city, country: user.country, role: user.role },
+      user: {
+        name: user.name,
+        email: user.email,
+        city: user.city,
+        country: user.country,
+        role: user.role,
+      },
     });
   } catch (err) {
     console.error(err);
@@ -125,7 +131,7 @@ export const refreshAccessToken = async (req, res) => {
     const user = await User.findById(payload.userId);
     res.json({
       jwt_token: newAccessToken,
-      user: { name: user.name, email: user.email },
+      user: { name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
@@ -184,7 +190,7 @@ export const googleAuth = async (req, res) => {
       return res.status(201).json({
         message: "New Google user. Please complete profile.",
         profileIncomplete: true,
-        user: { id: user.id, name: user.name, email: user.email }
+        user: { id: user.id, name: user.name, email: user.email },
       });
     }
 
