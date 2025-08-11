@@ -1,19 +1,24 @@
 import { Outlet } from 'react-router-dom';
-import Sidebar from '@/components/Sidebar';
-import LogoutDialog from '@/components/auth/LogoutDialog';
+import Navbar from '@/components/Navbar';
+import LogoutDialog from '@/components/auth/LogoutMenuItem';
 import ChatBubble from '@/components/ChatBubble';
 
 const DashboardLayout = () => {
   return (
-    <div className="flex">
-      <Sidebar />
-      <div className=" absolute top-8 right-0">
+    <div className="flex flex-col min-h-screen">
+      {/* Top Navbar */}
+      <Navbar />
+
+      
+      <div className="absolute top-4 right-4 flex items-center gap-2">
         <LogoutDialog />
         <ChatBubble />
       </div>
-      <div className="flex-1 mt-20 ml-15">
+
+      {/* Main content */}
+      <main className="flex-1 mt-4 px-4">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 };

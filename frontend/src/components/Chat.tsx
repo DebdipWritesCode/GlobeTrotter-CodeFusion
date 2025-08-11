@@ -1,14 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
-import { MessageSquare, X, CornerUpRight, Maximize2, Minimize2 } from "lucide-react";
+import {
+  MessageSquare,
+  X,
+  CornerUpRight,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
 import type { RootState } from "@/redux/store";
 
 interface Message {
-  userId: string;
-  user: string;
+  socketId: string;
+  username: string;
   text: string;
   time: string;
+  avatar?: string;
 }
 
 interface ChatProps {
@@ -17,7 +24,7 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ onClose }) => {
   const currentUser = useSelector((state: RootState) => state.auth);
-console.log("Current user in chat:", currentUser);
+
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem("chatMessages");
     return saved ? JSON.parse(saved) : [];
@@ -32,7 +39,9 @@ console.log("Current user in chat:", currentUser);
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      console.log("Connected to chat server");
+      if (currentUser?.name) {
+        socket.emit("setDisplayName", currentUser.name);
+      }
     });
 
     socket.on("chatMessage", (msg: Message) => {
@@ -56,14 +65,10 @@ console.log("Current user in chat:", currentUser);
     if (!input.trim() || !socketRef.current) return;
 
     const msg: Message = {
-      userId: currentUser?.user_id || "guest",
-
-      user: currentUser?.name || "Guest",
+      socketId: socketRef.current.id,
+      username: currentUser?.name || "Guest",
       text: input.trim(),
-      time: new Date().toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      time: new Date().toISOString(),
     };
 
     socketRef.current.emit("chatMessage", msg);
@@ -71,7 +76,30 @@ console.log("Current user in chat:", currentUser);
   };
 
   const getAvatarUrl = (username: string) =>
-    `https://api.dicebear.com/6.x/identicon/svg?seed=${encodeURIComponent(username)}`;
+    `https://api.dicebear.com/6.x/identicon/svg?seed=${encodeURIComponent(
+      username
+    )}`;
+
+  // Date label formatter
+  const formatDateLabel = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const isToday = date.toDateString() === today.toDateString();
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+
+    if (isToday) return "Today";
+    if (isYesterday) return "Yesterday";
+
+    return date.toLocaleDateString(undefined, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: today.getFullYear() !== date.getFullYear() ? "numeric" : undefined,
+    });
+  };
 
   return (
     <aside
@@ -93,6 +121,7 @@ console.log("Current user in chat:", currentUser);
           <button
             onClick={() => setExpanded((prev) => !prev)}
             className="p-1 rounded hover:bg-white/5"
+            aria-label={expanded ? "Minimize chat" : "Maximize chat"}
           >
             {expanded ? (
               <Minimize2 className="w-4 h-4" />
@@ -100,7 +129,11 @@ console.log("Current user in chat:", currentUser);
               <Maximize2 className="w-4 h-4" />
             )}
           </button>
-          <button onClick={onClose} className="p-1 rounded hover:bg-white/5">
+          <button
+            onClick={onClose}
+            className="p-1 rounded hover:bg-white/5"
+            aria-label="Close chat"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -111,52 +144,65 @@ console.log("Current user in chat:", currentUser);
         {messages.length === 0 ? (
           <div className="text-xs text-gray-500">No messages yet</div>
         ) : (
-          messages.map((msg, idx) => {
-            const isOwn = msg.userId === currentUser?.user_id;
-            return (
-              <div
-                key={idx}
-                className={`flex items-start gap-2 ${
-                  isOwn ? "justify-end" : "justify-start"
-                }`}
-              >
-                {/* Avatar + Username */}
-                {!isOwn && (
-                  <img
-                    src={getAvatarUrl(msg.user)}
-                    alt={msg.user}
-                    className="w-7 h-7 rounded-full"
-                  />
-                )}
-                <div
-                  className={`max-w-[75%] rounded-lg p-2 ${
-                    isOwn
-                      ? "bg-cyan-500 text-white rounded-br-none"
-                      : "bg-gray-700 text-gray-100 rounded-bl-none"
-                  }`}
-                >
+          (() => {
+            let lastDate: string | null = null;
+            return messages.map((msg, idx) => {
+              const isOwn = msg.username === currentUser?.name;
+              const messageDate = new Date(msg.time).toDateString();
+              const showDate = messageDate !== lastDate;
+              if (showDate) lastDate = messageDate;
+
+              return (
+                <React.Fragment key={idx}>
+                  {showDate && (
+                    <div className="text-center text-[10px] text-gray-400 my-2">
+                      {formatDateLabel(msg.time)}
+                    </div>
+                  )}
+
                   <div
-                    className={`text-[10px] mb-1 font-semibold flex items-center gap-1 ${
-                      isOwn ? "text-white/90" : "text-gray-300"
+                    className={`flex items-start gap-2 w-full ${
+                      isOwn ? "justify-end" : "justify-start"
                     }`}
                   >
-                    {msg.user}
+                    {/* Other user: avatar left */}
+                    {!isOwn && (
+                      <img
+                        src={msg.avatar || getAvatarUrl(msg.username)}
+                        alt={msg.username}
+                        className="w-7 h-7 rounded-full flex-shrink-0"
+                      />
+                    )}
+
+                    <div
+                      className={`p-2 break-words rounded-lg ${
+                        isOwn
+                          ? "bg-cyan-500 text-white rounded-br-none text-right max-w-[85%] sm:max-w-[65%]"
+                          : "bg-gray-700 text-gray-100 rounded-bl-none text-left max-w-[85%] sm:max-w-[65%]"
+                      }`}
+                    >
+                      <div className="text-[10px] mb-1 font-semibold">
+                        {msg.username}
+                      </div>
+                      <div>{msg.text}</div>
+                      <div className="text-[9px] text-gray-300 mt-1 text-right">
+                        {new Date(msg.time).toLocaleTimeString()}
+                      </div>
+                    </div>
+
+                    {/* Current user: avatar right */}
+                    {isOwn && (
+                      <img
+                        src={msg.avatar || getAvatarUrl(msg.username)}
+                        alt={msg.username}
+                        className="w-7 h-7 rounded-full flex-shrink-0"
+                      />
+                    )}
                   </div>
-                  <div>{msg.text}</div>
-                  <div className="text-[9px] text-gray-300 mt-1 text-right">
-                    {msg.time}
-                  </div>
-                </div>
-                {isOwn && (
-                  <img
-                    src={getAvatarUrl(msg.user)}
-                    alt={msg.user}
-                    className="w-7 h-7 rounded-full"
-                  />
-                )}
-              </div>
-            );
-          })
+                </React.Fragment>
+              );
+            });
+          })()
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -169,10 +215,12 @@ console.log("Current user in chat:", currentUser);
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           placeholder="Type a message..."
           className="flex-1 p-2 rounded bg-white/5 border border-gray-800 text-sm outline-none text-white"
+          aria-label="Message input"
         />
         <button
           onClick={sendMessage}
           className="px-3 py-2 rounded bg-cyan-500 hover:bg-cyan-400"
+          aria-label="Send message"
         >
           <CornerUpRight className="w-4 h-4" />
         </button>

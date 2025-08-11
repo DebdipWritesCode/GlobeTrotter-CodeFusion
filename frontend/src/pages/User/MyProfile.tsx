@@ -2,49 +2,67 @@ import React, { useState, useEffect } from "react";
 import api from "@/api/axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
-import MyTrips from "./MyTrips";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 
-type U = {
-  _id: string;
+interface User {
+  id: string;
   name: string;
   email: string;
-  city: string;
-  country: string;
-  avatar?: string;
-};
+  city?: string;
+  country?: string;
+}
 
-const UserProfile: React.FC = () => {
-  const [u, setU] = useState<U | null>(null);
-  const [l, setL] = useState<boolean>(true);
-  const [e, setE] = useState<string>("");
-  const [uploadingAvatar, setUploadingAvatar] = useState<boolean>(false);
-  const [avatarError, setAvatarError] = useState<string>("");
-  const [showEditModal, setShowEditModal] = useState<boolean>(false);
-  const [editName, setEditName] = useState<string>("");
-  const [editCity, setEditCity] = useState<string>("");
-  const [editCountry, setEditCountry] = useState<string>("");
-  const [editError, setEditError] = useState<string>("");
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+interface Trip {
+  _id: string;
+  title: string;
+  coverPhoto?: string;
+  startDate: string;
+  endDate: string;
+  status: "upcoming" | "ongoing" | "completed";
+  budget?: number;
+}
 
-  const uid = useSelector((state: RootState) => state.auth.user_id);
+const MyProfile: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "stats">("upcoming");
+  const [user, setUser] = useState<User | null>(null);
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editOpen, setEditOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    city: "",
+    country: "",
+  });
+
+  const userId = useSelector((state: RootState) => state.auth.user_id);
+  const token = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
-    if (!uid) {
-      setL(false);
-      setE("User not authenticated.");
-      return;
-    }
-
-    const fetchUser = async () => {
-      setL(true);
+    const fetchData = async () => {
       try {
-        const res = await api.get(`/users/${uid}`);
-        setU(res.data);
-        setEditName(res.data.name);
-        setEditCity(res.data.city);
-        setEditCountry(res.data.country);
-      } catch (err: any) {
-        setE(err.response?.data?.message || "Failed to fetch profile.");
+        const [userRes, tripsRes] = await Promise.all([
+          api.get(`/users/${userId}`),
+          api.get(`/trips/user`),
+        ]);
+
+        const fullName = userRes.data.name || "";
+        const [first, ...rest] = fullName.split(" ");
+        const last = rest.join(" ");
+
+        setUser(userRes.data);
+        setFormData({
+          firstName: first || "",
+          lastName: last || "",
+          email: userRes.data.email || "",
+          city: userRes.data.city || "",
+          country: userRes.data.country || "",
+        });
+        setTrips(Array.isArray(tripsRes.data) ? tripsRes.data : []);
+      } catch (err) {
+        console.error("Error fetching profile data", err);
       } finally {
         setL(false);
       }
@@ -76,217 +94,219 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  const openEditModal = () => {
-    setShowEditModal(true);
-  };
-
-  const closeEditModal = () => {
-    setShowEditModal(false);
-    setEditError("");
-    setEditName(u?.name || "");
-    setEditCity(u?.city || "");
-    setEditCountry(u?.country || "");
-  };
-
-  const handleEditSubmit = async () => {
-    setIsEditing(true);
-    setEditError("");
+  const handleSave = async () => {
     try {
-      const res = await api.put(`/users/${uid}`, {
-        name: editName,
-        city: editCity,
-        country: editCountry,
-      });
-      setU(res.data);
-      closeEditModal();
-    } catch (err: any) {
-      setEditError(err.response?.data?.message || "Failed to update profile.");
-    } finally {
-      setIsEditing(false);
+      if (!userId || !token) return;
+
+      const updatedData = {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        city: formData.city,
+        country: formData.country,
+      };
+
+      const res = await api.put(
+        `/users/${userId}`,
+        updatedData,
+          );
+
+      setUser(res.data);
+      setEditOpen(false);
+      toast.success("Profile updated successfully!");
+    } catch (err) {
+      console.error("Error updating profile", err);
+      toast.error("Failed to update profile.");
     }
   };
 
-  const mainStyle: React.CSSProperties = {
-    backgroundColor: "#121212",
-    color: "#eee",
-    padding: "20px 40px",
-    fontFamily: "'Segoe UI', sans-serif",
-    minHeight: "100vh",
-  };
+  if (loading) {
+    return <div className="p-6 text-center text-gray-400">Loading...</div>;
+  }
 
-  const profileBoxStyle: React.CSSProperties = {
-    display: "flex",
-    gap: "30px",
-    alignItems: "center",
-    backgroundColor: "#1e1e1e",
-    padding: "25px",
-    borderRadius: "10px",
-    marginBottom: "40px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.5)",
-  };
-
-  const avatarContainerStyle: React.CSSProperties = {
-    position: "relative",
-    display: "inline-block",
-  };
-
-  const avatarStyle: React.CSSProperties = {
-    width: "120px",
-    height: "120px",
-    borderRadius: "50%",
-    objectFit: "cover",
-    border: "3px solid #444",
-  };
-
-  const uploadIconStyle: React.CSSProperties = {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: "#007bff",
-    color: "#fff",
-    borderRadius: "50%",
-    padding: "8px",
-    cursor: "pointer",
-    fontSize: "1rem",
-  };
-
-  const editBtnStyle: React.CSSProperties = {
-    padding: "10px 20px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: 600,
-    color: "#fff",
-    backgroundColor: "#007bff",
-    marginTop: "15px",
-  };
-
-  const modalStyle: React.CSSProperties = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-  };
-
-  const modalContentStyle: React.CSSProperties = {
-    backgroundColor: "#222",
-    padding: "30px",
-    borderRadius: "10px",
-    width: "400px",
-    maxWidth: "90%",
-    color: "#eee",
-  };
-
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "15px",
-    borderRadius: "6px",
-    border: "none",
-    backgroundColor: "#333",
-    color: "#eee",
-  };
-
-  const modalBtnContainerStyle: React.CSSProperties = {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: "15px",
-    marginTop: "20px",
-  };
-
-  const modalBtnStyle = (color: string): React.CSSProperties => ({
-    padding: "10px 20px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: 600,
-    color: "#fff",
-    backgroundColor: color,
-  });
-
-  if (l) return <div style={mainStyle}><p>Loading Profile...</p></div>;
-  if (e) return <div style={mainStyle}><p style={{ color: "red" }}>{e}</p></div>;
-  if (!u) return <div style={mainStyle}><p>Could not find user profile.</p></div>;
+  const upcomingTrips = trips.filter(
+    (t) => t.status === "upcoming" || t.status === "ongoing"
+  );
+  const pastTrips = trips.filter((t) => t.status === "completed");
 
   return (
-    <div style={mainStyle}>
-      <div style={profileBoxStyle}>
-        <div style={avatarContainerStyle}>
-          <img
-            src={u.avatar || `https://via.placeholder.com/120?text=${u.name.charAt(0)}`}
-            alt="User"
-            style={avatarStyle}
-          />
-          <label htmlFor="avatarUpload" style={uploadIconStyle}>
-            <i className="fas fa-camera"></i>
-          </label>
-          <input
-            id="avatarUpload"
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={handleAvatarUpload}
-          />
-          {uploadingAvatar && <small>Uploading...</small>}
-          {avatarError && <p style={{ color: "red", marginTop: "5px" }}>{avatarError}</p>}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-gray-800 dark:from-gray-950 dark:via-gray-900 dark:to-black flex flex-col items-center py-10 px-4 font-sans transition-colors">
+      {/* Profile Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 120, damping: 18 }}
+        className="w-full max-w-3xl mx-auto rounded-2xl shadow-xl bg-white/10 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 p-8 flex flex-col md:flex-row items-center md:items-start gap-8 mb-10"
+      >
+        {/* Avatar */}
+        <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-gray-300 to-gray-500 dark:from-gray-700 dark:to-gray-900 flex items-center justify-center text-4xl font-extrabold text-gray-700 dark:text-gray-200 select-none shadow">
+          {(formData.firstName?.[0] || "U") + (formData.lastName?.[0] || "")}
         </div>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "2.5rem" }}>{u.name}</h1>
-          <p style={{ margin: "5px 0 15px", color: "#aaa" }}>
-            {u.city}, {u.country}
-          </p>
-          <button style={editBtnStyle} onClick={openEditModal}>Edit Profile</button>
+
+        {/* Info */}
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+            {formData.firstName} {formData.lastName}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">{formData.email}</p>
+          {(formData.city || formData.country) && (
+            <p className="mt-1 text-gray-400 dark:text-gray-400 text-sm">
+              {formData.city ? formData.city + ", " : ""}
+              {formData.country || ""}
+            </p>
+          )}
         </div>
+
+        {/* Edit Button */}
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setEditOpen(true)}
+          className="bg-gradient-to-r from-purple-500/80 to-purple-700/80 hover:from-purple-600 hover:to-purple-800 transition px-5 py-2 rounded-md font-semibold shadow text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+        >
+          Edit Profile
+        </motion.button>
+      </motion.div>
+
+      {/* Tabs */}
+      <div className="w-full max-w-3xl mx-auto flex border-b border-gray-300 dark:border-gray-700 mb-8 text-lg bg-white/10 dark:bg-gray-900/40 backdrop-blur rounded-xl overflow-hidden">
+        {["upcoming", "past", "stats"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab as any)}
+            className={`flex-1 px-6 py-3 font-medium capitalize transition-colors duration-300 ${
+              activeTab === tab
+                ? "border-b-4 border-purple-500 text-purple-500 bg-white/20 dark:bg-gray-900/60"
+                : "text-gray-500 dark:text-gray-400 hover:text-purple-500"
+            }`}
+          >
+            {tab === "upcoming"
+              ? "Upcoming Trips"
+              : tab === "past"
+              ? "Past Trips"
+              : "Stats"}
+          </button>
+        ))}
       </div>
 
-      <MyTrips />
+      {/* Tab content */}
+      <div className="w-full max-w-3xl mx-auto">
+        {activeTab === "upcoming" && <TripsTab trips={upcomingTrips} />}
+        {activeTab === "past" && <TripsTab trips={pastTrips} />}
+        {activeTab === "stats" && <StatsTab trips={trips} />}
+      </div>
 
-      {showEditModal && (
-        <div style={modalStyle} onClick={closeEditModal}>
-          <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-            <h2>Edit Profile</h2>
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              style={inputStyle}
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-            />
-            <label htmlFor="city">City</label>
-            <input
-              type="text"
-              id="city"
-              style={inputStyle}
-              value={editCity}
-              onChange={(e) => setEditCity(e.target.value)}
-            />
-            <label htmlFor="country">Country</label>
-            <input
-              type="text"
-              id="country"
-              style={inputStyle}
-              value={editCountry}
-              onChange={(e) => setEditCountry(e.target.value)}
-            />
-            {editError && <p style={{ color: "red" }}>{editError}</p>}
-            <div style={modalBtnContainerStyle}>
-              <button style={modalBtnStyle("#555")} onClick={closeEditModal} disabled={isEditing}>
-                Cancel
-              </button>
-              <button style={modalBtnStyle("green")} onClick={handleEditSubmit} disabled={isEditing}>
-                {isEditing ? "Saving..." : "Save"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Edit Profile Modal */}
+      <AnimatePresence>
+        {editOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 120, damping: 18 }}
+              className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl w-full max-w-md p-8 relative text-gray-900 dark:text-gray-100"
+            >
+              <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                Edit Profile
+              </h2>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSave();
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label htmlFor="firstName" className="block mb-1 font-medium">
+                    First Name
+                  </label>
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block mb-1 font-medium">
+                    Last Name
+                  </label>
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block mb-1 font-medium">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="city" className="block mb-1 font-medium">
+                    City
+                  </label>
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="country" className="block mb-1 font-medium">
+                    Country
+                  </label>
+                  <input
+                    id="country"
+                    name="country"
+                    type="text"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                  />
+                </div>
+                <div className="flex justify-end space-x-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setEditOpen(false)}
+                    className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 font-semibold text-white"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

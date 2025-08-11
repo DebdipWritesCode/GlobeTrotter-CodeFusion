@@ -3,6 +3,28 @@ import Session from "../models/Session.js";
 import bcrypt from "bcryptjs";
 import { createToken, verifyToken } from "../utils/token.js";
 import { OAuth2Client } from "google-auth-library";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
+import ResetPasswordToken from "../models/ResetPasswordToken.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("Transporter verification failed:", error);
+  } else {
+    console.log("Transporter verified successfully");
+  }
+});
 
 const ACCESS_TOKEN_EXPIRY = "15m";
 const REFRESH_TOKEN_EXPIRY = "48h";
@@ -131,7 +153,12 @@ export const refreshAccessToken = async (req, res) => {
     const user = await User.findById(payload.userId);
     res.json({
       jwt_token: newAccessToken,
-      user: { name: user.name, email: user.email, role: user.role, id: user.id },
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        id: user.id,
+      },
     });
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
@@ -241,5 +268,95 @@ export const googleAuth = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Google authentication failed" });
+  }
+};
+
+export const sendResetPasswordEmail = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Respond with success even if user not found to avoid email enumeration
+      return res
+        .status(200)
+        .json({ message: "If registered, reset email sent" });
+    }
+
+    // Delete any existing tokens for this user
+    await ResetPasswordToken.deleteMany({ userId: user._id });
+
+    // Create token and expiry (e.g., 1 hour)
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    await ResetPasswordToken.create({
+      userId: user._id,
+      token,
+      expiresAt,
+    });
+
+    // Construct reset link
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    // Send mail
+    await transporter.sendMail({
+      from: `"YourApp Support" <${process.env.SMTP_USER}>`,
+      to: user.email,
+      subject: "Password Reset Request",
+      html: `
+        <p>Hi ${user.name},</p>
+        <p>You requested a password reset. Click the link below to reset your password:</p>
+        <a href="${resetLink}">${resetLink}</a>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `,
+    });
+
+    res.status(200).json({ message: "If registered, reset email sent" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const resetPasswordConfirm = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res
+      .status(400)
+      .json({ message: "Token and new password are required" });
+  }
+
+  try {
+    const tokenDoc = await ResetPasswordToken.findOne({ token });
+    if (!tokenDoc) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    if (new Date() > tokenDoc.expiresAt) {
+      await ResetPasswordToken.deleteOne({ _id: tokenDoc._id });
+      return res.status(400).json({ message: "Token expired" });
+    }
+
+    const user = await User.findById(tokenDoc.userId);
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Hash new password and save
+    user.passwordHash = await bcrypt.hash(newPassword, 12);
+    await user.save();
+
+    // Remove token so it cannot be reused
+    await ResetPasswordToken.deleteOne({ _id: tokenDoc._id });
+
+    res.status(200).json({ message: "Password reset successful" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
