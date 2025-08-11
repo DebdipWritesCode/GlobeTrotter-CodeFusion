@@ -1,24 +1,32 @@
+
 import LogoutDialog from '@/components/auth/LogoutMenuItem';
+
+import ThemeToggle from '@/components/ThemeToggle';
+
 import { Outlet, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import { Button } from '@/components/ui/button';
 
 const AdminLayout = () => {
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col">
-      <header className="bg-white shadow p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
-        <div className="space-x-4">
-          <Link
-            to="/admin/"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Go to Dashboard
-          </Link>
-          <LogoutDialog />
+    <div className="min-h-screen bg-background flex flex-col">
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-bold text-foreground">Admin Panel</h1>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/admin/">Go to Dashboard</Link>
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <LogoutDialog />
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 p-6">
+      <main className="flex-1">
         <Outlet />
       </main>
 
@@ -32,6 +40,7 @@ const AdminLayout = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
+        theme="light"
       />
     </div>
   );

@@ -1,4 +1,6 @@
 import City from "../models/City.js";
+import Activity from "../models/Activity.js";
+import axios from "axios";
 
 export const createCity = async (req, res) => {
   try {
@@ -14,12 +16,42 @@ export const createCity = async (req, res) => {
     });
 
     const savedCity = await city.save();
-    res.status(201).json({ message: "City created successfully", city: savedCity });
+
+    // === Call GPT service to generate activities for this city ===
+    // Replace URL with your FastAPI endpoint
+    const response = await axios.post("http://localhost:8000/v1/activities", {
+      city_name: name
+    });
+
+    const generatedActivities = response.data.activities || [];
+
+    // Prepare activities for DB insertion, linking cityId
+    const activityDocs = generatedActivities.map((act) => ({
+      name: act.name,
+      description: act.description || "",
+      category: act.category || "other",
+      cost: act.cost || 0,
+      duration: act.duration || 0,
+      cityId: savedCity._id,
+      images: [], // no images for now
+    }));
+
+    // Insert activities into DB
+    if (activityDocs.length > 0) {
+      await Activity.insertMany(activityDocs);
+    }
+
+    res.status(201).json({
+      message: "City and activities created successfully",
+      city: savedCity,
+      activitiesCreated: activityDocs.length,
+    });
   } catch (error) {
-    console.error("Error creating city:", error);
-    res.status(500).json({ message: "Server error creating city" });
+    console.error("Error creating city and activities:", error);
+    res.status(500).json({ message: "Server error creating city and activities" });
   }
 };
+
 
 // UPDATE city
 export const updateCity = async (req, res) => {
