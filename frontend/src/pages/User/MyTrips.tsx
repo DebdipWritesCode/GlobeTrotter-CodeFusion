@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "@/api/axios";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 
 type Trip = {
   _id: string;
@@ -28,8 +30,11 @@ const MyTrips: React.FC = () => {
   const [activeTab, setActiveTab] = useState<typeof tabNames[number]>("upcoming");
   const [sortKey, setSortKey] = useState<"date" | "name">("date");
   const [trips, setTrips] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const user_id = useSelector((state: RootState) => state.auth.user_id);
+  const loading_auth = useSelector((state: RootState) => state.auth.loading);
 
   // For update modal
   const [updateTrip, setUpdateTrip] = useState<Trip | null>(null);
@@ -40,7 +45,8 @@ const MyTrips: React.FC = () => {
       setLoading(true);
       setError("");
       try {
-        const response = await api.get("/trips/user");
+        console.log(`Fetching trips for user: ${user_id}`);
+        const response = await api.get(`/trips/user?userId=${user_id}`);
         setTrips(response.data);
       } catch (err: any) {
         setError(err.response?.data?.message || err.message || "Unknown error");
@@ -50,7 +56,7 @@ const MyTrips: React.FC = () => {
     };
 
     fetchTrips();
-  }, []);
+  }, [loading_auth]);
 
   const filteredTrips = trips
     .filter(
