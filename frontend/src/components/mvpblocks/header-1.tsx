@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, type JSX } from "react";
 import { motion, AnimatePresence, useTransform, useScroll } from "framer-motion";
 import { Menu, X, ChevronDown, ArrowRight, Globe, Map, Compass } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useTheme } from "next-themes";
+// Removed next-themes dependency to avoid build issues; assume light theme
 import ThemeToggle from "../ThemeToggle";
 
 // Navigation items (travel platform)
@@ -54,7 +54,7 @@ const colors = {
 };
 
 export default function Header1(): JSX.Element {
-  const { theme } = useTheme();
+  const isDark = false;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // desktop hover
@@ -85,9 +85,9 @@ export default function Header1(): JSX.Element {
     if (isScrolled) {
       return {
         backdropFilter: "blur(15px)",
-        backgroundColor: theme === "dark" ? "rgba(75,61,139,0.8)" : "rgba(230,230,250,0.8)",
-        boxShadow: theme === "dark" ? "0 8px 32px rgba(115,102,189,0.2)" : "0 8px 32px rgba(200,162,200,0.12)",
-        borderBottom: theme === "dark" ? "1px solid rgba(230,230,250,0.08)" : "1px solid rgba(200,162,200,0.18)"
+  backgroundColor: isDark ? "rgba(75,61,139,0.8)" : "rgba(230,230,250,0.8)",
+  boxShadow: isDark ? "0 8px 32px rgba(115,102,189,0.2)" : "0 8px 32px rgba(200,162,200,0.12)",
+  borderBottom: isDark ? "1px solid rgba(230,230,250,0.08)" : "1px solid rgba(200,162,200,0.18)"
       } as React.CSSProperties;
     }
     return {
@@ -99,20 +99,20 @@ export default function Header1(): JSX.Element {
   };
 
   const getTextColors = () => ({
-    primary: theme === "dark" ? colors.textDark : colors.textLight,
-    muted: theme === "dark" ? colors.textMutedDark : colors.textMutedLight,
-    hover: theme === "dark" ? colors.lilacLight : colors.lilacDark
+  primary: isDark ? colors.textDark : colors.textLight,
+  muted: isDark ? colors.textMutedDark : colors.textMutedLight,
+  hover: isDark ? colors.lilacLight : colors.lilacDark
   });
 
   const textColors = getTextColors();
 
   return (
     <motion.header
-      ref={(el) => (headerRef.current = el)}
+      ref={(el) => { headerRef.current = el; }}
       className="fixed top-0 left-0 right-0 z-50"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      style={{ ...getMirrorEffect(), opacity: headerOpacity } as any}
+  style={{ ...(getMirrorEffect() as React.CSSProperties), opacity: headerOpacity as unknown as number }}
       transition={{ duration: 0.35, ease: "easeInOut" }}
       role="banner"
     >
@@ -121,14 +121,14 @@ export default function Header1(): JSX.Element {
           {/* Brand */}
           <motion.div
             className="flex items-center space-x-2"
-            style={{ y: logoY } as any}
+            style={{ y: logoY }}
             whileHover={{ scale: 1.03 }}
             transition={{ type: "spring", stiffness: 400, damping: 14 }}>
             <Link to="/" className="flex items-center space-x-2" aria-label="Go to homepage">
               <div
                 className="flex h-10 w-10 items-center justify-center rounded-full"
                 style={{
-                  background: theme === "dark"
+                  background: isDark
                     ? `linear-gradient(to bottom right, ${colors.lilacMedium}, ${colors.lilacDeep})`
                     : `linear-gradient(to bottom right, ${colors.lilacLight}, ${colors.lilacDark})`,
                   boxShadow: `0 4px 12px rgba(147,112,219,0.35)`
@@ -139,7 +139,7 @@ export default function Header1(): JSX.Element {
               <span
                 className="bg-clip-text font-bold text-lg sm:text-xl"
                 style={{
-                  backgroundImage: theme === "dark"
+                  backgroundImage: isDark
                     ? `linear-gradient(to right, ${colors.lilacLight}, ${colors.lilacMedium})`
                     : `linear-gradient(to right, ${colors.lilacDark}, ${colors.lilacDeep})`
                 }}>
@@ -151,7 +151,7 @@ export default function Header1(): JSX.Element {
           {/* Desktop nav */}
           <motion.nav
             className="hidden lg:flex lg:items-center lg:space-x-8"
-            style={{ y: navItemsY } as any}
+            style={{ y: navItemsY }}
             role="navigation"
             aria-label="Main navigation"
           >
@@ -162,7 +162,7 @@ export default function Header1(): JSX.Element {
                 onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.name)}
                 onMouseLeave={() => setActiveDropdown(null)}>
                 <Link
-                  to={item.to}
+                  to={item.to ?? "/"}
                   className="flex items-center space-x-2 font-medium transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2"
                   style={{ color: textColors.primary }}
                   onMouseEnter={(e) => (e.currentTarget.style.color = textColors.hover)}
@@ -186,24 +186,24 @@ export default function Header1(): JSX.Element {
                         className="absolute top-full left-0 mt-2 w-64 overflow-hidden rounded-xl border shadow-xl"
                         style={{
                           backdropFilter: "blur(15px)",
-                          backgroundColor: theme === "dark" ? "rgba(75,61,139,0.85)" : "rgba(230,230,250,0.95)",
-                          boxShadow: theme === "dark" ? "0 8px 32px rgba(115,102,189,0.26)" : "0 8px 32px rgba(200,162,200,0.18)",
-                          borderColor: theme === "dark" ? "rgba(230,230,250,0.08)" : "rgba(200,162,200,0.14)"
+                          backgroundColor: isDark ? "rgba(75,61,139,0.85)" : "rgba(230,230,250,0.95)",
+                          boxShadow: isDark ? "0 8px 32px rgba(115,102,189,0.26)" : "0 8px 32px rgba(200,162,200,0.18)",
+                          borderColor: isDark ? "rgba(230,230,250,0.08)" : "rgba(200,162,200,0.14)"
                         } as React.CSSProperties}
                         initial={{ opacity: 0, y: -6, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -6, scale: 0.98 }}
                         transition={{ duration: 0.18 }}
                       >
-                        {item.dropdownItems?.map((dropdownItem) => (
+            {item.dropdownItems?.map((dropdownItem) => (
                           <Link
                             key={dropdownItem.name}
-                            to={dropdownItem.to}
+              to={dropdownItem.to ?? "/"}
                             className="block px-4 py-3 transition-all duration-150"
                             style={{ color: textColors.primary }}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.transform = "translateX(6px)";
-                              e.currentTarget.style.backgroundColor = theme === "dark" ? "rgba(147,112,219,0.12)" : "rgba(147,112,219,0.06)";
+                              e.currentTarget.style.backgroundColor = isDark ? "rgba(147,112,219,0.12)" : "rgba(147,112,219,0.06)";
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.transform = "translateX(0)";
@@ -239,7 +239,7 @@ export default function Header1(): JSX.Element {
                 to="/signup"
                 className="inline-flex items-center space-x-2 rounded-full px-6 py-2.5 font-medium text-white transition-all duration-200 hover:shadow-lg"
                 style={{
-                  backgroundImage: theme === "dark"
+                  backgroundImage: isDark
                     ? `linear-gradient(to right, ${colors.lilacMedium}, ${colors.lilacDeep})`
                     : `linear-gradient(to right, ${colors.lilacDark}, ${colors.lilacDeep})`,
                   boxShadow: `0 4px 12px rgba(147,112,219,0.3)`
@@ -285,8 +285,8 @@ export default function Header1(): JSX.Element {
                 className="mt-4 rounded-xl border py-4 shadow-xl"
                 style={{
                   backdropFilter: "blur(15px)",
-                  backgroundColor: theme === "dark" ? "rgba(75,61,139,0.9)" : "rgba(230,230,250,0.95)",
-                  borderColor: theme === "dark" ? "rgba(230,230,250,0.08)" : "rgba(200,162,200,0.14)"
+                  backgroundColor: isDark ? "rgba(75,61,139,0.9)" : "rgba(230,230,250,0.95)",
+                  borderColor: isDark ? "rgba(230,230,250,0.08)" : "rgba(200,162,200,0.14)"
                 }}>
 
                 <div className="max-h-[calc(100vh-6.25rem)] overflow-y-auto px-2 sm:px-4">
@@ -305,7 +305,7 @@ export default function Header1(): JSX.Element {
                           </button>
                         ) : (
                           <Link
-                            to={item.to}
+                            to={item.to ?? "/"}
                             className="flex items-center gap-3 font-medium flex-1"
                             style={{ color: textColors.primary }}
                             onClick={() => setIsMobileMenuOpen(false)}
@@ -339,10 +339,10 @@ export default function Header1(): JSX.Element {
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.16 }}
                             className="pl-6 pr-3 pb-3 space-y-2">
-                            {item.dropdownItems?.map((d) => (
+              {item.dropdownItems?.map((d) => (
                               <Link
                                 key={d.name}
-                                to={d.to}
+                to={d.to ?? "/"}
                                 className="block rounded-md py-2 px-2 text-sm"
                                 style={{ color: textColors.primary }}
                                 onClick={() => {
@@ -366,7 +366,7 @@ export default function Header1(): JSX.Element {
                       className="block w-full rounded-lg py-2.5 text-center font-medium transition-colors duration-150"
                       style={{
                         color: textColors.primary,
-                        border: `1px solid ${theme === "dark" ? colors.lilacMedium : colors.lilacDark}`
+                        border: `1px solid ${isDark ? colors.lilacMedium : colors.lilacDark}`
                       }}
                       onClick={() => setIsMobileMenuOpen(false)}>
                       Sign In
@@ -376,7 +376,7 @@ export default function Header1(): JSX.Element {
                       to="/register"
                       className="block w-full rounded-lg py-2.5 text-center font-medium text-white transition-all duration-150 hover:shadow-lg"
                       style={{
-                        backgroundImage: theme === "dark" ? `linear-gradient(to right, ${colors.lilacMedium}, ${colors.lilacDeep})` : `linear-gradient(to right, ${colors.lilacDark}, ${colors.lilacDeep})`,
+                        backgroundImage: isDark ? `linear-gradient(to right, ${colors.lilacMedium}, ${colors.lilacDeep})` : `linear-gradient(to right, ${colors.lilacDark}, ${colors.lilacDeep})`,
                         boxShadow: `0 4px 12px rgba(147,112,219,0.28)`
                       }}
                       onClick={() => setIsMobileMenuOpen(false)}>

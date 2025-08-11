@@ -20,17 +20,17 @@ const socialLinks = [
 ];
 
 const aboutLinks = [
-  { text: 'Company History', href: data.about.history },
+  { text: 'Our Story', href: data.about.history },
   { text: 'Meet the Team', href: data.about.team },
-  { text: 'Employee Handbook', href: data.about.handbook },
+  { text: 'Our Mission', href: data.about.mission },
   { text: 'Careers', href: data.about.careers },
 ];
 
 const serviceLinks = [
-  { text: 'Web Development', href: data.services.webdev },
-  { text: 'Web Design', href: data.services.webdesign },
-  { text: 'Marketing', href: data.services.marketing },
-  { text: 'Google Ads', href: data.services.googleads },
+  { text: 'Trip Planning', href: data.services.tripPlanning },
+  { text: 'Itinerary', href: data.services.itinerary },
+  { text: 'Community', href: data.services.community },
+  { text: 'Calendar', href: data.services.calendar },
 ];
 
 const helpfulLinks = [
