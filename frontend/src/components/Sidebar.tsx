@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ThemeToggle from "./ThemeToggle";
 
 const Sidebar = () => {
-  const [_, setIsOpen] = useState(false);
+  const [, setIsOpen] = useState(false);
   const userName = useSelector((state: RootState) => state.auth.name);
   const userEmail = useSelector((state: RootState) => state.auth.email);
 
@@ -51,11 +51,7 @@ const Sidebar = () => {
       </Sheet>
 
       <div className="hidden fixed left-0 top-0 h-full w-[300px] border-r">
-        <SidebarContent
-          userName={userName}
-          userEmail={userEmail}
-          getInitials={getInitials}
-        />
+        <SidebarContent userName={userName} userEmail={userEmail} getInitials={getInitials} />
       </div>
     </>
   );

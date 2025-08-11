@@ -48,7 +48,8 @@ const SignupForm = () => {
   const onSubmit = async (values: z.infer<typeof signupFormSchema>) => {
     setLoading(true);
     try {
-      const { confirmPassword, ...signupData } = values;
+  const { name, email, password, city, country } = values;
+  const signupData = { name, email, password, city, country };
 
       const response = await api.post("/auth/signup", signupData);
 
@@ -58,19 +59,20 @@ const SignupForm = () => {
       } else {
         throw new Error("Unexpected response from server");
       }
-    } catch (err: any) {
-      if (err.response) {
-        if (err.response.status === 409) {
+    } catch (err: unknown) {
+      const e = err as { response?: { status?: number; data?: { message?: string } }; request?: unknown; message?: string } | undefined
+      if (e?.response) {
+        if (e.response.status === 409) {
           toast.error("Email already exists. Please use a different email.");
-        } else if (err.response.data?.message) {
-          toast.error(err.response.data.message);
+        } else if (e.response.data?.message) {
+          toast.error(e.response.data.message);
         } else {
           toast.error("Registration failed. Please try again.");
         }
-      } else if (err.request) {
+      } else if (e?.request) {
         toast.error("No response from server. Please check your connection.");
       } else {
-        toast.error("An error occurred: " + err.message);
+        toast.error("An error occurred: " + (e?.message ?? "Unknown error"));
       }
     } finally {
       setLoading(false);

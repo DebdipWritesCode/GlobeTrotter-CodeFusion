@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -48,20 +48,9 @@ const DestinationsShowcase = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0.5]);
   
   // Card animation variants
-  const cardVariants = {
-    offscreen: {
-      y: 50,
-      opacity: 0
-    },
-    onscreen: (i: number) => ({
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        bounce: 0.4,
-        delay: i * 0.1
-      }
-    })
+  const cardVariants: Variants = {
+    offscreen: { y: 50, opacity: 0 },
+    onscreen: { y: 0, opacity: 1, transition: { type: "spring", bounce: 0.4 } },
   };
 
   return (

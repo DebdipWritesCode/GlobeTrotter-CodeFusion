@@ -4,7 +4,8 @@ import {
   getSectionsByTripId,
   getSectionById,
   updateSection,
-  deleteSection
+  deleteSection,
+  createItineraryByAI,
 } from "../controllers/sectionController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
@@ -15,5 +16,6 @@ router.get("/trip/:tripId", authenticate, getSectionsByTripId);
 router.get("/:id", authenticate, getSectionById);
 router.put("/:id", authenticate, updateSection);
 router.delete("/:id", authenticate, deleteSection);
+router.post("/create-itinerary-by-ai", createItineraryByAI);
 
 export default router;

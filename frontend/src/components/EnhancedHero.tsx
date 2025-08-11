@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback, type FC } from "react";
+import React, { useEffect, useRef, useState, type FC } from "react";
 import { ReactLenis } from "lenis/react";
-import { motion, useMotionTemplate, useScroll, useTransform, animate, MotionValue } from "framer-motion";
+import { motion, useMotionTemplate, useScroll, useTransform, MotionValue } from "framer-motion";
 import { ArrowDown, MapPin, Compass, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -395,8 +395,7 @@ const ParallaxImg: FC<ParallaxImgProps> = ({ className = "", alt, src, start, en
 
 /** Floating elements that use the centralized scrollY */
 const FloatingElements: FC<{ isMobile: boolean; scrollY: MotionValue<number> }> = ({ isMobile, scrollY }) => {
-  if (isMobile) return null;
-
+  // Always call hooks; conditionally render below to satisfy rules-of-hooks
   const y1 = useTransform(scrollY, [0, 800], [0, -120]);
   const opacity1 = useTransform(scrollY, [0, 600], [0.85, 0]);
 
@@ -405,6 +404,8 @@ const FloatingElements: FC<{ isMobile: boolean; scrollY: MotionValue<number> }> 
 
   const y3 = useTransform(scrollY, [0, 700], [0, -80]);
   const opacity3 = useTransform(scrollY, [0, 700], [0.85, 0]);
+
+  if (isMobile) return null;
 
   return (
     <>
