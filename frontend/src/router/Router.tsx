@@ -12,6 +12,8 @@ import CompleteProfile from "@/pages/Auth/CompleteProfile";
 
 import MyProfile from "@/pages/User/MyProfile";
 import MyTrips from "@/pages/User/MyTrips";
+import CreateTrip from "@/pages/CreateTrip";
+import ItineraryBuild from "@/pages/ItineraryBuild";
 
 const Router = () => {
   return (
@@ -32,6 +34,8 @@ const Router = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<MyProfile />} />
         <Route path="/trips" element={<MyTrips />} />
+        <Route path="/create-trip" element={<CreateTrip/>} />
+        <Route path="/build-itinerary" element={<ItineraryBuild/>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
