@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 export const createTrip = async (req, res) => {
   try {
     const { title, description, startDate, endDate} = req.body;
-    const userId = req.user._id;
+    const userId = req?.user?.userId;
+
+    console.log("Creating trip for user:", userId);
     if (!userId || !title || !description || !startDate || !endDate) {
       return res.status(400).json({ message: "Missing required fields" });
     }
