@@ -1,5 +1,8 @@
-import LogoutDialog from '@/components/auth/LogoutDialog';
+
+import LogoutDialog from '@/components/auth/LogoutMenuItem';
+
 import ThemeToggle from '@/components/ThemeToggle';
+
 import { Outlet, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { Button } from '@/components/ui/button';

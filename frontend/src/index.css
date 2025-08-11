@@ -154,3 +154,20 @@
 button {
   @apply cursor-pointer;
 }
+
+.nav-link {
+  @apply text-purple-900 dark:text-purple-100 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition;
+}
+
+.dropdown-item {
+  @apply flex items-center gap-2 px-4 py-2 text-purple-900 dark:text-purple-100 hover:bg-purple-100 dark:hover:bg-purple-800 transition w-full text-left;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out forwards;
+}
