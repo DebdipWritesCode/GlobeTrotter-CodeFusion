@@ -8,7 +8,7 @@ const AdminLayout = () => {
         <h1 className="text-xl font-bold">Admin Panel</h1>
         <div className="space-x-4">
           <Link
-            to="/admin/dashboard"
+            to="/admin/"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
             Go to Dashboard
