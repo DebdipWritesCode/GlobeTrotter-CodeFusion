@@ -1,322 +1,292 @@
-import { useEffect, useState } from "react";
-import api from "@/api/axios";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, MapPin, Building2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import api from "@/api/axios";
 
 interface City {
   _id: string;
   name: string;
   country: string;
-  costIndex?: number;
-  popularityScore?: number;
-  description?: string;
+  costIndex: number;
+  popularityScore: number;
+  description: string;
+  images: string[];
 }
-
-// Zod schema for validation (no images)
-const citySchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  country: z.string().min(2, "Country must be at least 2 characters"),
-  costIndex: z
-    .string()
-    .optional()
-    .refine((val) => !val || !isNaN(Number(val)), "Must be a number"),
-  popularityScore: z
-    .string()
-    .optional()
-    .refine((val) => !val || !isNaN(Number(val)), "Must be a number"),
-  description: z.string().optional(),
-});
-
-type CityFormValues = z.infer<typeof citySchema>;
 
 const ManageCities = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
-
-  // React Hook Form instance
-  const form = useForm<CityFormValues>({
-    resolver: zodResolver(citySchema),
-    defaultValues: {
-      name: "",
-      country: "",
-      costIndex: "",
-      popularityScore: "",
-      description: "",
-    },
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingCity, setEditingCity] = useState<City | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    country: "",
+    costIndex: "",
+    popularityScore: "",
+    description: "",
+    images: [] as string[]
   });
 
-  // Fetch cities
+  useEffect(() => {
+    fetchCities();
+  }, []);
+
   const fetchCities = async () => {
     try {
-      setLoading(true);
-      const res = await api.get("/cities");
-      setCities(res.data);
-    } catch (err) {
-      console.error(err);
+      const response = await api.get("/cities");
+      setCities(response.data);
+    } catch (error) {
       toast.error("Failed to fetch cities");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchCities();
-  }, []);
-
-  // Create City
-  const handleCreate = async (values: CityFormValues) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      await api.post("/cities", {
-        ...values,
-        costIndex: values.costIndex ? Number(values.costIndex) : undefined,
-        popularityScore: values.popularityScore
-          ? Number(values.popularityScore)
-          : undefined,
-      });
-      toast.success("City created");
-      setIsCreateOpen(false);
-      form.reset();
+      const cityData = {
+        ...formData,
+        costIndex: parseFloat(formData.costIndex),
+        popularityScore: parseFloat(formData.popularityScore)
+      };
+
+      if (editingCity) {
+        await api.put(`/cities/${editingCity._id}`, cityData);
+        toast.success("City updated successfully");
+      } else {
+        await api.post("/cities", cityData);
+        toast.success("City created successfully");
+      }
+
+      setIsDialogOpen(false);
+      resetForm();
       fetchCities();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to create city");
+    } catch (error) {
+      toast.error(editingCity ? "Failed to update city" : "Failed to create city");
     }
   };
 
-  // Update City
-  const handleUpdate = async (values: CityFormValues) => {
-    if (!selectedCity) return;
-    try {
-      await api.put(`/cities/${selectedCity._id}`, {
-        ...values,
-        costIndex: values.costIndex ? Number(values.costIndex) : undefined,
-        popularityScore: values.popularityScore
-          ? Number(values.popularityScore)
-          : undefined,
-      });
-      toast.success("City updated");
-      setIsEditOpen(false);
-      setSelectedCity(null);
-      form.reset();
-      fetchCities();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update city");
-    }
+  const handleEdit = (city: City) => {
+    setEditingCity(city);
+    setFormData({
+      name: city.name,
+      country: city.country,
+      costIndex: city.costIndex.toString(),
+      popularityScore: city.popularityScore.toString(),
+      description: city.description,
+      images: city.images
+    });
+    setIsDialogOpen(true);
   };
 
-  // Delete City
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this city?")) return;
-    try {
-      await api.delete(`/cities/${id}`);
-      toast.success("City deleted");
-      fetchCities();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to delete city");
+    if (window.confirm("Are you sure you want to delete this city?")) {
+      try {
+        await api.delete(`/cities/${id}`);
+        toast.success("City deleted successfully");
+        fetchCities();
+      } catch (error) {
+        toast.error("Failed to delete city");
+      }
     }
   };
 
-  // Form Fields Component (no images)
-  const CityFormFields = () => (
-    <div className="space-y-4 py-4">
-      <FormField
-        control={form.control}
-        name="name"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Name</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g., Tokyo" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="country"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Country</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g., Japan" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="costIndex"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Cost Index</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g., 75" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="popularityScore"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Popularity Score</FormLabel>
-            <FormControl>
-              <Input placeholder="e.g., 90" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Description</FormLabel>
-            <FormControl>
-              <Textarea placeholder="Short description about the city" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-  );
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      country: "",
+      costIndex: "",
+      popularityScore: "",
+      description: "",
+      images: []
+    });
+    setEditingCity(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-6xl mx-auto">
+          <Card className="bg-card/50 dark:bg-card/30 border-border/50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 space-y-6 max-w-3xl mx-auto">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Manage Cities</h1>
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => form.reset()}>Add City</Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Create City</DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleCreate)}>
-                <CityFormFields />
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg">
+              <Building2 className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Manage Cities</h1>
+              <p className="text-muted-foreground">Create and manage platform cities</p>
+            </div>
+          </div>
+          
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => resetForm()}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add City
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-background border-border">
+              <DialogHeader>
+                <DialogTitle className="text-foreground">
+                  {editingCity ? "Edit City" : "Add New City"}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground">City Name</label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Enter city name"
+                      className="bg-background border-border focus:border-primary"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Country</label>
+                    <Input
+                      value={formData.country}
+                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                      placeholder="Enter country name"
+                      className="bg-background border-border focus:border-primary"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Cost Index</label>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      value={formData.costIndex}
+                      onChange={(e) => setFormData({ ...formData, costIndex: e.target.value })}
+                      placeholder="e.g., 1.5"
+                      className="bg-background border-border focus:border-primary"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Popularity Score</label>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      value={formData.popularityScore}
+                      onChange={(e) => setFormData({ ...formData, popularityScore: e.target.value })}
+                      placeholder="e.g., 8.5"
+                      className="bg-background border-border focus:border-primary"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground">Description</label>
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Describe the city..."
+                    className="bg-background border-border focus:border-primary"
+                    rows={3}
+                    required
+                  />
+                </div>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsCreateOpen(false)}
-                  >
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancel
                   </Button>
-                  <Button type="submit">Save</Button>
+                  <Button type="submit">
+                    {editingCity ? "Update" : "Create"}
+                  </Button>
                 </div>
               </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {loading ? (
-        <p className="text-gray-500">Loading...</p>
-      ) : cities.length === 0 ? (
-        <p className="text-gray-500">No cities found.</p>
-      ) : (
-        <div className="space-y-4">
-          {cities.map((city) => (
-            <div
-              key={city._id}
-              className="p-4 border rounded-lg flex justify-between items-center hover:shadow-md transition"
-            >
-              <div>
-                <p className="font-semibold text-lg">{city.name}</p>
-                <p className="text-sm text-gray-500">{city.country}</p>
-                <p className="text-sm text-gray-600">{city.description}</p>
-                <p className="text-sm text-gray-600">Cost Index: {city.costIndex}</p>
-                <p className="text-sm text-gray-600">Popularity Score: {city.popularityScore}</p>
-              </div>
-              <div className="flex gap-2">
-                <Dialog
-                  open={isEditOpen && selectedCity?._id === city._id}
-                  onOpenChange={(open) => {
-                    setIsEditOpen(open);
-                    if (open) {
-                      setSelectedCity(city);
-                      form.reset({
-                        name: city.name,
-                        country: city.country,
-                        costIndex: city.costIndex?.toString() ?? "",
-                        popularityScore: city.popularityScore?.toString() ?? "",
-                        description: city.description ?? "",
-                      });
-                    } else {
-                      setSelectedCity(null);
-                      form.reset();
-                    }
-                  }}
-                >
-                  <DialogTrigger asChild>
-                    <Button variant="outline">Edit</Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-lg">
-                    <DialogHeader>
-                      <DialogTitle>Edit City</DialogTitle>
-                    </DialogHeader>
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(handleUpdate)}>
-                        <CityFormFields />
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setIsEditOpen(false)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button type="submit">Update</Button>
-                        </div>
-                      </form>
-                    </Form>
-                  </DialogContent>
-                </Dialog>
-                <Button
-                  variant="destructive"
-                  onClick={() => handleDelete(city._id)}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          ))}
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
+
+        {/* Cities Grid */}
+        {cities.length === 0 ? (
+          <Card className="bg-card/50 dark:bg-card/30 border-border/50">
+            <CardContent className="p-12 text-center">
+              <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No cities found</h3>
+              <p className="text-muted-foreground">Create your first city to get started</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cities.map((city) => (
+              <Card key={city._id} className="bg-card/50 dark:bg-card/30 border-border/50 hover:shadow-md transition-all duration-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <MapPin className="w-5 h-5 text-primary" />
+                    {city.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Country:</span>
+                    <span className="text-foreground font-medium">{city.country}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Cost Index:</span>
+                    <span className="text-foreground font-medium">{city.costIndex}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Popularity:</span>
+                    <span className="text-foreground font-medium">{city.popularityScore}/10</span>
+                  </div>
+                  {city.description && (
+                    <div className="text-sm text-muted-foreground mt-2">
+                      {city.description.length > 100 
+                        ? `${city.description.substring(0, 100)}...` 
+                        : city.description}
+                    </div>
+                  )}
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(city)}
+                      className="flex-1 text-xs"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDelete(city._id)}
+                      className="flex-1 text-xs"
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
