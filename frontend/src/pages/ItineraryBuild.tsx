@@ -252,6 +252,7 @@ const ItineraryBuild: React.FC = () => {
         });
         if (!res.ok) throw new Error("Failed to fetch sections");
         const data = await res.json();
+        console.log("Fetched sections:", data);
         setSections(
           data.map((sec: any) => ({
             ...sec,
