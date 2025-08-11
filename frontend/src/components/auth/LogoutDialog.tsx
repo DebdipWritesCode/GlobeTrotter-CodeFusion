@@ -47,7 +47,7 @@ const LogoutDialog = () => {
             <Button variant="destructive" onClick={() => handleLogout()}>
               Confirm
             </Button>
-            <DialogClose>
+            <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
           </DialogFooter>
