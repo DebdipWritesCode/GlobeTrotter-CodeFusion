@@ -8,6 +8,7 @@ import ThemeToggle from "./ThemeToggle";
 import { clearAccessToken } from "@/slices/authSlice";
 import api from "@/api/axios";
 import { toast } from "react-toastify";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -69,6 +70,9 @@ const Navbar = () => {
 
         {/* Right: Theme toggle & User */}
         <div className="flex items-center gap-4">
+          <Button variant="outline">
+            <Link to="/book-a-call">Book a Call</Link>
+          </Button>
           <ThemeToggle />
 
           {userName ? (

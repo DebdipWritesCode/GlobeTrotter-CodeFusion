@@ -12,6 +12,8 @@ import CompleteProfile from "@/pages/Auth/CompleteProfile";
 import ResetPassword from "@/pages/Auth/ResetPassword";
 import ForgotPassword from "@/pages/Auth/ForgotPassword";
 
+import BookACall from "@/pages/BookACall";
+
 import MyProfile from "@/pages/User/MyProfile";
 import MyTrips from "@/pages/User/MyTrips";
 import CreateTrip from "@/pages/CreateTrip";
@@ -54,7 +56,8 @@ const Router = () => {
         <Route path="/community" element={<Community />} />
         <Route path="/calendar" element={<MyTripsCalendar />} />
         <Route path="/search" element={<SearchActivity />} />
-        <Route path="/itinerary-view" element={<ItineraryViewer/>}  />
+        <Route path="/itinerary-view" element={<ItineraryViewer />} />
+        <Route path="/book-a-call" element={<BookACall />} />
       </Route>
 
       <Route
