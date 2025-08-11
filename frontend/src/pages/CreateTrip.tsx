@@ -496,6 +496,7 @@ import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import api from "@/api/axios"; // <-- use centralized axios instance
+import { useNavigate } from "react-router-dom";
 
 type TripData = {
   title: string;
@@ -531,6 +532,8 @@ const CreateTrip: React.FC = () => {
     endDate: undefined,
   });
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const pastTripSuggestions: Suggestion[] = [
     {
@@ -652,6 +655,7 @@ const CreateTrip: React.FC = () => {
 
       console.log("Trip Created:", data);
       alert("Trip created successfully!");
+      navigate(`/trips/${data.id}`); // Redirect to the newly created trip page
       // Optionally clear the form or redirect to trip page
       setTrip({ title: "", description: "", startDate: undefined, endDate: undefined });
     } catch (err: any) {
