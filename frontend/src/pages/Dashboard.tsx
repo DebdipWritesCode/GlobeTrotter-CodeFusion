@@ -8,13 +8,45 @@ import Loading from "@/components/Loading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Filter, Search, SortAsc, Group, DollarSign, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Filter,
+  Search,
+  SortAsc,
+  Group,
+  DollarSign,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Sun, Calendar, ImageIcon, TrendingUp, Camera, Coffee, Utensils, Music, Bike } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Sun,
+  Calendar,
+  ImageIcon,
+  TrendingUp,
+  Camera,
+  Coffee,
+  Utensils,
+  Music,
+  Bike,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Earth from "@/components/ui/globe";
 import Typewriter from "@/components/ui/typewriter";
 import Tilt from "@/components/ui/tilt";
@@ -22,8 +54,8 @@ import confetti from "canvas-confetti";
 import Reveal from "@/components/ui/reveal";
 import heroImg from "@/assets/images/chris-holgersson-iQKoSI25Lws-unsplash.jpg";
 import { toast } from "react-toastify";
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 // React-Leaflet removed for this section to avoid hidden-container sizing pitfalls; using imperative Leaflet below
 
@@ -31,9 +63,10 @@ import L from 'leaflet';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
 // Minimal imperative Leaflet map (per docs) to avoid rendering pitfalls
@@ -58,8 +91,9 @@ function PlainLeafletMap({
     if (!mapRef.current) {
       // Create the map
       mapRef.current = L.map(containerRef.current).setView(center, 5);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(mapRef.current);
 
       // Small delay to ensure size after tab visibility
@@ -93,10 +127,15 @@ function PlainLeafletMap({
     group.addTo(mapRef.current!);
 
     // Add polyline if provided
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let line: any | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let line: any | undefined;
     if (polyline && polyline.length > 1) {
-      line = L.polyline(polyline, { color: '#4F46E5', weight: 3, opacity: 0.8, dashArray: '5, 10' }).addTo(mapRef.current!);
+      line = L.polyline(polyline, {
+        color: "#4F46E5",
+        weight: 3,
+        opacity: 0.8,
+        dashArray: "5, 10",
+      }).addTo(mapRef.current!);
       // Fit bounds to polyline for better view
       try {
         mapRef.current!.fitBounds(line.getBounds(), { padding: [20, 20] });
@@ -127,7 +166,7 @@ function PlainLeafletMap({
     };
   }, []);
 
-  return <div ref={containerRef} style={{ height: '100%', width: '100%' }} />;
+  return <div ref={containerRef} style={{ height: "100%", width: "100%" }} />;
 }
 
 type City = {
@@ -173,10 +212,30 @@ type MapCity = City & { startDate?: string; endDate?: string; order?: number };
 
 // Add constant for destination categories
 const DESTINATION_CATEGORIES = [
-  { key: "beach", label: "Beach Escapes", color: "from-sky-500 to-cyan-500", icon: "🏖️" },
-  { key: "city", label: "City Breaks", color: "from-indigo-500 to-purple-500", icon: "🏙️" },
-  { key: "nature", label: "Nature & Trails", color: "from-emerald-500 to-lime-500", icon: "🏞️" },
-  { key: "culture", label: "Culture & History", color: "from-amber-500 to-red-500", icon: "🏛️" },
+  {
+    key: "beach",
+    label: "Beach Escapes",
+    color: "from-sky-500 to-cyan-500",
+    icon: "🏖️",
+  },
+  {
+    key: "city",
+    label: "City Breaks",
+    color: "from-indigo-500 to-purple-500",
+    icon: "🏙️",
+  },
+  {
+    key: "nature",
+    label: "Nature & Trails",
+    color: "from-emerald-500 to-lime-500",
+    icon: "🏞️",
+  },
+  {
+    key: "culture",
+    label: "Culture & History",
+    color: "from-amber-500 to-red-500",
+    icon: "🏛️",
+  },
 ];
 
 const dateFmt = (d: string | Date) => {
@@ -185,25 +244,35 @@ const dateFmt = (d: string | Date) => {
 };
 
 const daysBetween = (a: string, b: string) => {
-  const diff = Math.ceil((new Date(b).getTime() - new Date(a).getTime()) / (1000 * 60 * 60 * 24));
+  const diff = Math.ceil(
+    (new Date(b).getTime() - new Date(a).getTime()) / (1000 * 60 * 60 * 24)
+  );
   return Math.max(diff, 1);
 };
 
 const Dashboard = () => {
   const navigate = useNavigate();
   // Extract token from Redux state
-  const { loading: authLoading, name, accessToken } = useSelector((s: RootState) => s.auth);
+  const {
+    loading: authLoading,
+    name,
+    accessToken,
+  } = useSelector((s: RootState) => s.auth);
 
   const [loading, setLoading] = useState(true);
   const [cities, setCities] = useState<City[]>([]);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [query, setQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"popularity" | "cost" | "az">("popularity");
+  const [sortBy, setSortBy] = useState<"popularity" | "cost" | "az">(
+    "popularity"
+  );
   const [countryFilter, setCountryFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [groupBy, setGroupBy] = useState<"none" | "region" | "month">("region");
-  const [inspiration, setInspiration] = useState<{ title: string; desc?: string; img?: string }[]>([]);
+  const [inspiration, setInspiration] = useState<
+    { title: string; desc?: string; img?: string }[]
+  >([]);
   const [tripsPage, setTripsPage] = useState(1);
   const [activeTab, setActiveTab] = useState<string>("discover");
   const [isClient, setIsClient] = useState(false);
@@ -212,7 +281,7 @@ const Dashboard = () => {
     setIsClient(true);
   }, []);
   const tripsPerPage = 6;
-  
+
   // State for city explore dialog
   const [dialogCity, setDialogCity] = useState<City | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -220,93 +289,127 @@ const Dashboard = () => {
   // Single consolidated useEffect for API calls
   useEffect(() => {
     let mounted = true;
-<<<<<<< HEAD
-    (async () => {
-      try {
-        const [citiesRes, tripsRes] = await Promise.all([
-          api.get<City[]>("/cities"),
-          api.get<Trip[]>("/trips/user"),
-        ]);
-=======
     setLoading(true);
-    
+
     // Debug auth token from Redux (not localStorage)
-    console.log('Auth token status:', accessToken ? 'Present' : 'Missing');
-    
+    console.log("Auth token status:", accessToken ? "Present" : "Missing");
+
     Promise.all([
       // Remove /api prefix since it's in the baseURL
-      api.get('/cities').catch(error => {
-        console.error('Error fetching cities:', error);
-        toast.error('Failed to load cities');
+      api.get("/cities").catch((error) => {
+        console.error("Error fetching cities:", error);
+        toast.error("Failed to load cities");
         return { data: [] };
       }),
-      api.get('/trips/user').catch(error => {
-        console.error('Error fetching trips:', error.response?.status, error.response?.data);
-        toast.error('Failed to load trips');
+      api.get("/trips/user").catch((error) => {
+        console.error(
+          "Error fetching trips:",
+          error.response?.status,
+          error.response?.data
+        );
+        toast.error("Failed to load trips");
         return { data: [] };
       }),
-      api.get('/activities').catch(error => {
-        console.error('Error fetching activities:', error);
+      api.get("/activities").catch((error) => {
+        console.error("Error fetching activities:", error);
         // Activities are optional; fall back gracefully
         return { data: [] };
-      })
+      }),
     ])
       .then(([citiesRes, tripsRes, activitiesRes]) => {
->>>>>>> fa8c2bdf2a505f974ab88ce79400c31d9ee8a0c7
         if (!mounted) return;
-        
+
         // Use mock data if no real data is available
-  const citiesData = (citiesRes.data?.length > 0) ? citiesRes.data : MOCK_CITIES;
-  const tripsData = (tripsRes.data?.length > 0) ? tripsRes.data : MOCK_TRIPS;
-  const activitiesData = (activitiesRes.data?.length > 0) ? activitiesRes.data : MOCK_ACTIVITIES;
-        
+        const citiesData =
+          citiesRes.data?.length > 0 ? citiesRes.data : MOCK_CITIES;
+        const tripsData =
+          tripsRes.data?.length > 0 ? tripsRes.data : MOCK_TRIPS;
+        const activitiesData =
+          activitiesRes.data?.length > 0 ? activitiesRes.data : MOCK_ACTIVITIES;
+
+        setActivities(activitiesData);
+        setTrips(tripsData);
+        setCities(citiesData);
+
         // Add mock coordinates for cities if they don't have them
         const citiesWithCoords = citiesData.map((city: City) => {
           if (!city.coordinates) {
             // Generate random coordinates near popular areas
-            const baseCoords: Record<'Europe' | 'Asia' | 'North America' | 'South America' | 'Africa' | 'Australia', [number, number]> = {
+            const baseCoords: Record<
+              | "Europe"
+              | "Asia"
+              | "North America"
+              | "South America"
+              | "Africa"
+              | "Australia",
+              [number, number]
+            > = {
               Europe: [48.8566, 2.3522], // Paris
               Asia: [31.2304, 121.4737], // Shanghai
-              'North America': [40.7128, -74.0060], // New York
-              'South America': [-23.5505, -46.6333], // São Paulo
+              "North America": [40.7128, -74.006], // New York
+              "South America": [-23.5505, -46.6333], // São Paulo
               Africa: [-33.9249, 18.4241], // Cape Town
               Australia: [-33.8688, 151.2093], // Sydney
             };
-            
+
             // Simple region inference based on country
-            let region: 'Europe' | 'Asia' | 'North America' | 'South America' | 'Africa' | 'Australia' = 'Europe';
+            let region:
+              | "Europe"
+              | "Asia"
+              | "North America"
+              | "South America"
+              | "Africa"
+              | "Australia" = "Europe";
             const country = city.country.toLowerCase();
-            if (['china', 'japan', 'india', 'thailand', 'vietnam'].some(c => country.includes(c))) {
-              region = 'Asia';
-            } else if (['usa', 'canada', 'mexico'].some(c => country.includes(c))) {
-              region = 'North America';
-            } else if (['brazil', 'argentina', 'chile', 'peru'].some(c => country.includes(c))) {
-              region = 'South America';
-            } else if (['australia', 'new zealand'].some(c => country.includes(c))) {
-              region = 'Australia';
-            } else if (['egypt', 'morocco', 'south africa'].some(c => country.includes(c))) {
-              region = 'Africa';
+            if (
+              ["china", "japan", "india", "thailand", "vietnam"].some((c) =>
+                country.includes(c)
+              )
+            ) {
+              region = "Asia";
+            } else if (
+              ["usa", "canada", "mexico"].some((c) => country.includes(c))
+            ) {
+              region = "North America";
+            } else if (
+              ["brazil", "argentina", "chile", "peru"].some((c) =>
+                country.includes(c)
+              )
+            ) {
+              region = "South America";
+            } else if (
+              ["australia", "new zealand"].some((c) => country.includes(c))
+            ) {
+              region = "Australia";
+            } else if (
+              ["egypt", "morocco", "south africa"].some((c) =>
+                country.includes(c)
+              )
+            ) {
+              region = "Africa";
             }
-            
+
             const [baseLat, baseLng] = baseCoords[region];
             // Add random offset (±2 degrees)
             const lat = baseLat + (Math.random() * 4 - 2);
             const lng = baseLng + (Math.random() * 4 - 2);
-            
+
             return { ...city, coordinates: [lat, lng] };
           }
           return city;
         });
-        
+
         setCities(citiesWithCoords);
-        
+
         // Process trips data
         // Map string cityIds to actual city objects for mock data
         const processedTrips = tripsData.map((trip: Trip) => {
           if (trip.cities) {
-            const updatedCities = trip.cities.map(tc => {
-              if (typeof tc.cityId === 'string') {
-                const cityObj = citiesWithCoords.find((c: City) => c._id === tc.cityId);
+            const updatedCities = trip.cities.map((tc) => {
+              if (typeof tc.cityId === "string") {
+                const cityObj = citiesWithCoords.find(
+                  (c: City) => c._id === tc.cityId
+                );
                 if (cityObj) {
                   return { ...tc, cityId: cityObj };
                 }
@@ -317,36 +420,52 @@ const Dashboard = () => {
           }
           return trip;
         });
-        
+
         // sort trips by start date desc by default
         const tt = processedTrips.sort(
-          (a: Trip, b: Trip) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+          (a: Trip, b: Trip) =>
+            new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
         );
         setTrips(tt);
-        
+
+        console.log("Processed trips:", tt);
+
         // Build inspiration items: prefer activities with images, else top city images
-  const actItems = activitiesData
-          .filter((a: Activity) => Array.isArray(a.images) && a.images.length > 0)
+        const actItems = activitiesData
+          .filter(
+            (a: Activity) => Array.isArray(a.images) && a.images.length > 0
+          )
           .slice(0, 10)
           .map((a: Activity) => ({
             title: a.name,
-            desc: typeof a.cityId === 'string' ? undefined : `${a.cityId.name}, ${a.cityId.country}`,
-            img: a.images?.[0]
+            desc:
+              typeof a.cityId === "string"
+                ? undefined
+                : `${a.cityId.name}, ${a.cityId.country}`,
+            img: a.images?.[0],
           }));
         const cityItems = citiesWithCoords
           .filter((c: City) => Array.isArray(c.images) && c.images.length > 0)
           .slice(0, 10)
-          .map((c: City) => ({ title: c.name, desc: c.country, img: c.images?.[0] }));
+          .map((c: City) => ({
+            title: c.name,
+            desc: c.country,
+            img: c.images?.[0],
+          }));
         setInspiration(actItems.length ? actItems : cityItems);
-  setActivities(activitiesData);
-        
-        console.log('Fetched cities:', citiesData.length);
-        console.log('Fetched trips:', tripsData.length);
+        setActivities(activitiesData);
+
+        console.log("Fetched cities:", citiesData.length);
+        console.log("Fetched trips:", tripsData.length);
+        console.log("Fetched activities:", activitiesData.length);
+
+        setActivities(activitiesData);
+        setTrips(processedTrips);
       })
       .finally(() => {
         if (mounted) setLoading(false);
       });
-      
+
     return () => {
       mounted = false;
     };
@@ -363,48 +482,61 @@ const Dashboard = () => {
 
   const filteredCities = useMemo(() => {
     let list = [...cities];
-    
+
     // Text search
     if (query.trim()) {
       const q = query.toLowerCase();
-      list = list.filter((c) => c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q));
+      list = list.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.country.toLowerCase().includes(q)
+      );
     }
-    
+
     // Country filter
     if (countryFilter !== "all") {
       list = list.filter((c) => c.country === countryFilter);
     }
-    
+
     // Category filter (this is mocked since we don't have category data)
     if (categoryFilter !== "all") {
       // In a real app, you'd filter by actual category data
       // For now, we'll just filter based on some simple rules
       const mockCategoryMapping: Record<string, (city: City) => boolean> = {
-        'beach': (city) => {
+        beach: (city) => {
           const name = city.name.toLowerCase();
-          return name.includes('beach') || name.includes('coast') || 
-                 ['maldives', 'bali', 'cancun', 'hawaii'].some(term => name.includes(term));
+          return (
+            name.includes("beach") ||
+            name.includes("coast") ||
+            ["maldives", "bali", "cancun", "hawaii"].some((term) =>
+              name.includes(term)
+            )
+          );
         },
-        'city': (city) => {
+        city: (city) => {
           return city.popularityScore ? city.popularityScore > 70 : false;
         },
-        'nature': (city) => {
+        nature: (city) => {
           const name = city.name.toLowerCase();
-          return name.includes('park') || name.includes('mountain') || name.includes('lake') ||
-                 ['alps', 'forest', 'canyon'].some(term => name.includes(term));
+          return (
+            name.includes("park") ||
+            name.includes("mountain") ||
+            name.includes("lake") ||
+            ["alps", "forest", "canyon"].some((term) => name.includes(term))
+          );
         },
-        'culture': (city) => {
+        culture: (city) => {
           // For demo, alternate cities for culture category
           return city.costIndex ? city.costIndex > 60 : false;
-        }
+        },
       };
-      
+
       const filterFn = mockCategoryMapping[categoryFilter];
       if (filterFn) {
         list = list.filter(filterFn);
       }
     }
-    
+
     // Apply sorting
     switch (sortBy) {
       case "cost":
@@ -414,49 +546,61 @@ const Dashboard = () => {
         list.sort((a, b) => a.name.localeCompare(b.name));
         break;
       default:
-        list.sort((a, b) => (b.popularityScore ?? 0) - (a.popularityScore ?? 0));
+        list.sort(
+          (a, b) => (b.popularityScore ?? 0) - (a.popularityScore ?? 0)
+        );
     }
-    
+
     return list;
   }, [cities, query, countryFilter, categoryFilter, sortBy]);
 
   // Calculate pagination for trips
-  const paginatedTrips = useMemo(() => {
+  const paginatedTrips = () => {
     const startIndex = (tripsPage - 1) * tripsPerPage;
     return trips.slice(startIndex, startIndex + tripsPerPage);
-  }, [trips, tripsPage, tripsPerPage]);
+  };
+
+  console.log("Paginated trips:", {
+    trips: paginatedTrips(),
+    currentPage: tripsPage,
+  });
 
   const totalTripPages = Math.ceil(trips.length / tripsPerPage);
 
   // Get recent or ongoing trip for the map
   const mapTrip = useMemo(() => {
     const now = new Date();
-    
+
     // First try to find an ongoing trip
-    const ongoing = trips.find(t => 
-      t.status === "ongoing" && 
-      new Date(t.startDate) <= now && 
-      new Date(t.endDate) >= now
+    const ongoing = trips.find(
+      (t) =>
+        t.status === "ongoing" &&
+        new Date(t.startDate) <= now &&
+        new Date(t.endDate) >= now
     );
-    
+
     if (ongoing) return ongoing;
-    
+
     // Otherwise, find a recent trip (completed within the last week)
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    
-    const recent = trips.find(t => 
-      t.status === "completed" && 
-      new Date(t.endDate) >= oneWeekAgo && 
-      new Date(t.endDate) <= now
+
+    const recent = trips.find(
+      (t) =>
+        t.status === "completed" &&
+        new Date(t.endDate) >= oneWeekAgo &&
+        new Date(t.endDate) <= now
     );
-    
+
     if (recent) return recent;
-    
+
     // Otherwise return the most recent upcoming trip
     return trips
-      .filter(t => t.status === "upcoming")
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+      .filter((t) => t.status === "upcoming")
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      )[0];
   }, [trips]);
 
   // Build itinerary-based city path for the map (from sections -> activities -> cities)
@@ -468,8 +612,14 @@ const Dashboard = () => {
         return;
       }
       try {
-        const res = await api.get(`/sections/trip/${mapTrip._id}`).catch(() => ({ data: [] }));
-        const sections: { startDate: string; endDate: string; activities?: { activityId: string }[] }[] = res.data || [];
+        const res = await api
+          .get(`/sections/trip/${mapTrip._id}`)
+          .catch(() => ({ data: [] }));
+        const sections: {
+          startDate: string;
+          endDate: string;
+          activities?: { activityId: string }[];
+        }[] = res.data || [];
 
         if (!sections.length) {
           if (!cancelled) setItineraryCities([]);
@@ -480,7 +630,9 @@ const Dashboard = () => {
           if (!idOrName) return undefined;
           const byId = cities.find((c) => c._id === idOrName);
           if (byId?.coordinates) return byId;
-          const byName = cities.find((c) => c.name === idOrName && (!country || c.country === country));
+          const byName = cities.find(
+            (c) => c.name === idOrName && (!country || c.country === country)
+          );
           return byName?.coordinates ? byName : undefined;
         };
 
@@ -488,7 +640,8 @@ const Dashboard = () => {
         const aggMap = new Map<string, Agg>();
 
         const sortedSections = [...sections].sort(
-          (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          (a, b) =>
+            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
         );
 
         for (const sec of sortedSections) {
@@ -497,10 +650,14 @@ const Dashboard = () => {
             const act = activities.find((a) => a._id === ref.activityId);
             if (!act) continue;
             let cityDoc: City | undefined;
-            if (typeof act.cityId === 'string') {
+            if (typeof act.cityId === "string") {
               cityDoc = findCity(act.cityId);
             } else {
-              const obj = act.cityId as { _id: string; name: string; country: string };
+              const obj = act.cityId as {
+                _id: string;
+                name: string;
+                country: string;
+              };
               const id = obj?._id;
               const nm = obj?.name;
               const ct = obj?.country;
@@ -511,22 +668,41 @@ const Dashboard = () => {
             const key = cityDoc._id;
             const existing = aggMap.get(key);
             if (existing) {
-              existing.start = new Date(Math.min(new Date(existing.start).getTime(), new Date(sec.startDate).getTime())).toISOString();
-              existing.end = new Date(Math.max(new Date(existing.end).getTime(), new Date(sec.endDate).getTime())).toISOString();
+              existing.start = new Date(
+                Math.min(
+                  new Date(existing.start).getTime(),
+                  new Date(sec.startDate).getTime()
+                )
+              ).toISOString();
+              existing.end = new Date(
+                Math.max(
+                  new Date(existing.end).getTime(),
+                  new Date(sec.endDate).getTime()
+                )
+              ).toISOString();
               existing.firstTs = Math.min(existing.firstTs, firstTs);
             } else {
-              aggMap.set(key, { city: cityDoc, start: sec.startDate, end: sec.endDate, firstTs });
+              aggMap.set(key, {
+                city: cityDoc,
+                start: sec.startDate,
+                end: sec.endDate,
+                firstTs,
+              });
             }
           }
         }
 
         const ordered: MapCity[] = Array.from(aggMap.values())
           .sort((a, b) => a.firstTs - b.firstTs)
-          .map((x) => ({ ...(x.city as City), startDate: x.start, endDate: x.end }));
+          .map((x) => ({
+            ...(x.city as City),
+            startDate: x.start,
+            endDate: x.end,
+          }));
 
         if (!cancelled) setItineraryCities(ordered);
       } catch (e) {
-        console.error('Failed to build itinerary for map:', e);
+        console.error("Failed to build itinerary for map:", e);
         if (!cancelled) setItineraryCities([]);
       }
     };
@@ -541,15 +717,26 @@ const Dashboard = () => {
   const tripCities: MapCity[] = useMemo(() => {
     if (!mapTrip) return [];
 
-    const ensureWithCoords = (cityLike: Partial<City> & { _id?: string; name?: string; country?: string }) => {
-      if (cityLike && Array.isArray((cityLike as City).coordinates)) return cityLike as City;
+    const ensureWithCoords = (
+      cityLike: Partial<City> & {
+        _id?: string;
+        name?: string;
+        country?: string;
+      }
+    ) => {
+      if (cityLike && Array.isArray((cityLike as City).coordinates))
+        return cityLike as City;
       if (cityLike?._id) {
         const found = cities.find((c) => c._id === cityLike._id);
         if (found?.coordinates) return found;
       }
       if (cityLike?.name) {
         const foundByName = cities.find(
-          (c) => c.name === cityLike.name || (cityLike.country && c.name === cityLike.name && c.country === cityLike.country)
+          (c) =>
+            c.name === cityLike.name ||
+            (cityLike.country &&
+              c.name === cityLike.name &&
+              c.country === cityLike.country)
         );
         if (foundByName?.coordinates) return foundByName;
       }
@@ -558,22 +745,32 @@ const Dashboard = () => {
 
     return mapTrip.cities
       .map((tc) => {
-        if (typeof tc.cityId === 'string') {
+        if (typeof tc.cityId === "string") {
           const city = cities.find((c) => c._id === tc.cityId);
           if (city && city.coordinates) {
-    return { ...city, startDate: tc.startDate, endDate: tc.endDate, order: tc.order } as MapCity;
+            return {
+              ...city,
+              startDate: tc.startDate,
+              endDate: tc.endDate,
+              order: tc.order,
+            } as MapCity;
           }
           return null;
         } else {
           const withCoords = ensureWithCoords(tc.cityId as City);
           if (withCoords && withCoords.coordinates) {
-    return { ...withCoords, startDate: tc.startDate, endDate: tc.endDate, order: tc.order } as MapCity;
+            return {
+              ...withCoords,
+              startDate: tc.startDate,
+              endDate: tc.endDate,
+              order: tc.order,
+            } as MapCity;
           }
         }
         return null;
       })
-  .filter((c): c is MapCity => Boolean(c))
-  .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      .filter((c): c is MapCity => Boolean(c))
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }, [mapTrip, cities]);
 
   // Prefer itinerary cities if present; else fall back to trip cities; else mock few cities
@@ -587,9 +784,9 @@ const Dashboard = () => {
   // Find map center coordinates
   const mapCenter = useMemo(() => {
     if (chosenCities.length === 0) return [20, 0]; // Default center
-    
+
     // Calculate average coordinates
-  const total = chosenCities.reduce(
+    const total = chosenCities.reduce(
       (acc, city) => {
         if (city.coordinates) {
           acc[0] += city.coordinates[0];
@@ -599,11 +796,8 @@ const Dashboard = () => {
       },
       [0, 0]
     );
-    
-    return [
-      total[0] / chosenCities.length,
-      total[1] / chosenCities.length,
-    ];
+
+    return [total[0] / chosenCities.length, total[1] / chosenCities.length];
   }, [chosenCities]);
 
   const welcomeTitle = useMemo(() => {
@@ -614,8 +808,12 @@ const Dashboard = () => {
   const estBudgetForTrip = (t: Trip) => {
     // estimate from average city costIndex * days * base
     const days = daysBetween(t.startDate, t.endDate);
-    const cityObjs = t.cities.map((c) => (typeof c.cityId === "string" ? undefined : c.cityId)).filter(Boolean) as City[];
-    const avgCostIdx = cityObjs.length ? cityObjs.reduce((s, c) => s + (c.costIndex ?? 50), 0) / cityObjs.length : 50;
+    const cityObjs = t.cities
+      .map((c) => (typeof c.cityId === "string" ? undefined : c.cityId))
+      .filter(Boolean) as City[];
+    const avgCostIdx = cityObjs.length
+      ? cityObjs.reduce((s, c) => s + (c.costIndex ?? 50), 0) / cityObjs.length
+      : 50;
     const estimate = Math.round(avgCostIdx * days * 10); // arbitrary factor
     return estimate;
   };
@@ -675,8 +873,7 @@ const Dashboard = () => {
               onClick={() => {
                 fireConfetti();
                 navigate("/create-trip");
-              }}
-            >
+              }}>
               Plan New Trip
             </Button>
             <Button size="lg" variant="outline" asChild>
@@ -684,7 +881,15 @@ const Dashboard = () => {
             </Button>
           </div>
         </div>
-        <SparklesCore className="absolute inset-0 z-0 opacity-30" background="transparent" particleColor="#ffffff" particleDensity={50} maxSize={3} minSize={1} speed={2} />
+        <SparklesCore
+          className="absolute inset-0 z-0 opacity-30"
+          background="transparent"
+          particleColor="#ffffff"
+          particleDensity={50}
+          maxSize={3}
+          minSize={1}
+          speed={2}
+        />
       </div>
 
       {/* Budget highlights strip - ONLY SHOW THIS ONCE */}
@@ -701,7 +906,9 @@ const Dashboard = () => {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as "popularity" | "cost" | "az")}>
+        <Select
+          value={sortBy}
+          onValueChange={(v) => setSortBy(v as "popularity" | "cost" | "az")}>
           <SelectTrigger className="h-11">
             <SortAsc className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Sort by" />
@@ -712,18 +919,24 @@ const Dashboard = () => {
             <SelectItem value="az">A-Z</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={countryFilter} onValueChange={(v) => setCountryFilter(v)}>
+        <Select
+          value={countryFilter}
+          onValueChange={(v) => setCountryFilter(v)}>
           <SelectTrigger className="h-11">
             <Filter className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Country" />
           </SelectTrigger>
           <SelectContent className="max-h-64">
             {countryOptions.map((c) => (
-              <SelectItem key={c} value={c}>{c === "all" ? "All countries" : c}</SelectItem>
+              <SelectItem key={c} value={c}>
+                {c === "all" ? "All countries" : c}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Select value={groupBy} onValueChange={(v) => setGroupBy(v as "none" | "region" | "month")}>
+        <Select
+          value={groupBy}
+          onValueChange={(v) => setGroupBy(v as "none" | "region" | "month")}>
           <SelectTrigger className="h-11">
             <Group className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Group by" />
@@ -736,40 +949,40 @@ const Dashboard = () => {
       </div>
 
       {/* Add tabbed navigation */}
-  <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="grid grid-cols-3 w-full max-w-md mx-auto">
           <TabsTrigger value="discover">Discover</TabsTrigger>
           <TabsTrigger value="mytrips">My Trips</TabsTrigger>
           <TabsTrigger value="inspiration">Inspiration</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="discover" className="space-y-6 mt-4">
           {/* Earth globe visualization */}
           <TravelMap cities={filteredCities} />
-          
+
           {/* Destination categories as quick filters */}
-          <DestinationCategories 
-            activeCategory={categoryFilter} 
-            onSelectCategory={(category) => setCategoryFilter(category)} 
+          <DestinationCategories
+            activeCategory={categoryFilter}
+            onSelectCategory={(category) => setCategoryFilter(category)}
           />
 
           {/* Dynamic destinations grid with explore functionality */}
-          <BrowseDestinations 
-            cities={filteredCities} 
-            groupBy={groupBy} 
-            onExploreCity={handleExploreCity} 
+          <BrowseDestinations
+            cities={filteredCities}
+            groupBy={groupBy}
+            onExploreCity={handleExploreCity}
           />
         </TabsContent>
-        
+
         <TabsContent value="mytrips" className="space-y-6 mt-4">
           {/* Trip countdown */}
           <div className="grid md:grid-cols-2 gap-6">
             <NextTripCountdown trips={trips} />
             <TravelStats trips={trips} />
           </div>
-          
+
           {/* Trip Map with Leaflet - render when on My Trips and client-side; show even with 0 markers */}
-          {isClient && activeTab === 'mytrips' && mapTrip && (
+          {isClient && activeTab === "mytrips" && mapTrip && (
             <section>
               <div className="flex items-end justify-between mb-3">
                 <div>
@@ -780,103 +993,50 @@ const Dashboard = () => {
                   {mapTrip?.title}
                 </div>
               </div>
-<<<<<<< HEAD
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              {trips.filter(t => t.status === "upcoming").slice(0, 2).map(t => (
-                <Card key={`planning-${t._id}`} className="overflow-hidden">
-                  <div className="p-0">
-                    <div className="flex h-14 items-center gap-3 bg-muted/50 px-4">
-                      <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                        <Calendar className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{t.title}</h3>
-                        <p className="text-xs text-muted-foreground">
-                          {dateFmt(t.startDate)} – {dateFmt(t.endDate)}
-                        </p>
-                      </div>
-                      <div className="ml-auto flex gap-2">
-                        <Badge variant="outline">{t.status}</Badge>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <div className="mb-4">
-                        <div className="flex justify-between text-sm">
-                          <span>Planning Progress</span>
-                          <span>60%</span>
-                        </div>
-                        <div className="mt-1 h-2 w-full bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-primary rounded-full" style={{ width: "60%" }}></div>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="h-4 w-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                            <span className="block h-1.5 w-1.5 rounded-full bg-green-500"></span>
-                          </span>
-                          <span>Cities selected</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="h-4 w-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                            <span className="block h-1.5 w-1.5 rounded-full bg-green-500"></span>
-                          </span>
-                          <span>Dates confirmed</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="h-4 w-4 rounded-full bg-amber-500/20 flex items-center justify-center">
-                            <span className="block h-1.5 w-1.5 rounded-full bg-amber-500"></span>
-                          </span>
-                          <span>Add activities (3 of 5)</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="h-4 w-4 rounded-full bg-slate-500/20 flex items-center justify-center">
-                            <span className="block h-1.5 w-1.5 rounded-full bg-slate-500"></span>
-                          </span>
-                          <span>Complete budget</span>
-                        </div>
-                      </div>
-                      <Button className="w-full mt-4" onClick={() => navigate(`/build-itinerary/${t._id}`)}>
-                        Continue Planning
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </section>
-=======
               <div className="h-80 w-full rounded-lg overflow-hidden border">
                 <PlainLeafletMap
                   center={mapCenter as [number, number]}
-                  markers={chosenCities.filter(c => c.coordinates).map((city) => ({
-                    position: city.coordinates as [number, number],
-                    popup: `<div><strong>${city.name}</strong><br/>${city.country}${city.startDate ? `<br/><small>${dateFmt(city.startDate)} - ${dateFmt(city.endDate!)}</small>` : ''}</div>`
-                  }))}
-                  polyline={chosenCities.filter(c => c.coordinates).map((city) => city.coordinates as [number, number])}
+                  markers={chosenCities
+                    .filter((c) => c.coordinates)
+                    .map((city) => ({
+                      position: city.coordinates as [number, number],
+                      popup: `<div><strong>${city.name}</strong><br/>${
+                        city.country
+                      }${
+                        city.startDate
+                          ? `<br/><small>${dateFmt(city.startDate)} - ${dateFmt(
+                              city.endDate!
+                            )}</small>`
+                          : ""
+                      }</div>`,
+                    }))}
+                  polyline={chosenCities
+                    .filter((c) => c.coordinates)
+                    .map((city) => city.coordinates as [number, number])}
                 />
               </div>
             </section>
           )}
           
+
           {/* Complete trips list with pagination */}
-          <AllTrips 
-            trips={paginatedTrips} 
+          <AllTrips
+            trips={trips}
             currentPage={tripsPage}
             totalPages={totalTripPages}
             onPageChange={(page) => setTripsPage(page)}
           />
->>>>>>> fa8c2bdf2a505f974ab88ce79400c31d9ee8a0c7
         </TabsContent>
-        
+
         <TabsContent value="inspiration" className="space-y-6 mt-4">
           {/* Travel Inspiration Carousel with explore functionality */}
-          <InspirationCarousel 
-            items={inspiration} 
+          <InspirationCarousel
+            items={inspiration}
             onExploreItem={(title, desc) => {
               // Find a city that matches this inspiration item
-              const city = cities.find(c => c.name === title || c.name === desc);
+              const city = cities.find(
+                (c) => c.name === title || c.name === desc
+              );
               if (city) {
                 handleExploreCity(city);
               } else {
@@ -884,24 +1044,28 @@ const Dashboard = () => {
               }
             }}
           />
-          
+
           {/* Travel tips section updated to use handleExploreCity */}
           <section>
             <div className="flex items-end justify-between mb-3">
               <div>
-                <h2 className="text-xl font-semibold">Travel Tips & Insights</h2>
+                <h2 className="text-xl font-semibold">
+                  Travel Tips & Insights
+                </h2>
                 <div className="mt-1 h-1 w-24 bg-gradient-to-r from-amber-500 to-red-500 rounded-full" />
               </div>
             </div>
-            
+
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
               {filteredCities.slice(0, 4).map((city) => (
-                <div key={`seasonal-${city._id}`} className="relative h-48 rounded-lg overflow-hidden group">
+                <div
+                  key={`seasonal-${city._id}`}
+                  className="relative h-48 rounded-lg overflow-hidden group">
                   {city.images?.[0] ? (
-                    <img 
-                      src={city.images[0]} 
-                      alt={city.name} 
-                      className="h-full w-full object-cover transition-transform group-hover:scale-110" 
+                    <img
+                      src={city.images[0]}
+                      alt={city.name}
+                      className="h-full w-full object-cover transition-transform group-hover:scale-110"
                     />
                   ) : (
                     <ImagePlaceholder seed={city.name} />
@@ -914,12 +1078,11 @@ const Dashboard = () => {
                   <div className="absolute top-2 right-2 p-1.5 bg-black/50 rounded-full text-white">
                     <Sun className="h-4 w-4" />
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant="secondary" 
+                  <Button
+                    size="sm"
+                    variant="secondary"
                     className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleExploreCity(city)}
-                  >
+                    onClick={() => handleExploreCity(city)}>
                     Explore
                   </Button>
                 </div>
@@ -928,27 +1091,41 @@ const Dashboard = () => {
           </section>
         </TabsContent>
       </Tabs>
-      
+
       {/* Floating Plan button */}
       <div className="fixed left-4 bottom-4 z-40">
-        <Button size="lg" className="shadow-lg" onClick={() => navigate("/create-trip")}>+ Plan a Trip</Button>
+        <Button
+          size="lg"
+          className="shadow-lg"
+          onClick={() => navigate("/create-trip")}>
+          + Plan a Trip
+        </Button>
       </div>
-      
+
       {/* City Explore Dialog - separated from the main return for clarity */}
-      <CityExploreDialog 
-        city={dialogCity} 
-        isOpen={dialogOpen} 
-        onClose={() => setDialogOpen(false)} 
+      <CityExploreDialog
+        city={dialogCity}
+        isOpen={dialogOpen}
+        onClose={() => setDialogOpen(false)}
       />
     </div>
   );
 };
 
-function Highlights({ trips, estimate }: { trips: Trip[]; estimate: (t: Trip) => number }) {
+function Highlights({
+  trips,
+  estimate,
+}: {
+  trips: Trip[];
+  estimate: (t: Trip) => number;
+}) {
   const now = new Date();
   const upcoming = trips.filter((t) => new Date(t.endDate) >= now);
   const upcomingCount = upcoming.length;
-  const totalDays = upcoming.reduce((acc, t) => acc + daysBetween(t.startDate, t.endDate), 0);
+  const totalDays = upcoming.reduce(
+    (acc, t) => acc + daysBetween(t.startDate, t.endDate),
+    0
+  );
   const totalBudget = upcoming.reduce((acc, t) => acc + estimate(t), 0);
   return (
     <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -960,14 +1137,20 @@ function Highlights({ trips, estimate }: { trips: Trip[]; estimate: (t: Trip) =>
       </Card>
       <Card className="border bg-gradient-to-br from-purple-50 to-transparent dark:from-purple-950/30">
         <CardContent className="py-4">
-          <div className="text-sm text-muted-foreground">Total days planned</div>
+          <div className="text-sm text-muted-foreground">
+            Total days planned
+          </div>
           <div className="text-2xl font-semibold">{totalDays}</div>
         </CardContent>
       </Card>
       <Card className="border bg-gradient-to-br from-blue-50 to-transparent dark:from-blue-950/30">
         <CardContent className="py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground"><DollarSign className="h-4 w-4" /> Est. total budget</div>
-          <div className="text-2xl font-semibold">$ {totalBudget.toLocaleString()}</div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <DollarSign className="h-4 w-4" /> Est. total budget
+          </div>
+          <div className="text-2xl font-semibold">
+            $ {totalBudget.toLocaleString()}
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -993,9 +1176,13 @@ function TravelMap({ cities }: { cities: City[] }) {
           <h2 className="text-xl font-semibold">Explore the Map</h2>
           <div className="mt-1 h-1 w-24 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" />
         </div>
-        <Button variant="outline" onClick={() => void 0}>Open Full Map</Button>
+        <Button variant="outline" onClick={() => void 0}>
+          Open Full Map
+        </Button>
       </div>
-      <Reveal className="w-full flex items-center justify-center py-4" direction="up">
+      <Reveal
+        className="w-full flex items-center justify-center py-4"
+        direction="up">
         <Earth className="max-w-[420px]" theta={0.25} dark={1} scale={1.15} />
       </Reveal>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -1007,12 +1194,17 @@ function TravelMap({ cities }: { cities: City[] }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium">{c.name}</div>
-                      <div className="text-xs text-muted-foreground">{c.country}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {c.country}
+                      </div>
                     </div>
-                    <Badge variant="secondary">{Math.round(c.popularityScore ?? 50)}</Badge>
+                    <Badge variant="secondary">
+                      {Math.round(c.popularityScore ?? 50)}
+                    </Badge>
                   </div>
                   <div className="mt-3 text-sm text-muted-foreground">
-                    Approx. cost index: <span className="font-medium">{c.costIndex ?? 50}</span>
+                    Approx. cost index:{" "}
+                    <span className="font-medium">{c.costIndex ?? 50}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -1025,12 +1217,12 @@ function TravelMap({ cities }: { cities: City[] }) {
 }
 
 // DestinationCategories: interactive category filters
-function DestinationCategories({ 
-  activeCategory, 
-  onSelectCategory 
-}: { 
-  activeCategory: string; 
-  onSelectCategory: (category: string) => void 
+function DestinationCategories({
+  activeCategory,
+  onSelectCategory,
+}: {
+  activeCategory: string;
+  onSelectCategory: (category: string) => void;
 }) {
   return (
     <section>
@@ -1042,37 +1234,38 @@ function DestinationCategories({
       </div>
       <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-4">
         {/* "All" category */}
-        <Card 
+        <Card
           className={`overflow-hidden cursor-pointer transition-all ${
-            activeCategory === 'all' ? 'ring-2 ring-primary' : ''
+            activeCategory === "all" ? "ring-2 ring-primary" : ""
           }`}
-          onClick={() => onSelectCategory('all')}
-        >
+          onClick={() => onSelectCategory("all")}>
           <div className="h-1 w-full bg-gradient-to-r from-gray-400 to-gray-600" />
           <CardContent className="p-4 flex items-center justify-between">
             <div className="font-medium">All Categories</div>
-            <Badge variant={activeCategory === 'all' ? "default" : "outline"}>
-              {activeCategory === 'all' ? "Selected" : "Select"}
+            <Badge variant={activeCategory === "all" ? "default" : "outline"}>
+              {activeCategory === "all" ? "Selected" : "Select"}
             </Badge>
           </CardContent>
         </Card>
-        
+
         {/* Other categories */}
         {DESTINATION_CATEGORIES.map((cat) => (
-          <Card 
-            key={cat.key} 
+          <Card
+            key={cat.key}
             className={`overflow-hidden cursor-pointer transition-all ${
-              activeCategory === cat.key ? 'ring-2 ring-primary' : ''
+              activeCategory === cat.key ? "ring-2 ring-primary" : ""
             }`}
-            onClick={() => onSelectCategory(cat.key)}
-          >
+            onClick={() => onSelectCategory(cat.key)}>
             <div className={`h-1 w-full bg-gradient-to-r ${cat.color}`} />
             <CardContent className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span role="img" aria-label={cat.label}>{cat.icon}</span>
+                <span role="img" aria-label={cat.label}>
+                  {cat.icon}
+                </span>
                 <span className="font-medium">{cat.label}</span>
               </div>
-              <Badge variant={activeCategory === cat.key ? "default" : "outline"}>
+              <Badge
+                variant={activeCategory === cat.key ? "default" : "outline"}>
                 {activeCategory === cat.key ? "Selected" : "Select"}
               </Badge>
             </CardContent>
@@ -1084,8 +1277,12 @@ function DestinationCategories({
 }
 
 // BrowseDestinations: dynamic grid of filtered cities (search + sort + filters)
-function BrowseDestinations({ cities, groupBy, onExploreCity }: { 
-  cities: City[]; 
+function BrowseDestinations({
+  cities,
+  groupBy,
+  onExploreCity,
+}: {
+  cities: City[];
   groupBy: "none" | "region" | "month";
   onExploreCity: (city: City) => void;
 }) {
@@ -1099,7 +1296,9 @@ function BrowseDestinations({ cities, groupBy, onExploreCity }: {
             <div className="mt-1 h-1 w-24 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" />
           </div>
         </div>
-        <div className="text-sm text-muted-foreground">No destinations match your search.</div>
+        <div className="text-sm text-muted-foreground">
+          No destinations match your search.
+        </div>
       </section>
     );
   }
@@ -1110,7 +1309,9 @@ function BrowseDestinations({ cities, groupBy, onExploreCity }: {
       acc[c.country].push(c);
       return acc;
     }, {});
-    const entries = Object.entries(byCountry).sort((a, b) => a[0].localeCompare(b[0]));
+    const entries = Object.entries(byCountry).sort((a, b) =>
+      a[0].localeCompare(b[0])
+    );
     return (
       <section>
         <div className="flex items-end justify-between mb-3">
@@ -1132,14 +1333,21 @@ function BrowseDestinations({ cities, groupBy, onExploreCity }: {
                   <Card key={`browse-${c._id}`} className="overflow-hidden">
                     <div className="h-28 w-full bg-muted overflow-hidden">
                       {c.images?.[0] ? (
-                        <img src={c.images[0]} alt={c.name} className="h-full w-full object-cover" loading="lazy" />
+                        <img
+                          src={c.images[0]}
+                          alt={c.name}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
                       ) : (
                         <ImagePlaceholder seed={c.name} />
                       )}
                     </div>
                     <CardContent className="p-3">
                       <div className="font-medium leading-tight">{c.name}</div>
-                      <div className="text-xs text-muted-foreground">Cost idx: {c.costIndex ?? 50}</div>
+                      <div className="text-xs text-muted-foreground">
+                        Cost idx: {c.costIndex ?? 50}
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -1159,14 +1367,21 @@ function BrowseDestinations({ cities, groupBy, onExploreCity }: {
           <h2 className="text-xl font-semibold">Browse Destinations</h2>
           <div className="mt-1 h-1 w-24 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" />
         </div>
-        <div className="text-sm text-muted-foreground">{cities.length} result{cities.length === 1 ? '' : 's'}</div>
+        <div className="text-sm text-muted-foreground">
+          {cities.length} result{cities.length === 1 ? "" : "s"}
+        </div>
       </div>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {cities.slice(0, 12).map((c) => (
           <Card key={`browse-${c._id}`} className="overflow-hidden">
             <div className="h-28 w-full bg-muted overflow-hidden">
               {c.images?.[0] ? (
-                <img src={c.images[0]} alt={c.name} className="h-full w-full object-cover" loading="lazy" />
+                <img
+                  src={c.images[0]}
+                  alt={c.name}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
               ) : (
                 <ImagePlaceholder seed={c.name} />
               )}
@@ -1174,12 +1389,11 @@ function BrowseDestinations({ cities, groupBy, onExploreCity }: {
             <CardContent className="p-3">
               <div className="font-medium leading-tight">{c.name}</div>
               <div className="text-xs text-muted-foreground">{c.country}</div>
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="mt-2 w-full"
-                onClick={() => onExploreCity(c)}
-              >
+                onClick={() => onExploreCity(c)}>
                 Explore
               </Button>
             </CardContent>
@@ -1196,7 +1410,10 @@ function NextTripCountdown({ trips }: { trips: Trip[] }) {
     const now = new Date().getTime();
     return [...trips]
       .filter((t) => new Date(t.startDate).getTime() >= now)
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      )[0];
   }, [trips]);
 
   if (!next) {
@@ -1204,14 +1421,21 @@ function NextTripCountdown({ trips }: { trips: Trip[] }) {
       <Card>
         <CardContent className="p-6">
           <div className="text-sm text-muted-foreground">No upcoming trips</div>
-          <div className="mt-1 text-2xl font-semibold">Plan something amazing</div>
-          <div className="mt-4 text-sm text-muted-foreground">Your countdown will appear here once you add a future trip.</div>
+          <div className="mt-1 text-2xl font-semibold">
+            Plan something amazing
+          </div>
+          <div className="mt-4 text-sm text-muted-foreground">
+            Your countdown will appear here once you add a future trip.
+          </div>
         </CardContent>
       </Card>
     );
   }
 
-  const daysLeft = Math.max(0, daysBetween(new Date().toISOString(), next.startDate));
+  const daysLeft = Math.max(
+    0,
+    daysBetween(new Date().toISOString(), next.startDate)
+  );
   return (
     <Card>
       <CardContent className="p-6">
@@ -1232,16 +1456,44 @@ function TravelStats({ trips }: { trips: Trip[] }) {
     const ongoing = trips.filter((t) => t.status === "ongoing").length;
     const completed = trips.filter((t) => t.status === "completed").length;
     const totalCities = trips.reduce((acc, t) => acc + t.cities.length, 0);
-    const totalDays = trips.reduce((acc, t) => acc + daysBetween(t.startDate, t.endDate), 0);
+    const totalDays = trips.reduce(
+      (acc, t) => acc + daysBetween(t.startDate, t.endDate),
+      0
+    );
     return { upcoming, ongoing, completed, totalCities, totalDays };
   }, [trips]);
 
   const items = [
-    { key: "upcoming", label: "Upcoming", value: stats.upcoming, color: "from-blue-500 to-indigo-500" },
-    { key: "ongoing", label: "Ongoing", value: stats.ongoing, color: "from-emerald-500 to-green-500" },
-    { key: "completed", label: "Completed", value: stats.completed, color: "from-amber-500 to-orange-500" },
-    { key: "cities", label: "Cities", value: stats.totalCities, color: "from-purple-500 to-fuchsia-500" },
-    { key: "days", label: "Days", value: stats.totalDays, color: "from-cyan-500 to-sky-500" },
+    {
+      key: "upcoming",
+      label: "Upcoming",
+      value: stats.upcoming,
+      color: "from-blue-500 to-indigo-500",
+    },
+    {
+      key: "ongoing",
+      label: "Ongoing",
+      value: stats.ongoing,
+      color: "from-emerald-500 to-green-500",
+    },
+    {
+      key: "completed",
+      label: "Completed",
+      value: stats.completed,
+      color: "from-amber-500 to-orange-500",
+    },
+    {
+      key: "cities",
+      label: "Cities",
+      value: stats.totalCities,
+      color: "from-purple-500 to-fuchsia-500",
+    },
+    {
+      key: "days",
+      label: "Days",
+      value: stats.totalDays,
+      color: "from-cyan-500 to-sky-500",
+    },
   ];
 
   return (
@@ -1250,8 +1502,12 @@ function TravelStats({ trips }: { trips: Trip[] }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {items.map((it) => (
             <div key={it.key} className="rounded-lg border p-3">
-              <div className={`h-1 w-10 rounded-full bg-gradient-to-r ${it.color}`} />
-              <div className="mt-2 text-xs text-muted-foreground">{it.label}</div>
+              <div
+                className={`h-1 w-10 rounded-full bg-gradient-to-r ${it.color}`}
+              />
+              <div className="mt-2 text-xs text-muted-foreground">
+                {it.label}
+              </div>
               <div className="text-xl font-semibold">{it.value}</div>
             </div>
           ))}
@@ -1262,10 +1518,10 @@ function TravelStats({ trips }: { trips: Trip[] }) {
 }
 
 // InspirationCarousel: simple horizontal scroll section
-function InspirationCarousel({ 
-  items, 
-  onExploreItem 
-}: { 
+function InspirationCarousel({
+  items,
+  onExploreItem,
+}: {
   items: { title: string; desc?: string; img?: string }[];
   onExploreItem?: (title: string, desc?: string) => void;
 }) {
@@ -1283,7 +1539,12 @@ function InspirationCarousel({
             <Card key={`insp-${idx}`} className="min-w-[260px] overflow-hidden">
               <div className="h-28 w-full overflow-hidden bg-muted">
                 {it.img ? (
-                  <img src={it.img} alt={it.title} className="h-full w-full object-cover" loading="lazy" />
+                  <img
+                    src={it.img}
+                    alt={it.title}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
                 ) : (
                   <ImagePlaceholder seed={it.title} />
                 )}
@@ -1291,12 +1552,13 @@ function InspirationCarousel({
               <CardContent className="p-4">
                 <div className="text-sm text-muted-foreground">{it.title}</div>
                 {it.desc && <div className="mt-1 font-medium">{it.desc}</div>}
-                <Button 
-                  className="mt-3" 
-                  size="sm" 
+                <Button
+                  className="mt-3"
+                  size="sm"
                   variant="secondary"
-                  onClick={() => onExploreItem ? onExploreItem(it.title, it.desc) : null}
-                >
+                  onClick={() =>
+                    onExploreItem ? onExploreItem(it.title, it.desc) : null
+                  }>
                   Explore
                 </Button>
               </CardContent>
@@ -1304,19 +1566,21 @@ function InspirationCarousel({
           ))}
         </div>
       ) : (
-        <div className="text-sm text-muted-foreground">No inspiration to show yet. Create trips or add activities.</div>
+        <div className="text-sm text-muted-foreground">
+          No inspiration to show yet. Create trips or add activities.
+        </div>
       )}
     </section>
   );
 }
 
 // AllTrips: list all user trips as cards with pagination
-function AllTrips({ 
-  trips, 
-  currentPage, 
+function AllTrips({
+  trips,
+  currentPage,
   totalPages,
-  onPageChange 
-}: { 
+  onPageChange,
+}: {
   trips: Trip[];
   currentPage: number;
   totalPages: number;
@@ -1331,11 +1595,13 @@ function AllTrips({
             <div className="mt-1 h-1 w-24 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" />
           </div>
         </div>
-        <div className="text-sm text-muted-foreground">No trips yet. Plan your first adventure!</div>
+        <div className="text-sm text-muted-foreground">
+          No trips yet. Plan your first adventure!
+        </div>
       </section>
     );
   }
-  
+
   return (
     <section>
       <div className="flex items-end justify-between mb-3">
@@ -1347,7 +1613,7 @@ function AllTrips({
           {trips.length} shown • Page {currentPage} of {totalPages}
         </div>
       </div>
-      
+
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {trips.map((t) => (
           <Card key={`trip-${t._id}`} className="overflow-hidden">
@@ -1357,52 +1623,60 @@ function AllTrips({
                 <Badge variant="outline">{t.status}</Badge>
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                {dateFmt(t.startDate)} 
-                {" "}–{" "}
-                {dateFmt(t.endDate)}
+                {dateFmt(t.startDate)} – {dateFmt(t.endDate)}
               </div>
               <div className="mt-3 text-sm text-muted-foreground">
-                {t.cities.length} city{t.cities.length === 1 ? '' : 'ies'} planned
+                {t.cities.length} city{t.cities.length === 1 ? "" : "ies"}{" "}
+                planned
               </div>
               <div className="mt-4 flex gap-2">
-                <Button size="sm" variant="secondary" onClick={() => window.location.assign(`/build-itinerary?trip=${t._id}`)}>Open</Button>
-                <Button size="sm" variant="outline" onClick={() => window.location.assign(`/itinerary/${t._id}`)}>View</Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() =>
+                    window.location.assign(`/build-itinerary/${t._id}`)
+                  }>
+                  Open
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => window.location.assign(`/itinerary/${t._id}`)}>
+                  View
+                </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-      
+
       {/* Pagination controls */}
       {totalPages > 1 && (
         <div className="mt-6 flex items-center justify-center gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             disabled={currentPage === 1}
-            onClick={() => onPageChange(currentPage - 1)}
-          >
+            onClick={() => onPageChange(currentPage - 1)}>
             <ChevronLeft className="h-4 w-4 mr-1" />
             Prev
           </Button>
-          
+
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <Button
               key={`page-${page}`}
               variant={page === currentPage ? "default" : "outline"}
               size="sm"
-              onClick={() => onPageChange(page)}
-            >
+              onClick={() => onPageChange(page)}>
               {page}
             </Button>
           ))}
-          
+
           <Button
             variant="outline"
             size="sm"
             disabled={currentPage === totalPages}
-            onClick={() => onPageChange(currentPage + 1)}
-          >
+            onClick={() => onPageChange(currentPage + 1)}>
             Next
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
@@ -1421,7 +1695,9 @@ const MOCK_CITIES: City[] = [
     costIndex: 75,
     popularityScore: 92,
     coordinates: [48.8566, 2.3522],
-    images: ["https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop"]
+    images: [
+      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop",
+    ],
   },
   {
     _id: "mock-city-kyoto",
@@ -1430,7 +1706,9 @@ const MOCK_CITIES: City[] = [
     costIndex: 65,
     popularityScore: 86,
     coordinates: [35.0116, 135.7681],
-    images: ["https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=600&auto=format&fit=crop"]
+    images: [
+      "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=600&auto=format&fit=crop",
+    ],
   },
   {
     _id: "mock-city-nyc",
@@ -1438,8 +1716,10 @@ const MOCK_CITIES: City[] = [
     country: "United States",
     costIndex: 85,
     popularityScore: 90,
-    coordinates: [40.7128, -74.0060],
-    images: ["https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop"]
+    coordinates: [40.7128, -74.006],
+    images: [
+      "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop",
+    ],
   },
   {
     _id: "mock-city-bali",
@@ -1448,7 +1728,9 @@ const MOCK_CITIES: City[] = [
     costIndex: 45,
     popularityScore: 88,
     coordinates: [-8.4095, 115.1889],
-    images: ["https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=600&auto=format&fit=crop"]
+    images: [
+      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=600&auto=format&fit=crop",
+    ],
   },
   {
     _id: "mock-city-barcelona",
@@ -1457,7 +1739,9 @@ const MOCK_CITIES: City[] = [
     costIndex: 60,
     popularityScore: 85,
     coordinates: [41.3851, 2.1734],
-    images: ["https://images.unsplash.com/photo-1583422409516-2895a77efded?q=80&w=600&auto=format&fit=crop"]
+    images: [
+      "https://images.unsplash.com/photo-1583422409516-2895a77efded?q=80&w=600&auto=format&fit=crop",
+    ],
   },
   {
     _id: "mock-city-cape-town",
@@ -1466,8 +1750,10 @@ const MOCK_CITIES: City[] = [
     costIndex: 50,
     popularityScore: 80,
     coordinates: [-33.9249, 18.4241],
-    images: ["https://images.unsplash.com/photo-1580060839134-75a5edca2e99?q=80&w=600&auto=format&fit=crop"]
-  }
+    images: [
+      "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?q=80&w=600&auto=format&fit=crop",
+    ],
+  },
 ];
 
 const MOCK_TRIPS: Trip[] = [
@@ -1481,17 +1767,21 @@ const MOCK_TRIPS: Trip[] = [
     cities: [
       {
         cityId: "mock-city-paris", // Paris
-        startDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        startDate: new Date(
+          Date.now() + 14 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         endDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-        order: 0
+        order: 0,
       },
       {
         cityId: "mock-city-barcelona", // Barcelona
-        startDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+        startDate: new Date(
+          Date.now() + 21 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         endDate: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
-        order: 1
-      }
-    ]
+        order: 1,
+      },
+    ],
   },
   {
     _id: "mock-trip-asia",
@@ -1503,18 +1793,22 @@ const MOCK_TRIPS: Trip[] = [
     cities: [
       {
         cityId: "mock-city-kyoto", // Kyoto
-        startDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(),
+        startDate: new Date(
+          Date.now() + 45 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         endDate: new Date(Date.now() + 52 * 24 * 60 * 60 * 1000).toISOString(),
-        order: 0
+        order: 0,
       },
       {
         cityId: "mock-city-bali", // Bali
-        startDate: new Date(Date.now() + 52 * 24 * 60 * 60 * 1000).toISOString(),
+        startDate: new Date(
+          Date.now() + 52 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
-        order: 1
-      }
-    ]
-  }
+        order: 1,
+      },
+    ],
+  },
 ];
 
 const MOCK_ACTIVITIES: Activity[] = [
@@ -1526,7 +1820,9 @@ const MOCK_ACTIVITIES: Activity[] = [
     category: "Sightseeing",
     cost: 25,
     duration: 3,
-    images: ["https://images.unsplash.com/photo-1543349689-9a4d426bee8e?q=80&w=600&auto=format&fit=crop"]
+    images: [
+      "https://images.unsplash.com/photo-1543349689-9a4d426bee8e?q=80&w=600&auto=format&fit=crop",
+    ],
   },
   {
     _id: "mock-activity-2",
@@ -1536,22 +1832,38 @@ const MOCK_ACTIVITIES: Activity[] = [
     category: "Culture",
     cost: 40,
     duration: 5,
-    images: ["https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=600&auto=format&fit=crop"]
+    images: [
+      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=600&auto=format&fit=crop",
+    ],
   },
   {
     _id: "mock-activity-3",
     name: "Central Park Bicycle Tour",
     description: "Cycle through NYC's famous urban park",
-    cityId: { _id: "mock-city-nyc", name: "New York City", country: "United States" },
+    cityId: {
+      _id: "mock-city-nyc",
+      name: "New York City",
+      country: "United States",
+    },
     category: "Adventure",
     cost: 35,
     duration: 2,
-    images: ["https://images.unsplash.com/photo-1517736996303-4eec4a66bb17?q=80&w=600&auto=format&fit=crop"]
-  }
+    images: [
+      "https://images.unsplash.com/photo-1517736996303-4eec4a66bb17?q=80&w=600&auto=format&fit=crop",
+    ],
+  },
 ];
 
 // New ImagePlaceholder component
-function ImagePlaceholder({ seed, icon, className = "h-full w-full" }: { seed?: string; icon?: ReactNode; className?: string }) {
+function ImagePlaceholder({
+  seed,
+  icon,
+  className = "h-full w-full",
+}: {
+  seed?: string;
+  icon?: ReactNode;
+  className?: string;
+}) {
   // Generate a consistent color based on the seed
   const hue = useMemo(() => {
     if (!seed) return Math.floor(Math.random() * 360);
@@ -1561,33 +1873,34 @@ function ImagePlaceholder({ seed, icon, className = "h-full w-full" }: { seed?: 
     }
     return hash % 360;
   }, [seed]);
-  
+
   return (
-    <div 
+    <div
       className={`flex items-center justify-center ${className}`}
       style={{
-        background: `linear-gradient(135deg, hsl(${hue}, 80%, 92%), hsl(${(hue + 40) % 360}, 80%, 96%))`,
-      }}
-    >
+        background: `linear-gradient(135deg, hsl(${hue}, 80%, 92%), hsl(${
+          (hue + 40) % 360
+        }, 80%, 96%))`,
+      }}>
       {icon || <ImageIcon className="h-8 w-8 text-white/50" />}
     </div>
   );
 }
 
 // CityExploreDialog component
-function CityExploreDialog({ 
-  city, 
-  isOpen, 
-  onClose 
-}: { 
-  city: City | null; 
-  isOpen: boolean; 
-  onClose: () => void; 
+function CityExploreDialog({
+  city,
+  isOpen,
+  onClose,
+}: {
+  city: City | null;
+  isOpen: boolean;
+  onClose: () => void;
 }) {
   const navigate = useNavigate();
-  
+
   if (!city) return null;
-  
+
   // Sample activities for the city
   const activities = [
     "Guided City Tour",
@@ -1595,30 +1908,36 @@ function CityExploreDialog({
     "Local Food Tasting",
     "Nature Excursion",
     "Evening Entertainment",
-    "Bike Tour"
+    "Bike Tour",
   ];
-  
+
   const activityIcons = [Camera, Coffee, Utensils, MapPin, Music, Bike];
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{city.name}, {city.country}</DialogTitle>
+          <DialogTitle>
+            {city.name}, {city.country}
+          </DialogTitle>
           <DialogDescription>
             Explore this amazing destination
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="aspect-video rounded-lg overflow-hidden">
             {city.images?.[0] ? (
-              <img src={city.images[0]} alt={city.name} className="w-full h-full object-cover" />
+              <img
+                src={city.images[0]}
+                alt={city.name}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <ImagePlaceholder seed={city.name} />
             )}
           </div>
-          
+
           <div>
             <h3 className="text-lg font-medium mb-2">City Highlights</h3>
             <ul className="space-y-2">
@@ -1626,60 +1945,74 @@ function CityExploreDialog({
                 <span className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
                   <DollarSign className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                 </span>
-                <span>Cost Index: <strong>{city.costIndex ?? 50}</strong>/100</span>
+                <span>
+                  Cost Index: <strong>{city.costIndex ?? 50}</strong>/100
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
                   <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </span>
-                <span>Popularity: <strong>{city.popularityScore ?? 50}</strong>/100</span>
+                <span>
+                  Popularity: <strong>{city.popularityScore ?? 50}</strong>/100
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                   <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </span>
-                <span>Best visiting time: <strong>Apr-Oct</strong></span>
+                <span>
+                  Best visiting time: <strong>Apr-Oct</strong>
+                </span>
               </li>
             </ul>
-            
+
             <h3 className="text-lg font-medium mt-4 mb-2">Why Visit</h3>
             <p className="text-sm text-muted-foreground">
-              {city.name} offers a perfect blend of culture, cuisine, and unforgettable experiences.
-              Discover iconic landmarks, enjoy local delicacies, and immerse yourself in the unique atmosphere.
+              {city.name} offers a perfect blend of culture, cuisine, and
+              unforgettable experiences. Discover iconic landmarks, enjoy local
+              delicacies, and immerse yourself in the unique atmosphere.
             </p>
           </div>
         </div>
-        
+
         <div className="mt-4">
           <h3 className="text-lg font-medium mb-2">Popular Activities</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {activities.slice(0, 3).map((activity, i) => {
               const Icon = activityIcons[i % activityIcons.length];
               return (
-                <div key={`act-${i}`} className="rounded-lg border overflow-hidden">
+                <div
+                  key={`act-${i}`}
+                  className="rounded-lg border overflow-hidden">
                   <div className="h-24">
-                    <ImagePlaceholder 
-                      seed={`${city.name}-${activity}`} 
-                      icon={<Icon className="h-8 w-8 text-white/60" />} 
+                    <ImagePlaceholder
+                      seed={`${city.name}-${activity}`}
+                      icon={<Icon className="h-8 w-8 text-white/60" />}
                     />
                   </div>
                   <div className="p-2">
                     <div className="text-sm font-medium">{activity}</div>
-                    <div className="text-xs text-muted-foreground">From $30</div>
+                    <div className="text-xs text-muted-foreground">
+                      From $30
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-        
+
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Close</Button>
-          <Button onClick={() => {
-            onClose();
-            navigate("/create-trip");
-            toast.success(`Start planning your trip to ${city.name}!`);
-          }}>
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+          <Button
+            onClick={() => {
+              onClose();
+              navigate("/create-trip");
+              toast.success(`Start planning your trip to ${city.name}!`);
+            }}>
             Plan a Trip Here
           </Button>
         </DialogFooter>
