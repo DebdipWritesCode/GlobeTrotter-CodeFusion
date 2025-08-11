@@ -1,9 +1,22 @@
-import os
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from api.router import api_router
-# from api.routes import router as hackrx
+import os
 
 app = FastAPI()
+
+# Add CORS middleware
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # allow only this origin
+    allow_credentials=True,
+    allow_methods=["*"],            # allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],            # allow all headers
+)
 
 app.include_router(api_router)
 
