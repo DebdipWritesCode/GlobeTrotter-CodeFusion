@@ -1,88 +1,67 @@
-import React, { useState } from "react";
+import api from "@/api/axios";
+import React, { useState, useEffect } from "react";
 
 type Trip = {
-  id: number;
-  name: string;
-  destination: string;
-  date: string;
-  status: "upcoming" | "past" | "completed";
+  _id: string;
+  title: string;
   description: string;
-  imageUrl: string;
+  startDate: string;
+  endDate: string;
+  status: "upcoming" | "past" | "completed" | "ongoing";
+  coverPhoto?: string;
 };
+function getTripStatus(trip: Trip): Trip["status"] {
+  const now = new Date();
+  const start = new Date(trip.startDate);
+  const end = new Date(trip.endDate);
 
-const tripsData: Trip[] = [
-  {
-    id: 1,
-    name: "Beach Vacation",
-    destination: "Maldives",
-    date: "2025-09-10",
-    status: "upcoming",
-    description: "Relax at the sunny beaches with crystal clear water.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=60",
-  },
-  {
-    id: 2,
-    name: "Mountain Trek",
-    destination: "Himalayas",
-    date: "2025-05-20",
-    status: "completed",
-    description: "Adventure trekking through the beautiful mountains.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=600&q=60",
-  },
-  {
-    id: 3,
-    name: "City Tour",
-    destination: "Paris",
-    date: "2025-06-15",
-    status: "past",
-    description: "Explore the romantic city of lights and its history.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=60",
-  },
-  {
-    id: 4,
-    name: "Desert Safari",
-    destination: "Dubai",
-    date: "2025-11-01",
-    status: "upcoming",
-    description: "Experience thrilling desert adventures and dunes.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=600&q=60",
-  },
-  {
-    id: 5,
-    name: "Cruise Trip",
-    destination: "Caribbean",
-    date: "2025-04-01",
-    status: "completed",
-    description: "Luxury cruise around the beautiful islands.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1468071174046-657d9d351a40?auto=format&fit=crop&w=600&q=60",
-  },
-];
+  if (now < start) return "upcoming";
+  if (now > end) return "completed";
+  return "ongoing";
+}
 
-const tabNames = ["upcoming", "past", "completed"] as const;
+
+const tabNames = ["upcoming", "ongoing", "completed"] as const;
 
 const MyTrips: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [activeTab, setActiveTab] = useState<typeof tabNames[number]>("upcoming");
   const [sortKey, setSortKey] = useState<"date" | "name">("date");
+  const [trips, setTrips] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  const filteredTrips = tripsData
-    .filter(
-      (trip) =>
-        trip.status === activeTab &&
-        trip.name.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortKey === "date") {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      } else {
-        return a.name.localeCompare(b.name);
-      }
-    });
+  useEffect(() => {
+  const fetchTrips = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await api.get("/trips/user");
+      setTrips(response.data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTrips();
+}, []);
+
+const filteredTrips = trips
+  .filter(
+    (trip) =>
+      getTripStatus(trip) === activeTab &&
+      trip.title.toLowerCase().includes(search.toLowerCase())
+  )
+  .sort((a, b) => {
+    if (sortKey === "date") {
+      return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+    } else {
+      return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+    }
+  });
+
 
   const cardStyle: React.CSSProperties = {
     backgroundColor: "#1e1e1e",
@@ -198,18 +177,27 @@ const MyTrips: React.FC = () => {
         </button>
       </div>
 
-      {filteredTrips.length === 0 && <p>No {activeTab} trips found.</p>}
+      {loading && <p>Loading trips...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {!loading && filteredTrips.length === 0 && <p>No {activeTab} trips found.</p>}
 
       {filteredTrips.map((trip) => (
-        <div key={trip.id} style={cardStyle}>
-          <img src={trip.imageUrl} alt={trip.name} style={imgStyle} />
+        <div key={trip._id} style={cardStyle}>
+          <img
+            src={trip.coverPhoto || "https://via.placeholder.com/120x80.png?text=No+Image"}
+            alt={trip.title}
+            style={imgStyle}
+          />
           <div>
-            <h3>{trip.name}</h3>
+            <h3>{trip.title}</h3>
             <p>
-              <strong>Destination:</strong> {trip.destination}
+              <strong>Start Date:</strong>{" "}
+              {new Date(trip.startDate).toLocaleDateString()}
             </p>
             <p>
-              <strong>Date:</strong> {trip.date}
+              <strong>End Date:</strong>{" "}
+              {new Date(trip.endDate).toLocaleDateString()}
             </p>
             <p>{trip.description}</p>
           </div>

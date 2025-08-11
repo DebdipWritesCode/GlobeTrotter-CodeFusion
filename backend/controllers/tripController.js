@@ -32,7 +32,7 @@ export const createTrip = async (req, res) => {
 export const getTripById = async (req, res) => {
   try {
     const trip = await Trip.findById(req.params.id)
-      .populate("userId", "name email") // limit user fields
+      .populate("userId", "name email") 
       .populate("cities.cityId");
 
     if (!trip) return res.status(404).json({ message: "Trip not found" });
@@ -69,7 +69,8 @@ export const deleteTrip = async (req, res) => {
 
 export const getTripsByUserId = async (req, res) => {
   try {
-  const trips = await Trip.find({ userId: req?.user?.userId }).populate("cities.cityId");
+     console.log("User in getTripsByUserId:", req.user);
+    const trips = await Trip.find({ userId: req?.user.userId }).populate("cities.cityId");
     res.json(trips);
   } catch (error) {
     res.status(500).json({ message: error.message });
