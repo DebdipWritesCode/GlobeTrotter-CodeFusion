@@ -73,8 +73,8 @@ const Dashboard = () => {
     (async () => {
       try {
         const [citiesRes, tripsRes] = await Promise.all([
-          api.get<City[]>("/api/cities"),
-          api.get<Trip[]>("/api/trips/user"),
+          api.get<City[]>("/cities"),
+          api.get<Trip[]>("/trips/user"),
         ]);
         if (!mounted) return;
         setCities(citiesRes.data || []);
@@ -338,7 +338,7 @@ const Dashboard = () => {
                           <span>Complete budget</span>
                         </div>
                       </div>
-                      <Button className="w-full mt-4" onClick={() => navigate(`/build-itinerary?trip=${t._id}`)}>
+                      <Button className="w-full mt-4" onClick={() => navigate(`/build-itinerary/${t._id}`)}>
                         Continue Planning
                       </Button>
                     </div>

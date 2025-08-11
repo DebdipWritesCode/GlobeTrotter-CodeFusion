@@ -36,6 +36,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import api from "@/api/axios";
 import Loading from "@/components/Loading";
+import { useParams } from "react-router-dom";
 
 interface Activity {
   id: number;
@@ -208,7 +209,7 @@ const ItineraryBuild: React.FC = () => {
 
   const [loading, setLoading] = useState(false); // ⬅ Loading state
 
-  const tripId = "6899d016db3fd59dd8ee47d1"; // Replace with real tripId from props/context
+  const tripId = useParams<{ tripId: string }>().tripId;
 
   const onGenerateNowClick = async () => {
     try {
