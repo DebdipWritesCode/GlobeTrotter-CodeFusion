@@ -45,9 +45,9 @@ const formatDate = (iso?: string) =>
 
 const Community: React.FC = () => {
   const token = useSelector((s: RootState) => s.auth.accessToken);
-  const currentUser = useSelector((s: RootState) => (s as any).auth.user); 
+  const currentUser = useSelector((s: RootState) => (s as any).auth); 
 
-  // state
+
   const [posts, setPosts] = useState<PostT[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -121,7 +121,7 @@ const Community: React.FC = () => {
     setPreviews((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  // Create post (supports image upload via /uploads endpoint that returns array of URLs)
+
   const createPost = async () => {
     if (!title.trim() && !content.trim() && files.length === 0) {
       alert("Please add a title, content or at least one image.");
@@ -160,11 +160,11 @@ const Community: React.FC = () => {
 
   // Like / Unlike
   const toggleLike = async (postId: string) => {
-    // optimistic update
+   
     setPosts((prev) =>
       prev.map((p) => {
         if (p._id !== postId) return p;
-        const userId = currentUser?._id || (currentUser as any)?.id;
+        const userId = currentUser?.user_id || (currentUser as any)?.id;
         const has = p.likes?.includes(userId);
         return { ...p, likes: has ? p.likes?.filter((l) => l !== userId) : [...(p.likes || []), userId] };
       })
@@ -174,11 +174,11 @@ const Community: React.FC = () => {
       await api.post(`/community/${postId}/like`);
     } catch (err) {
       console.error("toggleLike error", err);
-      // revert if failure
+     
       setPosts((prev) =>
         prev.map((p) => {
           if (p._id !== postId) return p;
-          const userId = currentUser?._id || (currentUser as any)?.id;
+          const userId = currentUser?.user_id || (currentUser as any)?.id;
           const has = p.likes?.includes(userId);
           return { ...p, likes: has ? p.likes?.filter((l) => l !== userId) : [...(p.likes || []), userId] };
         })
@@ -190,10 +190,9 @@ const Community: React.FC = () => {
   const submitComment = async (postId: string) => {
     const commentText = (commentInputs[postId] || "").trim();
     if (!commentText) return;
-    // optimistic
     const tempComment: CommentT = {
       _id: "tmp-" + Math.random().toString(36).slice(2),
-      userId: { _id: currentUser?._id || (currentUser as any)?.id, name: currentUser?.name || "You" },
+      userId: { _id: currentUser?.user_id || (currentUser as any)?.id, name: currentUser?.name || "You" },
       comment: commentText,
       createdAt: new Date().toISOString(),
     };
@@ -376,7 +375,7 @@ const Community: React.FC = () => {
           {!loading &&
             posts.map((post) => {
               const userId = typeof post.userId === "string" ? post.userId : (post.userId as any)?._id;
-              const isOwner = currentUser && (currentUser?._id === userId || (currentUser as any)?.id === userId);
+              const isOwner = currentUser && (currentUser?.user_id === userId || (currentUser as any)?.id === userId);
               const likedByMe = !!(post.likes || []).includes(currentUser?._id || (currentUser as any)?.id);
 
               return (
@@ -452,7 +451,7 @@ const Community: React.FC = () => {
                         {(post.comments || []).map((c) => {
                           const cid = c._id || Math.random().toString(36).slice(2);
                           const commentUser = typeof c.userId === "string" ? { name: "User" } : (c.userId as any);
-                          const isCommentOwner = currentUser && ((c.userId as any)?._id === currentUser?._id || (c.userId as any)?.id === (currentUser as any)?.id);
+                          const isCommentOwner = currentUser && ((c.userId as any)?._id === currentUser?.user_id || (c.userId as any)?.id === (currentUser as any)?.id);
 
                           return (
                             <div key={cid} className="flex items-start gap-3 bg-white/2 p-2 rounded">
