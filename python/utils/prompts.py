@@ -34,3 +34,35 @@ Rules:
 
 Produce only the JSON output without extra explanation or text.
 """
+
+
+def activities_prompt(city_name: str) -> str:
+    return f"""
+You are a travel planner AI. Generate up to 12 unique activities suitable for visitors in the city named "{city_name}".
+
+Each activity should include:
+- name (short title),
+- optional description,
+- category (choose from sightseeing, food, adventure, culture, other),
+- approximate cost (in INR),
+- approximate duration (in hours).
+
+Return the output as valid JSON with a single key "activities" that maps to an array of activities.
+
+Example output:
+{{
+  "activities": [
+    {{
+      "name": "Visit the city museum",
+      "description": "Explore historical artifacts and exhibits",
+      "category": "sightseeing",
+      "cost": 150,
+      "duration": 2
+    }},
+    ...
+  ]
+}}
+
+Do not include any IDs or city IDs — those will be handled by the backend.
+Produce only the JSON output without extra explanation or text.
+"""

@@ -117,113 +117,113 @@ const CardIcon = ({ index }: { index: number }) => {
   );
 };
 
-const SortableSection = ({
-  id,
-  section,
-  toggleExpand,
-  openModalForEdit,
-  handleDeleteSection,
-  index,
-  getActivityName,
-}: {
-  id: string;
-  section: Section;
-  toggleExpand: (id?: string) => void;
-  openModalForEdit: (section: Section) => void;
-  handleDeleteSection: (id?: string) => void;
-  index: number;
-  getActivityName: (activityId: string) => string;
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-  const style = useMemo(
-    () => ({
-      transform: CSS.Transform.toString(transform),
-      transition,
-      opacity: isDragging ? 0.6 : 1,
-      cursor: "grab",
-    }),
-    [transform, transition, isDragging]
-  );
+// const SortableSection = ({
+//   id,
+//   section,
+//   toggleExpand,
+//   openModalForEdit,
+//   handleDeleteSection,
+//   index,
+//   getActivityName,
+// }: {
+//   id: string;
+//   section: Section;
+//   toggleExpand: (id?: string) => void;
+//   openModalForEdit: (section: Section) => void;
+//   handleDeleteSection: (id?: string) => void;
+//   index: number;
+//   getActivityName: (activityId: string) => string;
+// }) => {
+//   const {
+//     attributes,
+//     listeners,
+//     setNodeRef,
+//     transform,
+//     transition,
+//     isDragging,
+//   } = useSortable({ id });
+//   const style = useMemo(
+//     () => ({
+//       transform: CSS.Transform.toString(transform),
+//       transition,
+//       opacity: isDragging ? 0.6 : 1,
+//       cursor: "grab",
+//     }),
+//     [transform, transition, isDragging]
+//   );
 
-  return (
-    <Reveal delayMs={index * 60} className="relative mb-10 pl-14">
-      <Tilt glare className="rounded-xl">
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-          <Card className="overflow-hidden border-indigo-500/20 hover:border-indigo-400/30 transition-all duration-300 bg-gradient-to-br from-background to-background/60">
-            <TimelineDot number={index + 1} />
-            <div
-              className="flex justify-between items-center p-5 cursor-pointer select-none hover:bg-muted/40"
-              onClick={() => toggleExpand(section._id)}>
-              <div className="flex items-center font-medium text-base">
-                <CardIcon index={index} />
-                {section.name}
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openModalForEdit(section);
-                  }}
-                  title="Edit Section">
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteSection(section._id);
-                  }}
-                  title="Delete Section">
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-                {section.expanded ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </div>
-            </div>
+//   return (
+//     <Reveal delayMs={index * 60} className="relative mb-10 pl-14">
+//       <Tilt glare className="rounded-xl">
+//         <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+//           <Card className="overflow-hidden border-indigo-500/20 hover:border-indigo-400/30 transition-all duration-300 bg-gradient-to-br from-background to-background/60">
+//             <TimelineDot number={index + 1} />
+//             <div
+//               className="flex justify-between items-center p-5 cursor-pointer select-none hover:bg-muted/40"
+//               onClick={() => toggleExpand(section._id)}>
+//               <div className="flex items-center font-medium text-base">
+//                 <CardIcon index={index} />
+//                 {section.name}
+//               </div>
+//               <div className="flex items-center gap-3">
+//                 <Button
+//                   variant="ghost"
+//                   size="sm"
+//                   onClick={(e) => {
+//                     e.stopPropagation();
+//                     openModalForEdit(section);
+//                   }}
+//                   title="Edit Section">
+//                   <Edit className="w-4 h-4" />
+//                 </Button>
+//                 <Button
+//                   variant="ghost"
+//                   size="sm"
+//                   onClick={(e) => {
+//                     e.stopPropagation();
+//                     handleDeleteSection(section._id);
+//                   }}
+//                   title="Delete Section">
+//                   <Trash2 className="w-4 h-4" />
+//                 </Button>
+//                 {section.expanded ? (
+//                   <ChevronUp className="w-4 h-4" />
+//                 ) : (
+//                   <ChevronDown className="w-4 h-4" />
+//                 )}
+//               </div>
+//             </div>
 
-            {section.expanded && (
-              <CardContent className="pt-0 pb-5 text-sm text-muted-foreground">
-                <div className="mb-3">{section.description}</div>
-                <div className="mb-2">
-                  <span className="font-mono">Budget:</span>{" "}
-                  <span className="text-indigo-500 font-medium">
-                    ${section.budget || "0"}
-                  </span>{" "}
-                  <span className="mx-2">|</span>
-                  {section.startDate && section.endDate
-                    ? `${section.startDate.toLocaleString()} - ${section.endDate.toLocaleString()}`
-                    : "No dates set"}
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {section.activities?.map((ref) => (
-                    <span
-                      key={ref.activityId}
-                      className="bg-indigo-500/15 border border-indigo-500/30 px-3 py-1 rounded-full text-foreground">
-                      {getActivityName(ref.activityId)}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            )}
-          </Card>
-        </div>
-      </Tilt>
-    </Reveal>
-  );
-};
+//             {section.expanded && (
+//               <CardContent className="pt-0 pb-5 text-sm text-muted-foreground">
+//                 <div className="mb-3">{section.description}</div>
+//                 <div className="mb-2">
+//                   <span className="font-mono">Budget:</span>{" "}
+//                   <span className="text-indigo-500 font-medium">
+//                     ${section.budget || "0"}
+//                   </span>{" "}
+//                   <span className="mx-2">|</span>
+//                   {section.startDate && section.endDate
+//                     ? `${section.startDate.toLocaleString()} - ${section.endDate.toLocaleString()}`
+//                     : "No dates set"}
+//                 </div>
+//                 <div className="flex flex-wrap gap-2 mt-2">
+//                   {section.activities?.map((ref) => (
+//                     <span
+//                       key={ref.activityId}
+//                       className="bg-indigo-500/15 border border-indigo-500/30 px-3 py-1 rounded-full text-foreground">
+//                       {getActivityName(ref.activityId)}
+//                     </span>
+//                   ))}
+//                 </div>
+//               </CardContent>
+//             )}
+//           </Card>
+//         </div>
+//       </Tilt>
+//     </Reveal>
+//   );
+// };
 
 const ItineraryBuild: React.FC = () => {
   const { tripId } = useParams(); // this reads the :id param from the URL
@@ -245,6 +245,15 @@ const ItineraryBuild: React.FC = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [activitiesUI, setActivitiesUI] = useState<ActivityUI[]>([]);
   const [selectedActivityId, setSelectedActivityId] = useState<string>("");
+
+  const [activeSection, setActiveSection] = useState<string>("");
+
+  // Add this useEffect to set the first section as active when sections load
+  useEffect(() => {
+    if (sections.length > 0 && !activeSection) {
+      setActiveSection(sections[0]._id || "0");
+    }
+  }, [sections, activeSection]);
 
   useEffect(() => {
     let mounted = true;
@@ -295,23 +304,6 @@ const ItineraryBuild: React.FC = () => {
   }, [allActivities]);
 
   const getActivityName = (id: string) => activityMap.get(id) || "Unknown";
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
-
-  const onDragEnd = (event: any) => {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-      const oldIndex = sections.findIndex(
-        (sec) => (sec._id || sec.id?.toString()) === active.id
-      );
-      const newIndex = sections.findIndex(
-        (sec) => (sec._id || sec.id?.toString()) === over?.id
-      );
-      setSections((items) => arrayMove(items, oldIndex, newIndex));
-    }
-  };
 
   const openModalForAdd = () => {
     setEditSection(null);
@@ -424,14 +416,6 @@ const ItineraryBuild: React.FC = () => {
     }
   };
 
-  const toggleExpand = (id?: string) => {
-    setSections((prev) =>
-      prev.map((sec) =>
-        sec._id === id ? { ...sec, expanded: !sec.expanded } : sec
-      )
-    );
-  };
-
   if (loading) return <Loading />;
 
   return (
@@ -457,7 +441,7 @@ const ItineraryBuild: React.FC = () => {
                 <Typewriter
                   className="text-sm sm:text-base"
                   words={[
-                    "Drag and reorder sections.",
+                    "Navigate between sections.",
                     "Set dates and budget.",
                     "Add activities you love.",
                     "Refine with AI suggestions.",
@@ -471,16 +455,48 @@ const ItineraryBuild: React.FC = () => {
 
             <div className="shrink-0 flex gap-2">
               <Button
-                variant={mode === "manual" ? "default" : "outline"}
-                onClick={() => setMode("manual")}
-                size="lg">
-                <Plus className="w-4 h-4 mr-2" /> Manual
-              </Button>
-              <Button
-                variant={mode === "ai" ? "default" : "outline"}
-                onClick={() => setMode("ai")}
-                size="lg">
-                <Sparkles className="w-4 h-4 mr-2" /> AI
+                onClick={async () => {
+                  if (!tripId) {
+                    alert("No trip selected.");
+                    return;
+                  }
+                  try {
+                    setLoading(true); // Start loading
+
+                    // 1️⃣ Fetch trip details
+                    const tripRes = await api.get(`/trips/get/${tripId}`);
+                    const trip = tripRes.data;
+
+                    // 2️⃣ Prepare payload
+                    const payload = {
+                      name: trip.title,
+                      description: trip.description,
+                      start_date: trip.startDate,
+                      end_date: trip.endDate,
+                      tripId: tripId,
+                    };
+
+                    // 3️⃣ Send POST request
+                    const itineraryRes = await api.post(
+                      "/sections/create-itinerary-by-ai",
+                      payload
+                    );
+
+                    console.log(
+                      "Itinerary created successfully:",
+                      itineraryRes.data
+                    );
+
+                    // 4️⃣ Refresh page or trigger re-fetch
+                    window.location.reload();
+                  } catch (error) {
+                    console.error("Error generating itinerary:", error);
+                  } finally {
+                    setLoading(false); // Stop loading
+                  }
+                }}>
+                <Sparkles className="w-5 h-5 mr-2" />
+                Generate Now
               </Button>
             </div>
           </div>
@@ -514,49 +530,6 @@ const ItineraryBuild: React.FC = () => {
                 <div className="text-sm text-muted-foreground mb-4">
                   Get a personalized itinerary based on your preferences.
                 </div>
-                <Button
-                  onClick={async () => {
-                    if (!tripId) {
-                      alert("No trip selected.");
-                      return;
-                    }
-                    try {
-                      setLoading(true); // Start loading
-
-                      // 1️⃣ Fetch trip details
-                      const tripRes = await api.get(`/trips/get/${tripId}`);
-                      const trip = tripRes.data;
-
-                      // 2️⃣ Prepare payload
-                      const payload = {
-                        name: trip.title,
-                        description: trip.description,
-                        start_date: trip.startDate,
-                        end_date: trip.endDate,
-                        tripId: tripId,
-                      };
-
-                      // 3️⃣ Send POST request
-                      const itineraryRes = await api.post(
-                        "/sections/create-itinerary-by-ai",
-                        payload
-                      );
-
-                      console.log(
-                        "Itinerary created successfully:",
-                        itineraryRes.data
-                      );
-
-                      // 4️⃣ Refresh page or trigger re-fetch
-                      window.location.reload();
-                    } catch (error) {
-                      console.error("Error generating itinerary:", error);
-                    } finally {
-                      setLoading(false); // Stop loading
-                    }
-                  }}>
-                  Generate Now
-                </Button>
               </CardContent>
             </Card>
           </Reveal>
@@ -570,33 +543,198 @@ const ItineraryBuild: React.FC = () => {
               </Button>
             </div>
 
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={onDragEnd}>
-              <SortableContext
-                items={sections.map(
-                  (sec) => sec._id || sec.id?.toString() || ""
-                )}
-                strategy={verticalListSortingStrategy}>
-                <div className="relative mt-10 ml-6">
-                  <div className="absolute top-0 left-[1.4rem] w-1 bg-gradient-to-b from-indigo-500 via-indigo-400 to-transparent rounded-full shadow-[0_0_10px_rgba(99,102,241,0.7)]"></div>
-
-                  {sections.map((sec, index) => (
-                    <SortableSection
-                      key={sec._id || sec.id || index}
-                      id={sec._id || sec.id?.toString() || index.toString()}
-                      section={sec}
-                      toggleExpand={toggleExpand}
-                      openModalForEdit={openModalForEdit}
-                      handleDeleteSection={handleDeleteSection}
-                      index={index}
-                      getActivityName={getActivityName}
-                    />
+            <div className="mt-6">
+              {/* Section Navigation Buttons */}
+              {sections.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6 p-1 bg-muted/30 rounded-lg">
+                  {sections.map((section, index) => (
+                    <button
+                      key={section._id || index}
+                      onClick={() =>
+                        setActiveSection(section._id || index.toString())
+                      }
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                        activeSection === (section._id || index.toString())
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                      }`}>
+                      <CardIcon index={index} />
+                      Section {index + 1}
+                      <span className="text-xs opacity-75">
+                        ({section.activities?.length || 0})
+                      </span>
+                    </button>
                   ))}
                 </div>
-              </SortableContext>
-            </DndContext>
+              )}
+
+              {/* Active Section Content */}
+              {sections.map((section, index) => {
+                const isActive =
+                  activeSection === (section._id || index.toString());
+                if (!isActive) return null;
+
+                return (
+                  <Reveal key={section._id || index} className="space-y-6">
+                    {/* Section Header */}
+                    <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h2 className="text-2xl font-semibold text-foreground mb-2 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                              {index + 1}
+                            </div>
+                            {section.name}
+                          </h2>
+                          <p className="text-muted-foreground">
+                            {section.description}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openModalForEdit(section)}
+                            title="Edit Section">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteSection(section._id)}
+                            title="Delete Section">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Section Details */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="w-4 h-4 text-indigo-500" />
+                          <span className="text-muted-foreground">Budget:</span>
+                          <span className="font-medium text-indigo-500">
+                            ${section.budget || "0"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-indigo-500" />
+                          <span className="text-muted-foreground">
+                            Duration:
+                          </span>
+                          <span className="font-medium">
+                            {section.startDate && section.endDate
+                              ? `${section.startDate.toLocaleDateString()} - ${section.endDate.toLocaleDateString()}`
+                              : "No dates set"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Activities Grid */}
+                    <div>
+                      <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-indigo-500" />
+                        Activities ({section.activities?.length || 0})
+                      </h3>
+
+                      {section.activities && section.activities.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {section.activities.map((activityRef, actIndex) => {
+                            // Find full activity details from allActivities
+                            const activity = allActivities.find(
+                              (a) => a._id === activityRef.activityId
+                            );
+
+                            return (
+                              <Tilt
+                                key={activityRef.activityId}
+                                glare
+                                className="rounded-lg">
+                                <Card className="h-full hover:shadow-lg transition-all duration-300 border-indigo-500/20 hover:border-indigo-400/30">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-start justify-between mb-3">
+                                      <h4 className="font-medium text-foreground line-clamp-2">
+                                        {activity?.name ||
+                                          getActivityName(
+                                            activityRef.activityId
+                                          )}
+                                      </h4>
+                                      <span className="text-xs bg-indigo-500/15 text-indigo-600 px-2 py-1 rounded-full ml-2 whitespace-nowrap">
+                                        {activity?.category || "other"}
+                                      </span>
+                                    </div>
+
+                                    {activity?.description && (
+                                      <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
+                                        {activity.description}
+                                      </p>
+                                    )}
+
+                                    <div className="space-y-2 text-xs text-muted-foreground">
+                                      {activity?.cost && (
+                                        <div className="flex items-center gap-2">
+                                          <DollarSign className="w-3 h-3" />
+                                          <span>Cost: ${activity.cost}</span>
+                                        </div>
+                                      )}
+                                      {activity?.duration && (
+                                        <div className="flex items-center gap-2">
+                                          <Calendar className="w-3 h-3" />
+                                          <span>
+                                            Duration: {activity.duration}h
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </Tilt>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <Card className="border-dashed border-2 border-muted">
+                          <CardContent className="p-8 text-center">
+                            <Sparkles className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                            <p className="text-muted-foreground">
+                              No activities added to this section yet.
+                            </p>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => openModalForEdit(section)}>
+                              Add Activities
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                  </Reveal>
+                );
+              })}
+
+              {/* Empty State */}
+              {sections.length === 0 && (
+                <Card className="border-dashed border-2 border-muted">
+                  <CardContent className="p-12 text-center">
+                    <Plus className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">
+                      No sections yet
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Start building your itinerary by adding your first
+                      section.
+                    </p>
+                    <Button onClick={openModalForAdd}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add First Section
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </>
         )}
 
