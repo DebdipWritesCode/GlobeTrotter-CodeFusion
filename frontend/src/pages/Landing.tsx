@@ -1,13 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { EnhancedHero } from "@/components/EnhancedHero";
 // Components
 import Header1 from "@/components/mvpblocks/header-1";
 import Footer4Col from "@/components/mvpblocks/footer-4col";
 import Loading from "@/components/Loading";
-import HeroSection from "@/components/landing/HeroSection";
 import { SmoothScrollHero } from "@/components/SmoothScrollHero";
 import DestinationsShowcase from "@/components/landing/DestinationsShowcase";
 import FeaturesSection from "@/components/landing/FeaturesSection";
@@ -43,7 +40,7 @@ const Landing = () => {
     <Header1 />
     
     <main className="flex-grow">
-      <SmoothScrollHero />
+  <SmoothScrollHero />
       <DestinationsShowcase />
       <FeaturesSection />
       <PlanningTools />

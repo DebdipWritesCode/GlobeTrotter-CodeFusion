@@ -2,7 +2,7 @@ from models.itinerary import ItineraryRequest, ItineraryResponse
 from utils.prompts import itinerary_prompt
 from services.openai_service import get_structured_output
 
-def generate_itinerary(data: ItineraryRequest) -> ItineraryResponse:
+async def generate_itinerary(data: ItineraryRequest) -> ItineraryResponse:
     prompt = itinerary_prompt(
         name=data.name,
         description=data.description,
@@ -11,9 +11,9 @@ def generate_itinerary(data: ItineraryRequest) -> ItineraryResponse:
         activities=[a.dict() for a in data.activities]
     )
 
-    itinerary = get_structured_output(
+    itinerary = await get_structured_output(
         prompt=prompt,
-        response_format=ItineraryResponse
+        response_model=ItineraryResponse
     )
 
     return itinerary
