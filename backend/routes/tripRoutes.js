@@ -1,5 +1,5 @@
 import express from "express";      
-const { createTrip, getTripById, updateTrip, deleteTrip, getTripsByUserId, addActivityToTrip, removeActivityFromTrip } = require("../controllers/tripController.js");
+import { createTrip, getTripById, updateTrip, deleteTrip, getTripsByUserId, addActivityToTrip, removeActivityFromTrip } from "../controllers/tripController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.post("/:tripId/activities",authenticate, addActivityToTrip);
 router.delete("/:tripId/activities/:activityId",authenticate, removeActivityFromTrip);
 
 // AI generated route for trending trips
-router.get("/trending", getTrendingTrips);
+// router.get("/trending", getTrendingTrips);
 
 
 export default router;

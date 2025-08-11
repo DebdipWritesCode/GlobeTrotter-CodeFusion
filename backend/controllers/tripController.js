@@ -1,4 +1,4 @@
-import Trip from "../models/Trip";
+import Trip from "../models/Trip.js";
 import mongoose from "mongoose";
 
 export const createTrip = async (req, res) => {
