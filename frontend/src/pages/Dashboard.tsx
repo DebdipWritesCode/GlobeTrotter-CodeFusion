@@ -1654,11 +1654,10 @@ function AllTrips({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => navigate("/itinerary-view")}
+                  onClick={() => window.location.assign("/itinerary-view")}
                 >
                   View
                 </Button>
-                Button
               </div>
             </CardContent>
           </Card>

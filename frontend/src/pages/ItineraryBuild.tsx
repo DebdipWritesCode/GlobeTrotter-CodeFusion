@@ -55,6 +55,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "react-toastify";
+import ToastComponent from "@/components/ToastComponent";
 
 type ActivityOption = {
   _id: string;
@@ -487,8 +489,10 @@ const ItineraryBuild: React.FC = () => {
                       itineraryRes.data
                     );
 
-                    // 4️⃣ Refresh page or trigger re-fetch
-                    window.location.reload();
+                    toast.success("Itinerary generated successfully! Updating your sections...✨✨");
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 3000);
                   } catch (error) {
                     console.error("Error generating itinerary:", error);
                   } finally {
@@ -614,7 +618,7 @@ const ItineraryBuild: React.FC = () => {
                           <DollarSign className="w-4 h-4 text-indigo-500" />
                           <span className="text-muted-foreground">Budget:</span>
                           <span className="font-medium text-indigo-500">
-                            ${section.budget || "0"}
+                            ₹{section.budget || "0"}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -675,7 +679,7 @@ const ItineraryBuild: React.FC = () => {
                                       {activity?.cost && (
                                         <div className="flex items-center gap-2">
                                           <DollarSign className="w-3 h-3" />
-                                          <span>Cost: ${activity.cost}</span>
+                                          <span>Cost: ₹{activity.cost}</span>
                                         </div>
                                       )}
                                       {activity?.duration && (
@@ -867,6 +871,7 @@ const ItineraryBuild: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
+      <ToastComponent />
     </div>
   );
 };

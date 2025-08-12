@@ -11,6 +11,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const routes = [
+    
     { label: "Manage Cities", path: "/admin/cities", icon: Settings },
     { label: "Manage Users", path: "/admin/users", icon: UserCheck },
     { label: "Manage Activities", path: "/admin/activities", icon: Users },

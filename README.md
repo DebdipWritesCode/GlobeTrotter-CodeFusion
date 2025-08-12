@@ -93,6 +93,7 @@ The aim is to make travel planning as engaging as the journey itself, allowing u
 * **Client Layer:** Responsive web interface for trip planning and viewing itineraries
 * **API Layer:** RESTful endpoints handling CRUD operations, AI itinerary generation, and authentication
 * **Database Layer:** MongoDB storing users, trips, cities, activities, and budget data
+<img width="2852" height="3491" alt="diagram-export-8-12-2025-9_13_31-AM" src="https://github.com/user-attachments/assets/6884feab-95d6-4dd9-a659-a1c4b95a822e" />
 
 ---
 
