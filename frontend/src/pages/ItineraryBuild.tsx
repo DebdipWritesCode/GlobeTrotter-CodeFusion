@@ -55,6 +55,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "react-toastify";
+import ToastComponent from "@/components/ToastComponent";
 
 type ActivityOption = {
   _id: string;
@@ -487,8 +489,10 @@ const ItineraryBuild: React.FC = () => {
                       itineraryRes.data
                     );
 
-                    // 4️⃣ Refresh page or trigger re-fetch
-                    window.location.reload();
+                    toast.success("Itinerary generated successfully! Updating your sections...✨✨");
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 3000);
                   } catch (error) {
                     console.error("Error generating itinerary:", error);
                   } finally {
@@ -867,6 +871,7 @@ const ItineraryBuild: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
+      <ToastComponent />
     </div>
   );
 };
