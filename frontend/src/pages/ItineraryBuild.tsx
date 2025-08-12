@@ -4,9 +4,32 @@ import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-// DnD-kit imports were unused; remove to satisfy TS errors
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-import { Plus, Calendar, DollarSign, X, Sparkles, Edit, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Calendar,
+  DollarSign,
+  X,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  Trash2,
+} from "lucide-react";
 
 import api from "@/api/axios";
 import Loading from "@/components/Loading";
@@ -38,10 +61,6 @@ import ToastComponent from "@/components/ToastComponent";
 type ActivityOption = {
   _id: string;
   name: string;
-  category?: string;
-  description?: string;
-  cost?: number;
-  duration?: number;
 };
 
 type ActivityRef = {
@@ -76,7 +95,13 @@ type ActivityUI = {
   name: string;
 };
 
-// Decorative timeline dot removed to avoid unused symbol in current layout
+const TimelineDot = ({ number }: { number: number }) => {
+  return (
+    <div className="absolute -left-8 top-6 w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-[0_0_14px_rgba(99,102,241,0.65)] flex items-center justify-center text-white font-bold text-base select-none hover:scale-105 transition-transform duration-300">
+      {number}
+    </div>
+  );
+};
 
 const CardIcon = ({ index }: { index: number }) => {
   const icons = [
@@ -210,7 +235,7 @@ const ItineraryBuild: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [sections, setSections] = useState<Section[]>([]);
   const [allActivities, setAllActivities] = useState<ActivityOption[]>([]);
-  const [mode] = useState<"ai" | "manual">("manual");
+  const [mode, setMode] = useState<"ai" | "manual">("manual");
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editSection, setEditSection] = useState<Section | null>(null);
@@ -236,24 +261,19 @@ const ItineraryBuild: React.FC = () => {
     let mounted = true;
     const load = async () => {
       try {
-        type AxiosRes<T> = { data: T };
-        const requests: Array<Promise<AxiosRes<ActivityOption[]> | AxiosRes<SectionApi[]>>> = [
-          api.get<ActivityOption[]>("/activities") as unknown as Promise<AxiosRes<ActivityOption[]>>,
-        ];
+        const requests: Promise<any>[] = [api.get("/activities")];
         if (tripId) {
-          requests.push(api.get<SectionApi[]>(`/sections/trip/${tripId}`));
+          requests.push(api.get(`/sections/trip/${tripId}`));
           console.log(`request is sent to: /sections/trip/${tripId}`);
         }
         const [actsRes, sectionsRes] = await Promise.all(requests);
         if (!mounted) return;
-        const acts = (actsRes as { data: ActivityOption[] }).data || [];
-        const secs = (sectionsRes as { data: SectionApi[] } | undefined)?.data || [];
-        console.log("Fetched activities:", acts.length);
-        console.log("Fetched sections:", secs.length);
+        console.log("Fetched activities:", actsRes.data.length);
+        console.log("Fetched sections:", sectionsRes);
 
-        setAllActivities(acts);
-        if (secs) {
-          const list: SectionApi[] = secs || [];
+        setAllActivities(actsRes.data || []);
+        if (sectionsRes) {
+          const list: SectionApi[] = sectionsRes.data || [];
           setSections(
             list.map((sec) => ({
               _id: sec._id,
@@ -355,7 +375,7 @@ const ItineraryBuild: React.FC = () => {
       if (editSection?._id) {
         res = await api.put(`/sections/${editSection._id}`, bodyData);
       } else {
-        res = await api.post(`/sections`, bodyData);
+        res = await api.post(`/ sections`, bodyData);
       }
 
       const saved = res.data as SectionApi;
@@ -599,7 +619,6 @@ const ItineraryBuild: React.FC = () => {
                           <span className="text-muted-foreground">Budget:</span>
                           <span className="font-medium text-indigo-500">
                             ₹{section.budget || "0"}
-                            ₹{section.budget || "0"}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -625,7 +644,7 @@ const ItineraryBuild: React.FC = () => {
 
                       {section.activities && section.activities.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {section.activities.map((activityRef) => {
+                          {section.activities.map((activityRef, actIndex) => {
                             // Find full activity details from allActivities
                             const activity = allActivities.find(
                               (a) => a._id === activityRef.activityId
@@ -657,13 +676,13 @@ const ItineraryBuild: React.FC = () => {
                                     )}
 
                                     <div className="space-y-2 text-xs text-muted-foreground">
-                    {typeof activity?.cost === 'number' && (
+                                      {activity?.cost && (
                                         <div className="flex items-center gap-2">
                                           <DollarSign className="w-3 h-3" />
                                           <span>Cost: ₹{activity.cost}</span>
                                         </div>
                                       )}
-                    {typeof activity?.duration === 'number' && (
+                                      {activity?.duration && (
                                         <div className="flex items-center gap-2">
                                           <Calendar className="w-3 h-3" />
                                           <span>
