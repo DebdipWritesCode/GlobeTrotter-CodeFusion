@@ -35,7 +35,7 @@ const Chat: React.FC<ChatProps> = ({ onClose }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const socket = io(`${import.meta.env.VITE_CHAT_API_URL}`);
     socketRef.current = socket;
 
     socket.on("connect", () => {
