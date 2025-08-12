@@ -100,7 +100,7 @@ const AnalyticsTable: React.FC<AnalyticsTableProps> = ({ title, data, icon }) =>
                   </td>
                   <td className="py-3 px-4">
                     <span className="font-medium text-foreground">
-                      ${item.avg_cost.toLocaleString()}
+                      ₹{item.avg_cost.toLocaleString()}
                     </span>
                   </td>
                 </tr>
@@ -168,7 +168,7 @@ const AnalyticsTable: React.FC<AnalyticsTableProps> = ({ title, data, icon }) =>
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-foreground">
-                ${Math.round(data.reduce((sum, item) => sum + item.avg_cost, 0) / data.length).toLocaleString()}
+                ₹{Math.round(data.reduce((sum, item) => sum + item.avg_cost, 0) / data.length).toLocaleString()}
               </p>
               <p className="text-xs text-muted-foreground">Avg Cost</p>
             </div>

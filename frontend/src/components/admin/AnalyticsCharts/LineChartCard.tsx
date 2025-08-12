@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 
 interface DataPoint {
   date: string;
@@ -13,14 +13,16 @@ interface LineChartCardProps {
   icon?: React.ReactNode;
 }
 
+type CustomTooltipProps = { active?: boolean; payload?: Array<{ value?: number }>; label?: string };
+
 const LineChartCard: React.FC<LineChartCardProps> = ({ title, series, icon }) => {
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900 dark:text-gray-100">{label}</p>
           <p className="text-sm text-blue-600 dark:text-blue-400">
-            {payload[0].value.toLocaleString()} trips
+            {Number(payload[0]?.value ?? 0).toLocaleString()} trips
           </p>
         </div>
       );

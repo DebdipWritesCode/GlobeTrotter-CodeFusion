@@ -1,5 +1,5 @@
 // NavbarCombined.tsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useScroll, motion, AnimatePresence } from "framer-motion";
@@ -58,6 +58,12 @@ export default function Navbar() {
       dispatch(clearAccessToken());
       toast.success("Logged out successfully");
       setUserMenuOpen(false);
+      // Redirect to landing page or refresh if already there
+      if (location.pathname === "/") {
+        window.location.reload(); // Force refresh to update UI state
+      } else {
+        window.location.href = "/"; // Redirect to landing page
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to logout");

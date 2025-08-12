@@ -54,6 +54,20 @@ import confetti from "canvas-confetti";
 import Reveal from "@/components/ui/reveal";
 import heroImg from "@/assets/images/chris-holgersson-iQKoSI25Lws-unsplash.jpg";
 import { toast } from "react-toastify";
+// Local image assets for reliable loading
+import imgAliKazal from "@/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg";
+import imgAndreBenz from "@/assets/images/andre-benz-cXU6tNxhub0-unsplash.jpg";
+import imgCharlotteNoelle from "@/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg";
+import imgChris2 from "@/assets/images/chris-holgersson-iQKoSI25Lws-unsplash-2.jpg";
+import imgDavidKohler from "@/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg";
+import imgJeanValjean from "@/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg";
+import imgKajaReichardt from "@/assets/images/kaja-reichardt-kLA5yRv0Gd4-unsplash.jpg";
+import imgNickSeagrave from "@/assets/images/nick-seagrave-1tpLdmxki-c-unsplash.jpg";
+import imgNiklasOhlrogge1 from "@/assets/images/niklas-ohlrogge-niamoh-de-BkmdKnuAZtw-unsplash (1).jpg";
+import imgSydSujuaan from "@/assets/images/syd-sujuaan-AjtAJ-FK0Aw-unsplash.jpg";
+import imgTakashiMiyazaki from "@/assets/images/takashi-miyazaki-64ajtpEzlYc-unsplash.jpg";
+import imgWhatsApp from "@/assets/images/WhatsApp Image 2025-08-12 at 10.57.40_d52ccf69.jpg";
+
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -238,6 +252,134 @@ const DESTINATION_CATEGORIES = [
   },
 ];
 
+// Local image pool for general fallbacks (All category, Inspiration, etc.)
+const LOCAL_IMAGE_POOL: string[] = [
+  imgNickSeagrave,
+  imgAliKazal,
+  imgSydSujuaan,
+  imgJeanValjean,
+  imgAndreBenz,
+  imgDavidKohler,
+  imgCharlotteNoelle,
+  imgChris2,
+  imgKajaReichardt,
+  imgNiklasOhlrogge1,
+  imgTakashiMiyazaki,
+  imgWhatsApp,
+];
+
+// Simple fallback pools to ensure cards always appear by category
+// Includes realistic, category-appropriate image URLs
+const FALLBACK_BY_CATEGORY: Record<
+  string,
+  { _id: string; name: string; country: string; images?: string[] }[]
+> = {
+  beach: [
+    {
+      _id: "fb-beach-1",
+      name: "Maldives Atoll",
+      country: "Maldives",
+  images: [imgNickSeagrave]
+    },
+    {
+      _id: "fb-beach-2",
+      name: "Bora Bora",
+      country: "French Polynesia",
+  images: [imgAliKazal]
+    },
+    {
+      _id: "fb-beach-3",
+      name: "Phi Phi Islands",
+      country: "Thailand",
+  images: [imgSydSujuaan]
+    },
+    {
+      _id: "fb-beach-4",
+      name: "Bondi Beach",
+      country: "Australia",
+  images: [imgJeanValjean]
+    },
+  ],
+  city: [
+    {
+      _id: "fb-city-1",
+      name: "Tokyo",
+      country: "Japan",
+  images: [imgAndreBenz]
+    },
+    {
+      _id: "fb-city-2",
+      name: "Dubai",
+      country: "United Arab Emirates",
+  images: [imgDavidKohler]
+    },
+    {
+      _id: "fb-city-3",
+      name: "Singapore",
+      country: "Singapore",
+  images: [imgCharlotteNoelle]
+    },
+    {
+      _id: "fb-city-4",
+      name: "Hong Kong",
+      country: "China",
+  images: [imgChris2]
+    },
+  ],
+  nature: [
+    {
+      _id: "fb-nature-1",
+      name: "Banff National Park",
+      country: "Canada",
+  images: [imgKajaReichardt]
+    },
+    {
+      _id: "fb-nature-2",
+      name: "Swiss Alps",
+      country: "Switzerland",
+  images: [imgNiklasOhlrogge1]
+    },
+    {
+      _id: "fb-nature-3",
+      name: "Yosemite Valley",
+      country: "United States",
+  images: [imgWhatsApp]
+    },
+    {
+      _id: "fb-nature-4",
+      name: "Patagonia",
+      country: "Argentina",
+  images: [imgCharlotteNoelle]
+    },
+  ],
+  culture: [
+    {
+      _id: "fb-culture-1",
+      name: "Rome",
+      country: "Italy",
+  images: [imgDavidKohler]
+    },
+    {
+      _id: "fb-culture-2",
+      name: "Athens",
+      country: "Greece",
+  images: [imgChris2]
+    },
+    {
+      _id: "fb-culture-3",
+      name: "Kyoto Temples",
+      country: "Japan",
+  images: [imgTakashiMiyazaki]
+    },
+    {
+      _id: "fb-culture-4",
+      name: "Machu Picchu",
+      country: "Peru",
+  images: [imgJeanValjean]
+    },
+  ],
+};
+
 const dateFmt = (d: string | Date) => {
   const dt = new Date(d);
   return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
@@ -269,6 +411,20 @@ const Dashboard = () => {
   );
   const [countryFilter, setCountryFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [categoryCounts] = useState<Record<string, number>>(() => {
+    try {
+      const saved = localStorage.getItem("dash.categoryCounts");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.warn("Failed reading categoryCounts from storage", e);
+    }
+    // Seed random desired counts per category (2-4)
+    const counts: Record<string, number> = {};
+    for (const c of DESTINATION_CATEGORIES) {
+      counts[c.key] = 2 + Math.floor(Math.random() * 3); // 2..4
+    }
+    return counts;
+  });
   const [groupBy, setGroupBy] = useState<"none" | "region" | "month">("region");
   const [inspiration, setInspiration] = useState<
     { title: string; desc?: string; img?: string }[]
@@ -280,6 +436,32 @@ const Dashboard = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Persist chosen category and counts
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("dash.category");
+      if (saved) setCategoryFilter(saved);
+    } catch (e) {
+      console.warn("Failed reading category from storage", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("dash.category", categoryFilter);
+    } catch (e) {
+      console.warn("Failed saving category to storage", e);
+    }
+  }, [categoryFilter]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("dash.categoryCounts", JSON.stringify(categoryCounts));
+    } catch (e) {
+      console.warn("Failed saving categoryCounts to storage", e);
+    }
+  }, [categoryCounts]);
   const tripsPerPage = 6;
 
   // State for city explore dialog
@@ -970,6 +1152,14 @@ const Dashboard = () => {
             onSelectCategory={(category) => setCategoryFilter(category)}
           />
 
+          {/* Category showcase cards (now show for 'all' too) */}
+          <CategoryShowcase
+            categoryKey={categoryFilter}
+            cities={filteredCities}
+            desiredCount={categoryCounts[categoryFilter] ?? 4}
+            onExploreCity={handleExploreCity}
+          />
+
           {/* Dynamic destinations grid with explore functionality */}
           <BrowseDestinations
             cities={filteredCities}
@@ -1070,6 +1260,7 @@ const Dashboard = () => {
                       src={city.images[0]}
                       alt={city.name}
                       className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                      referrerPolicy="no-referrer"
                     />
                   ) : (
                     <ImagePlaceholder seed={city.name} />
@@ -1223,6 +1414,107 @@ function TravelMap({ cities }: { cities: City[] }) {
   );
 }
 
+// CategoryShowcase: shows a small grid of cities for the selected category with safe fallbacks
+function CategoryShowcase({
+  categoryKey,
+  cities,
+  desiredCount,
+  onExploreCity,
+}: {
+  categoryKey: string;
+  cities: City[];
+  desiredCount: number;
+  onExploreCity: (city: City) => void;
+}) {
+  const label = DESTINATION_CATEGORIES.find((c) => c.key === categoryKey)?.label || "Selected";
+
+  const filterFn: Record<string, (city: City) => boolean> = {
+    beach: (city) => {
+      const name = city.name.toLowerCase();
+      return (
+        name.includes("beach") ||
+        name.includes("coast") ||
+        ["maldives", "bali", "cancun", "hawaii"].some((term) => name.includes(term))
+      );
+    },
+    city: (city) => (city.popularityScore ? city.popularityScore > 70 : false),
+    nature: (city) => {
+      const name = city.name.toLowerCase();
+      return (
+        name.includes("park") ||
+        name.includes("mountain") ||
+        name.includes("lake") ||
+        ["alps", "forest", "canyon"].some((term) => name.includes(term))
+      );
+    },
+    culture: (city) => (city.costIndex ? city.costIndex > 60 : false),
+  };
+
+  const pool = (filterFn[categoryKey] ? cities.filter(filterFn[categoryKey]) : cities).slice();
+
+  const items: City[] = pool.slice(0, Math.max(0, desiredCount));
+  if (items.length < desiredCount) {
+    const fallback = FALLBACK_BY_CATEGORY[categoryKey] || [];
+    for (let i = 0; i < fallback.length && items.length < desiredCount; i++) {
+      const f = fallback[i];
+      items.push({
+        _id: f._id,
+        name: f.name,
+        country: f.country,
+        images: f.images,
+      });
+    }
+  }
+
+  // If still short or if some items have no images, pad with LOCAL_IMAGE_POOL
+  for (let i = 0; i < items.length; i++) {
+    if (!items[i].images || items[i].images?.length === 0) {
+      items[i].images = [LOCAL_IMAGE_POOL[i % LOCAL_IMAGE_POOL.length]];
+    }
+  }
+  while (items.length < desiredCount) {
+    const i = items.length;
+    items.push({
+      _id: `local-fallback-${categoryKey}-${i}`,
+      name: `Discover Spot ${i + 1}`,
+      country: "",
+      images: [LOCAL_IMAGE_POOL[i % LOCAL_IMAGE_POOL.length]],
+    });
+  }
+
+  return (
+    <section>
+      <div className="flex items-end justify-between mb-3">
+        <div>
+          <h2 className="text-xl font-semibold">{label}</h2>
+          <div className="mt-1 h-1 w-24 bg-gradient-to-r from-fuchsia-500 to-purple-500 rounded-full" />
+        </div>
+        <div className="text-sm text-muted-foreground">{items.length} spot{items.length === 1 ? "" : "s"}</div>
+      </div>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {items.map((c) => (
+          <Card key={`cat-${categoryKey}-${c._id}`} className="overflow-hidden">
+            <div className="h-28 w-full bg-muted overflow-hidden">
+              {c.images?.[0] ? (
+                <img src={c.images[0]} alt={c.name} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
+              ) : (
+                <ImagePlaceholder seed={`${categoryKey}-${c.name}`} />
+              )}
+            </div>
+            <CardContent className="p-3">
+              <div className="font-medium leading-tight">{c.name}</div>
+              <div className="text-xs text-muted-foreground">{c.country}</div>
+              <Button size="sm" variant="outline" className="mt-2 w-full" onClick={() => onExploreCity(c)}>
+                Explore
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // DestinationCategories: interactive category filters
 function DestinationCategories({
   activeCategory,
@@ -1348,6 +1640,7 @@ function BrowseDestinations({
                           alt={c.name}
                           className="h-full w-full object-cover"
                           loading="lazy"
+                          referrerPolicy="no-referrer"
                         />
                       ) : (
                         <ImagePlaceholder seed={c.name} />
@@ -1391,6 +1684,7 @@ function BrowseDestinations({
                   alt={c.name}
                   className="h-full w-full object-cover"
                   loading="lazy"
+                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <ImagePlaceholder seed={c.name} />
@@ -1549,16 +1843,20 @@ function InspirationCarousel({
           {items.map((it, idx) => (
             <Card key={`insp-${idx}`} className="min-w-[260px] overflow-hidden">
               <div className="h-28 w-full overflow-hidden bg-muted">
-                {it.img ? (
+                {(() => {
+                  const src = it.img || LOCAL_IMAGE_POOL[idx % LOCAL_IMAGE_POOL.length];
+                  return src ? (
                   <img
-                    src={it.img}
+                    src={src}
                     alt={it.title}
                     className="h-full w-full object-cover"
                     loading="lazy"
+                    referrerPolicy="no-referrer"
                   />
-                ) : (
-                  <ImagePlaceholder seed={it.title} />
-                )}
+                  ) : (
+                    <ImagePlaceholder seed={it.title} />
+                  );
+                })()}
               </div>
               <CardContent className="p-4">
                 <div className="text-sm text-muted-foreground">{it.title}</div>
@@ -1712,9 +2010,7 @@ const MOCK_CITIES: City[] = [
     costIndex: 75,
     popularityScore: 92,
     coordinates: [48.8566, 2.3522],
-    images: [
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgCharlotteNoelle],
   },
   {
     _id: "mock-city-kyoto",
@@ -1723,9 +2019,7 @@ const MOCK_CITIES: City[] = [
     costIndex: 65,
     popularityScore: 86,
     coordinates: [35.0116, 135.7681],
-    images: [
-      "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgTakashiMiyazaki],
   },
   {
     _id: "mock-city-nyc",
@@ -1734,9 +2028,7 @@ const MOCK_CITIES: City[] = [
     costIndex: 85,
     popularityScore: 90,
     coordinates: [40.7128, -74.006],
-    images: [
-      "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgAndreBenz],
   },
   {
     _id: "mock-city-bali",
@@ -1745,9 +2037,7 @@ const MOCK_CITIES: City[] = [
     costIndex: 45,
     popularityScore: 88,
     coordinates: [-8.4095, 115.1889],
-    images: [
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgNickSeagrave],
   },
   {
     _id: "mock-city-barcelona",
@@ -1756,9 +2046,7 @@ const MOCK_CITIES: City[] = [
     costIndex: 60,
     popularityScore: 85,
     coordinates: [41.3851, 2.1734],
-    images: [
-      "https://images.unsplash.com/photo-1583422409516-2895a77efded?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgDavidKohler],
   },
   {
     _id: "mock-city-cape-town",
@@ -1767,9 +2055,7 @@ const MOCK_CITIES: City[] = [
     costIndex: 50,
     popularityScore: 80,
     coordinates: [-33.9249, 18.4241],
-    images: [
-      "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgSydSujuaan],
   },
 ];
 
@@ -1837,9 +2123,7 @@ const MOCK_ACTIVITIES: Activity[] = [
     category: "Sightseeing",
     cost: 25,
     duration: 3,
-    images: [
-      "https://images.unsplash.com/photo-1543349689-9a4d426bee8e?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgCharlotteNoelle],
   },
   {
     _id: "mock-activity-2",
@@ -1849,9 +2133,7 @@ const MOCK_ACTIVITIES: Activity[] = [
     category: "Culture",
     cost: 40,
     duration: 5,
-    images: [
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgTakashiMiyazaki],
   },
   {
     _id: "mock-activity-3",
@@ -1865,9 +2147,7 @@ const MOCK_ACTIVITIES: Activity[] = [
     category: "Adventure",
     cost: 35,
     duration: 2,
-    images: [
-      "https://images.unsplash.com/photo-1517736996303-4eec4a66bb17?q=80&w=600&auto=format&fit=crop",
-    ],
+  images: [imgAndreBenz],
   },
 ];
 
@@ -1950,6 +2230,7 @@ function CityExploreDialog({
                 src={city.images[0]}
                 alt={city.name}
                 className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
               />
             ) : (
               <ImagePlaceholder seed={city.name} />
@@ -2013,7 +2294,7 @@ function CityExploreDialog({
                   <div className="p-2">
                     <div className="text-sm font-medium">{activity}</div>
                     <div className="text-xs text-muted-foreground">
-                      From $30
+                      From ₹30
                     </div>
                   </div>
                 </div>
