@@ -31,7 +31,6 @@ const ManageCities = () => {
     description: "",
     images: [] as string[]
   });
-
   useEffect(() => {
     fetchCities();
   }, []);
@@ -50,6 +49,7 @@ const ManageCities = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const cityData = {
         ...formData,
         costIndex: parseFloat(formData.costIndex),
@@ -69,6 +69,8 @@ const ManageCities = () => {
       fetchCities();
     } catch (error) {
       toast.error(editingCity ? "Failed to update city" : "Failed to create city");
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -154,7 +154,6 @@
 
 // export default LoginForm;
 
-
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -253,7 +252,9 @@ const LoginForm = () => {
       }
     } catch (err: unknown) {
       // from nishant: safer alias for axios-like error shape (frontend UX only)
-      const axiosErr = err as { response?: { status?: number; data?: { message?: string } } } | undefined;
+      const axiosErr = err as
+        | { response?: { status?: number; data?: { message?: string } } }
+        | undefined;
       if (axiosErr?.response) {
         if (axiosErr.response.status === 401) {
           toast.error("Invalid email or password. Please try again.");
@@ -275,8 +276,7 @@ const LoginForm = () => {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="max-w-md mx-auto flex flex-col gap-6"
-        aria-label="Sign in form"
-      >
+        aria-label="Sign in form">
         <FormField
           control={form.control}
           name="email"
@@ -319,8 +319,9 @@ const LoginForm = () => {
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-600 hover:text-gray-900"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }>
                     {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
@@ -330,11 +331,20 @@ const LoginForm = () => {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={loading} aria-busy={loading}>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={loading}
+          aria-busy={loading}>
           {loading ? "Logging in..." : "Log In"}
         </Button>
       </form>
 
+      <button
+        onClick={() => navigate("/forgot-password")}
+        className="mt-4 text-sm text-blue-600 hover:underline text-center w-full">
+        Forgot Password?
+      </button>
       <ToastComponent />
     </Form>
   );
