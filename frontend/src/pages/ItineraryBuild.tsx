@@ -679,7 +679,7 @@ const ItineraryBuild: React.FC = () => {
                                       {activity?.cost && (
                                         <div className="flex items-center gap-2">
                                           <DollarSign className="w-3 h-3" />
-                                          <span>Cost: ${activity.cost}</span>
+                                          <span>Cost: ₹{activity.cost}</span>
                                         </div>
                                       )}
                                       {activity?.duration && (
