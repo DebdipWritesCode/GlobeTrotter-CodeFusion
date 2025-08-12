@@ -1055,7 +1055,8 @@ const Dashboard = () => {
               onClick={() => {
                 fireConfetti();
                 navigate("/create-trip");
-              }}>
+              }}
+            >
               Plan New Trip
             </Button>
             <Button size="lg" variant="outline" asChild>
@@ -1090,7 +1091,8 @@ const Dashboard = () => {
         </div>
         <Select
           value={sortBy}
-          onValueChange={(v) => setSortBy(v as "popularity" | "cost" | "az")}>
+          onValueChange={(v) => setSortBy(v as "popularity" | "cost" | "az")}
+        >
           <SelectTrigger className="h-11">
             <SortAsc className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Sort by" />
@@ -1103,7 +1105,8 @@ const Dashboard = () => {
         </Select>
         <Select
           value={countryFilter}
-          onValueChange={(v) => setCountryFilter(v)}>
+          onValueChange={(v) => setCountryFilter(v)}
+        >
           <SelectTrigger className="h-11">
             <Filter className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Country" />
@@ -1118,7 +1121,8 @@ const Dashboard = () => {
         </Select>
         <Select
           value={groupBy}
-          onValueChange={(v) => setGroupBy(v as "none" | "region" | "month")}>
+          onValueChange={(v) => setGroupBy(v as "none" | "region" | "month")}
+        >
           <SelectTrigger className="h-11">
             <Group className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Group by" />
@@ -1207,7 +1211,6 @@ const Dashboard = () => {
               </div>
             </section>
           )}
-          
 
           {/* Complete trips list with pagination */}
           <AllTrips
@@ -1250,7 +1253,8 @@ const Dashboard = () => {
               {filteredCities.slice(0, 4).map((city) => (
                 <div
                   key={`seasonal-${city._id}`}
-                  className="relative h-48 rounded-lg overflow-hidden group">
+                  className="relative h-48 rounded-lg overflow-hidden group"
+                >
                   {city.images?.[0] ? (
                     <img
                       src={city.images[0]}
@@ -1273,7 +1277,8 @@ const Dashboard = () => {
                     size="sm"
                     variant="secondary"
                     className="absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleExploreCity(city)}>
+                    onClick={() => handleExploreCity(city)}
+                  >
                     Explore
                   </Button>
                 </div>
@@ -1288,7 +1293,8 @@ const Dashboard = () => {
         <Button
           size="lg"
           className="shadow-lg"
-          onClick={() => navigate("/create-trip")}>
+          onClick={() => navigate("/create-trip")}
+        >
           + Plan a Trip
         </Button>
       </div>
@@ -1373,7 +1379,8 @@ function TravelMap({ cities }: { cities: City[] }) {
       </div>
       <Reveal
         className="w-full flex items-center justify-center py-4"
-        direction="up">
+        direction="up"
+      >
         <Earth className="max-w-[420px]" theta={0.25} dark={1} scale={1.15} />
       </Reveal>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -1530,7 +1537,8 @@ function DestinationCategories({
           className={`overflow-hidden cursor-pointer transition-all ${
             activeCategory === "all" ? "ring-2 ring-primary" : ""
           }`}
-          onClick={() => onSelectCategory("all")}>
+          onClick={() => onSelectCategory("all")}
+        >
           <div className="h-1 w-full bg-gradient-to-r from-gray-400 to-gray-600" />
           <CardContent className="p-4 flex items-center justify-between">
             <div className="font-medium">All Categories</div>
@@ -1547,7 +1555,8 @@ function DestinationCategories({
             className={`overflow-hidden cursor-pointer transition-all ${
               activeCategory === cat.key ? "ring-2 ring-primary" : ""
             }`}
-            onClick={() => onSelectCategory(cat.key)}>
+            onClick={() => onSelectCategory(cat.key)}
+          >
             <div className={`h-1 w-full bg-gradient-to-r ${cat.color}`} />
             <CardContent className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1557,7 +1566,8 @@ function DestinationCategories({
                 <span className="font-medium">{cat.label}</span>
               </div>
               <Badge
-                variant={activeCategory === cat.key ? "default" : "outline"}>
+                variant={activeCategory === cat.key ? "default" : "outline"}
+              >
                 {activeCategory === cat.key ? "Selected" : "Select"}
               </Badge>
             </CardContent>
@@ -1687,7 +1697,8 @@ function BrowseDestinations({
                 size="sm"
                 variant="outline"
                 className="mt-2 w-full"
-                onClick={() => onExploreCity(c)}>
+                onClick={() => onExploreCity(c)}
+              >
                 Explore
               </Button>
             </CardContent>
@@ -1856,7 +1867,8 @@ function InspirationCarousel({
                   variant="secondary"
                   onClick={() =>
                     onExploreItem ? onExploreItem(it.title, it.desc) : null
-                  }>
+                  }
+                >
                   Explore
                 </Button>
               </CardContent>
@@ -1933,13 +1945,15 @@ function AllTrips({
                   variant="secondary"
                   onClick={() =>
                     window.location.assign(`/build-itinerary/${t._id}`)
-                  }>
+                  }
+                >
                   Open
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => window.location.assign(`/itinerary/${t._id}`)}>
+                  onClick={() => window.location.assign("/itinerary-view")}
+                >
                   View
                 </Button>
               </div>
@@ -1955,7 +1969,8 @@ function AllTrips({
             variant="outline"
             size="sm"
             disabled={currentPage === 1}
-            onClick={() => onPageChange(currentPage - 1)}>
+            onClick={() => onPageChange(currentPage - 1)}
+          >
             <ChevronLeft className="h-4 w-4 mr-1" />
             Prev
           </Button>
@@ -1965,7 +1980,8 @@ function AllTrips({
               key={`page-${page}`}
               variant={page === currentPage ? "default" : "outline"}
               size="sm"
-              onClick={() => onPageChange(page)}>
+              onClick={() => onPageChange(page)}
+            >
               {page}
             </Button>
           ))}
@@ -1974,7 +1990,8 @@ function AllTrips({
             variant="outline"
             size="sm"
             disabled={currentPage === totalPages}
-            onClick={() => onPageChange(currentPage + 1)}>
+            onClick={() => onPageChange(currentPage + 1)}
+          >
             Next
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
@@ -2161,7 +2178,8 @@ function ImagePlaceholder({
         background: `linear-gradient(135deg, hsl(${hue}, 80%, 92%), hsl(${
           (hue + 40) % 360
         }, 80%, 96%))`,
-      }}>
+      }}
+    >
       {icon || <ImageIcon className="h-8 w-8 text-white/50" />}
     </div>
   );
@@ -2265,7 +2283,8 @@ function CityExploreDialog({
               return (
                 <div
                   key={`act-${i}`}
-                  className="rounded-lg border overflow-hidden">
+                  className="rounded-lg border overflow-hidden"
+                >
                   <div className="h-24">
                     <ImagePlaceholder
                       seed={`${city.name}-${activity}`}
@@ -2293,7 +2312,8 @@ function CityExploreDialog({
               onClose();
               navigate("/create-trip");
               toast.success(`Start planning your trip to ${city.name}!`);
-            }}>
+            }}
+          >
             Plan a Trip Here
           </Button>
         </DialogFooter>
