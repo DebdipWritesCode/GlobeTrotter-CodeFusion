@@ -1,0 +1,348 @@
+/* Header theme styles */
+:root {
+  /* Light mode variables */
+  --header-bg-light: rgba(255, 255, 255, 0.9);
+  --header-bg-light-scrolled: rgba(255, 255, 255, 0.98);
+  --header-border-light: rgba(229, 231, 235, 0.5);
+  --header-text-light: #1f2937;
+  --header-text-hover-light: #10b981;
+  --header-text-active-light: #047857;
+  
+  /* Dark mode variables */
+  --header-bg-dark: rgba(17, 24, 39, 0.9);
+  --header-bg-dark-scrolled: rgba(17, 24, 39, 0.98);
+  --header-border-dark: rgba(55, 65, 81, 0.5);
+  --header-text-dark: #f3f4f6;
+  --header-text-hover-dark: #6ee7b7;
+  --header-text-active-dark: #a7f3d0;
+  
+  /* Brand colors */
+  --logo-gradient-from: #10b981; /* emerald-500 */
+  --logo-gradient-to: #22c55e; /* green-500 */
+  
+  /* Parallax specific variables */
+  --parallax-header-bg-opacity: 0;
+  --parallax-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Header base styling */
+.header-container {
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+/* Add space below header to avoid content overlap */
+.header-spacer {
+  height: 4rem; /* Adjust based on your header height */
+}
+@media (min-width: 768px) {
+  .header-spacer {
+    height: 4.5rem; 
+  }
+}
+
+/* Standard scrolled header */
+.header-scrolled {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: var(--header-bg-light-scrolled);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--header-border-light);
+}
+
+/* Parallax transparent header (landing page) */
+.header-transparent {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: rgba(0, 0, 0, var(--parallax-header-bg-opacity));
+  border-bottom: none;
+}
+
+/* Default header for non-landing pages */
+.header-default {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  background-color: var(--header-bg-light);
+  backdrop-filter: blur(4px);
+}
+
+/* Dark mode overrides */
+.dark .header-scrolled {
+  background-color: var(--header-bg-dark-scrolled);
+  border-bottom: 1px solid var(--header-border-dark);
+}
+
+.dark .header-default {
+  background-color: var(--header-bg-dark);
+}
+
+.dark .header-transparent {
+  background-color: rgba(0, 0, 0, var(--parallax-header-bg-opacity));
+}
+
+/* Logo styling */
+.logo-container {
+  height: 2.25rem;
+  width: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-default {
+  background: linear-gradient(to right, var(--logo-gradient-from), var(--logo-gradient-to));
+  color: white;
+}
+
+.logo-transparent {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.logo-text-default {
+  background: linear-gradient(to right, var(--logo-gradient-from), var(--logo-gradient-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}
+
+.logo-text-transparent {
+  color: white;
+  font-weight: 700;
+  text-shadow: var(--parallax-text-shadow); /* Add text shadow for better visibility on any background */
+}
+
+/* Nav items */
+.nav-item {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  color: var(--header-text-light); /* Default light text */
+}
+
+.nav-item:hover {
+  color: var(--header-text-hover-light);
+  background-color: rgba(16, 185, 129, 0.05); /* very subtle hover bg */
+}
+
+.dark .nav-item {
+  color: var(--header-text-dark); /* Default dark text */
+}
+
+.dark .nav-item:hover {
+  color: var(--header-text-hover-dark);
+  background-color: rgba(110, 231, 183, 0.05); /* subtle hover bg for dark mode */
+}
+
+.nav-item-active {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--header-text-active-light);
+  font-weight: 600;
+}
+
+.dark .nav-item-active {
+  background-color: rgba(110, 231, 183, 0.1);
+  color: var(--header-text-active-dark);
+}
+
+/* Transparent style specifically for parallax landing */
+.nav-item-transparent {
+  color: white;
+  text-shadow: var(--parallax-text-shadow); /* Add text shadow for better visibility */
+}
+
+.nav-item-transparent:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-item-transparent.nav-item-active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Mobile menu */
+.mobile-menu {
+  background-color: var(--header-bg-light);
+  border-radius: 0.75rem;
+  margin-top: 0.5rem;
+  border: 1px solid var(--header-border-light);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dark .mobile-menu {
+  background-color: var(--header-bg-dark);
+  border-color: var(--header-border-dark);
+}
+
+/* Buttons styling */
+.btn-outline {
+  border: 1px solid;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.btn-outline-light {
+  border-color: var(--header-border-light);
+  color: var(--header-text-light);
+}
+
+.btn-outline-light:hover {
+  border-color: var(--logo-gradient-from);
+  color: var(--logo-gradient-from);
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.dark .btn-outline-light {
+  border-color: var(--header-border-dark);
+  color: var(--header-text-dark);
+}
+
+.dark .btn-outline-light:hover {
+  border-color: var(--logo-gradient-from);
+  color: var(--header-text-hover-dark);
+  background-color: rgba(110, 231, 183, 0.05);
+}
+
+.btn-outline-transparent {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  text-shadow: var(--parallax-text-shadow);
+}
+
+.btn-outline-transparent:hover {
+  border-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(to right, var(--logo-gradient-from), var(--logo-gradient-to));
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25);
+}
+
+/* Special parallax-aware styles */
+.parallax-aware {
+  transition: all 0.3s ease-out;
+}
+
+/* User menu styling */
+.user-menu {
+  background-color: var(--header-bg-light);
+  border: 1px solid var(--header-border-light);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dark .user-menu {
+  background-color: var(--header-bg-dark);
+  border-color: var(--header-border-dark);
+}
+
+.user-menu-header {
+  padding: 0.75rem 1rem;
+  background-color: rgba(16, 185, 129, 0.05);
+  border-bottom: 1px solid var(--header-border-light);
+}
+
+.dark .user-menu-header {
+  background-color: rgba(110, 231, 183, 0.05);
+  border-color: var(--header-border-dark);
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: var(--header-text-light);
+  transition: all 0.15s ease;
+}
+
+.dark .user-menu-item {
+  color: var(--header-text-dark);
+}
+
+.user-menu-item:hover {
+  background-color: rgba(16, 185, 129, 0.05);
+  color: var(--header-text-hover-light);
+}
+
+.dark .user-menu-item:hover {
+  background-color: rgba(110, 231, 183, 0.05);
+  color: var(--header-text-hover-dark);
+}
+
+/* Create a separate class for the logout button */
+.user-menu-item-danger {
+  color: #ef4444; /* red-500 */
+}
+
+.user-menu-item-danger:hover {
+  background-color: rgba(239, 68, 68, 0.05);
+  color: #dc2626; /* red-600 */
+}
+
+.dark .user-menu-item-danger {
+  color: #f87171; /* red-400 */
+}
+
+.dark .user-menu-item-danger:hover {
+  background-color: rgba(248, 113, 113, 0.05);
+  color: #ef4444; /* red-500 */
+}
+
+/* Add JavaScript-controlled class for parallax opacity */
+[data-scroll="0"] {
+  --parallax-header-bg-opacity: 0;
+}
+
+[data-scroll="10"] {
+  --parallax-header-bg-opacity: 0.1;
+}
+
+[data-scroll="20"] {
+  --parallax-header-bg-opacity: 0.2;
+}
+
+[data-scroll="30"] {
+  --parallax-header-bg-opacity: 0.3;
+}
+
+[data-scroll="40"] {
+  --parallax-header-bg-opacity: 0.4;
+}
+
+[data-scroll="50"] {
+  --parallax-header-bg-opacity: 0.5;
+}
+
+[data-scroll="60"] {
+  --parallax-header-bg-opacity: 0.6;
+}
+
+[data-scroll="70"] {
+  --parallax-header-bg-opacity: 0.7;
+}
+
+[data-scroll="80"] {
+  --parallax-header-bg-opacity: 0.8;
+}
