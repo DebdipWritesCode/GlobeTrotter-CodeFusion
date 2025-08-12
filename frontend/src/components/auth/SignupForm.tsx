@@ -32,6 +32,8 @@ const signupFormSchema = z
 
 const SignupForm = () => {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // UI only
+  const [showConfirm, setShowConfirm] = useState(false);   // UI only
 
   const form = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
@@ -48,31 +50,36 @@ const SignupForm = () => {
   const onSubmit = async (values: z.infer<typeof signupFormSchema>) => {
     setLoading(true);
     try {
-  const { name, email, password, city, country } = values;
-  const signupData = { name, email, password, city, country };
+      // IMPORTANT: preserve depdip's backend payload exactly
+      const { name, email, password, city, country } = values;
+      const signupData = { name, email, password, city, country };
 
       const response = await api.post("/auth/signup", signupData);
 
       if (response.status === 200) {
         toast.success("Account created successfully! Please log in.");
-        form.reset();
+        form.reset(); // preserved from depdip
       } else {
         throw new Error("Unexpected response from server");
       }
     } catch (err: unknown) {
-      const e = err as { response?: { status?: number; data?: { message?: string } }; request?: unknown; message?: string } | undefined
-      if (e?.response) {
-        if (e.response.status === 409) {
+      // preserve depdip's error handling branches; alias name changed to axiosErr (safe)
+      const axiosErr = err as
+        | { response?: { status?: number; data?: { message?: string } }; request?: unknown; message?: string }
+        | undefined;
+
+      if (axiosErr?.response) {
+        if (axiosErr.response.status === 409) {
           toast.error("Email already exists. Please use a different email.");
-        } else if (e.response.data?.message) {
-          toast.error(e.response.data.message);
+        } else if (axiosErr.response.data?.message) {
+          toast.error(axiosErr.response.data.message);
         } else {
           toast.error("Registration failed. Please try again.");
         }
-      } else if (e?.request) {
+      } else if (axiosErr?.request) {
         toast.error("No response from server. Please check your connection.");
       } else {
-        toast.error("An error occurred: " + (e?.message ?? "Unknown error"));
+        toast.error("An error occurred: " + (axiosErr?.message ?? "Unknown error"));
       }
     } finally {
       setLoading(false);
@@ -84,6 +91,7 @@ const SignupForm = () => {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="max-w-md mx-auto flex flex-col gap-6"
+        aria-label="Sign up form"
       >
         {/* Name */}
         <FormField
@@ -93,7 +101,7 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="John Doe" autoComplete="name" aria-required="true" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -108,7 +116,14 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="john@example.com" {...field} />
+                <Input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="john@example.com"
+                  aria-required="true"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -123,7 +138,7 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>City</FormLabel>
               <FormControl>
-                <Input placeholder="Mumbai" {...field} />
+                <Input placeholder="Mumbai" autoComplete="address-level2" aria-required="true" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -138,7 +153,7 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Country</FormLabel>
               <FormControl>
-                <Input placeholder="India" {...field} />
+                <Input placeholder="India" autoComplete="country" aria-required="true" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -153,7 +168,23 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <div className="relative">
+                  <Input
+                    {...field}
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    aria-required="true"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-600 hover:text-gray-900"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -168,7 +199,23 @@ const SignupForm = () => {
             <FormItem>
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <div className="relative">
+                  <Input
+                    {...field}
+                    type={showConfirm ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    aria-required="true"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm((s) => !s)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-600 hover:text-gray-900"
+                    aria-label={showConfirm ? "Hide password" : "Show password"}
+                  >
+                    {showConfirm ? "Hide" : "Show"}
+                  </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -176,7 +223,7 @@ const SignupForm = () => {
         />
 
         {/* Submit */}
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full" disabled={loading} aria-busy={loading}>
           {loading ? "Signing up..." : "Sign Up"}
         </Button>
       </form>
