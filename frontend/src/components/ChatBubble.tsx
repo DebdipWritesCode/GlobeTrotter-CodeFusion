@@ -37,7 +37,7 @@ const ChatBubble = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/v1/chat", {
+      const response = await fetch("https://globetrotter-codefusion-production.up.railway.app/v1/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

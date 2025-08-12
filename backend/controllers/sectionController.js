@@ -152,7 +152,7 @@ export const createItineraryByAI = async (req, res) => {
 
     // 3️⃣ Call FastAPI
     const { data: itineraryResponse } = await axios.post(
-      "http://localhost:8000/v1/itinerary",
+      "https://globetrotter-codefusion-production.up.railway.app/v1/itinerary",
       itineraryPayload
     );
 
