@@ -11,6 +11,7 @@ interface User {
   email: string;
   city?: string;
   country?: string;
+  avatar?: string;
 }
 
 interface Trip {
@@ -23,12 +24,100 @@ interface Trip {
   budget?: number;
 }
 
+// TripsTab Component
+const TripsTab: React.FC<{ trips: Trip[] }> = ({ trips }) => {
+  if (trips.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        No trips found.
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {trips.map((trip) => (
+        <motion.div
+          key={trip._id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/10 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:bg-white/20 dark:hover:bg-gray-900/80 transition-all"
+        >
+          {trip.coverPhoto && (
+            <img
+              src={trip.coverPhoto}
+              alt={trip.title}
+              className="w-full h-32 object-cover rounded-lg mb-3"
+            />
+          )}
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            {trip.title}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+            {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
+          </p>
+          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+            trip.status === 'upcoming' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300' :
+            trip.status === 'ongoing' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' :
+            'bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-300'
+          }`}>
+            {trip.status}
+          </span>
+          {trip.budget && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Budget: ${trip.budget}
+            </p>
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+// StatsTab Component
+const StatsTab: React.FC<{ trips: Trip[] }> = ({ trips }) => {
+  const totalTrips = trips.length;
+  const completedTrips = trips.filter(t => t.status === 'completed').length;
+  const upcomingTrips = trips.filter(t => t.status === 'upcoming' || t.status === 'ongoing').length;
+  const totalBudget = trips.reduce((sum, trip) => sum + (trip.budget || 0), 0);
+
+  const stats = [
+    { label: 'Total Trips', value: totalTrips },
+    { label: 'Completed Trips', value: completedTrips },
+    { label: 'Upcoming Trips', value: upcomingTrips },
+    { label: 'Total Budget', value: `$${totalBudget}` },
+  ];
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {stats.map((stat, index) => (
+        <motion.div
+          key={stat.label}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="bg-white/10 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 rounded-xl p-6 text-center"
+        >
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            {stat.value}
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300">
+            {stat.label}
+          </p>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
 const MyProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "stats">("upcoming");
   const [user, setUser] = useState<User | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -43,6 +132,8 @@ const MyProfile: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (!userId) return;
+
         const [userRes, tripsRes] = await Promise.all([
           api.get(`/users/${userId}`),
           api.get(`/trips/user`),
@@ -64,28 +155,36 @@ const MyProfile: React.FC = () => {
       } catch (err) {
         console.error("Error fetching profile data", err);
       } finally {
-        setL(false);
+        setLoading(false);
       }
     };
 
-    fetchUser();
-  }, [uid]);
+    fetchData();
+  }, [userId]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !userId) return;
 
     setUploadingAvatar(true);
     setAvatarError("");
 
-    const formData = new FormData();
-    formData.append("avatar", file);
+    const formDataUpload = new FormData();
+    formDataUpload.append("avatar", file);
 
     try {
-      const res = await api.put(`/users/${uid}/avatar`, formData, {
+      const res = await api.put(`/users/${userId}/avatar`, formDataUpload, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setU((prevU) => (prevU ? { ...prevU, avatar: res.data.avatar } : res.data));
+      setUser((prevUser) => (prevUser ? { ...prevUser, avatar: res.data.avatar } : res.data));
     } catch (err: any) {
       setAvatarError(err.response?.data?.message || "Failed to upload avatar.");
     } finally {
@@ -105,10 +204,7 @@ const MyProfile: React.FC = () => {
         country: formData.country,
       };
 
-      const res = await api.put(
-        `/users/${userId}`,
-        updatedData,
-          );
+      const res = await api.put(`/users/${userId}`, updatedData);
 
       setUser(res.data);
       setEditOpen(false);
@@ -138,8 +234,30 @@ const MyProfile: React.FC = () => {
         className="w-full max-w-3xl mx-auto rounded-2xl shadow-xl bg-white/10 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-200 dark:border-gray-800 p-8 flex flex-col md:flex-row items-center md:items-start gap-8 mb-10"
       >
         {/* Avatar */}
-        <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-gray-300 to-gray-500 dark:from-gray-700 dark:to-gray-900 flex items-center justify-center text-4xl font-extrabold text-gray-700 dark:text-gray-200 select-none shadow">
-          {(formData.firstName?.[0] || "U") + (formData.lastName?.[0] || "")}
+        <div className="relative">
+          <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-gray-300 to-gray-500 dark:from-gray-700 dark:to-gray-900 flex items-center justify-center text-4xl font-extrabold text-gray-700 dark:text-gray-200 select-none shadow overflow-hidden">
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              (formData.firstName?.[0] || "U") + (formData.lastName?.[0] || "")
+            )}
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarUpload}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            disabled={uploadingAvatar}
+          />
+          {uploadingAvatar && (
+            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
         </div>
 
         {/* Info */}
@@ -153,6 +271,9 @@ const MyProfile: React.FC = () => {
               {formData.city ? formData.city + ", " : ""}
               {formData.country || ""}
             </p>
+          )}
+          {avatarError && (
+            <p className="mt-2 text-red-500 text-sm">{avatarError}</p>
           )}
         </div>
 
@@ -202,6 +323,11 @@ const MyProfile: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setEditOpen(false);
+              }
+            }}
           >
             <motion.div
               initial={{ y: 40, opacity: 0 }}
@@ -230,7 +356,7 @@ const MyProfile: React.FC = () => {
                     type="text"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
                     required
                   />
                 </div>
@@ -244,7 +370,7 @@ const MyProfile: React.FC = () => {
                     type="text"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
                   />
                 </div>
                 <div>
@@ -257,7 +383,7 @@ const MyProfile: React.FC = () => {
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
                     required
                   />
                 </div>
@@ -271,7 +397,7 @@ const MyProfile: React.FC = () => {
                     type="text"
                     value={formData.city}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
                   />
                 </div>
                 <div>
@@ -284,20 +410,20 @@ const MyProfile: React.FC = () => {
                     type="text"
                     value={formData.country}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border"
+                    className="w-full px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
                   />
                 </div>
                 <div className="flex justify-end space-x-4 mt-6">
                   <button
                     type="button"
                     onClick={() => setEditOpen(false)}
-                    className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+                    className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 font-semibold text-white"
+                    className="px-4 py-2 rounded bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 font-semibold text-white transition"
                   >
                     Save
                   </button>
@@ -311,4 +437,4 @@ const MyProfile: React.FC = () => {
   );
 };
 
-export default UserProfile;
+export default MyProfile;
