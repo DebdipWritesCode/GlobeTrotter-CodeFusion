@@ -250,7 +250,7 @@ const Community: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black text-gray-100 p-6">
+    <div className="min-h-screen dark:text-gray-100 text-gray-700 p-6">
       {/* Top bar with Chat button */}
       <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Community</h1>
