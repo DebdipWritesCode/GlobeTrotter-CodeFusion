@@ -31,6 +31,36 @@ export function useTheme() {
     };
 
     applyTheme(theme);
+
+    // Keep "system" theme in sync with OS changes after mount
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if (theme === "system") {
+        if (mql.matches) {
+          root.classList.add("dark");
+        } else {
+          root.classList.remove("dark");
+        }
+      }
+    };
+    try {
+      mql.addEventListener("change", onChange);
+    } catch {
+      // Safari < 14 fallback: use legacy addListener if available
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      mql.addListener?.(onChange);
+    }
+    return () => {
+      try {
+        mql.removeEventListener("change", onChange);
+      } catch {
+        // Safari < 14 fallback: use legacy removeListener if available
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        mql.removeListener?.(onChange);
+      }
+    };
   }, [theme]);
 
   return { theme, setTheme };

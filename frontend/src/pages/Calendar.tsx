@@ -6,9 +6,30 @@ import api from "@/api/axios";
 
 const localizer = momentLocalizer(moment);
 
+type TripEvent = {
+  title: string;
+  start: Date;
+  end: Date;
+  budget: string;
+  duration: string;
+  image: string;
+  type: "upcoming" | "ongoing" | "past" | string;
+  allDay: boolean;
+  badge?: string | number;
+};
+type TripAPI = {
+  title?: string;
+  startDate: string;
+  endDate: string;
+  budget?: string;
+  duration?: string;
+  coverPhoto?: string;
+  status?: "upcoming" | "ongoing" | "past" | string;
+};
+
 const Calendar = () => {
-  const [trips, setTrips] = useState([]);
-  const [hoveredEvent, setHoveredEvent] = useState(null);
+  const [trips, setTrips] = useState<TripEvent[]>([]);
+  const [hoveredEvent, setHoveredEvent] = useState<TripEvent | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
@@ -17,7 +38,7 @@ const Calendar = () => {
       try {
         const res = await api.get("/trips/user");
         const data = res.data;
-        const events = data.map((trip) => ({
+  const events: TripEvent[] = data.map((trip: TripAPI) => ({
           title: trip.title || "Trip",
           start: new Date(trip.startDate),
           end: new Date(trip.endDate),
@@ -50,16 +71,24 @@ const Calendar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const eventStyleGetter = (event) => {
-    let backgroundColor = "";
-    if (event.type === "past") backgroundColor = "#555";
-    else if (event.type === "ongoing") backgroundColor = "#8e6dc4";
-    else if (event.type === "upcoming") backgroundColor = "#6c5ce7";
+  const eventStyleGetter = (event: TripEvent) => {
+    let backgroundColor = "var(--primary)";
+    let color = "var(--primary-foreground)";
+    if (event.type === "past") {
+      backgroundColor = "var(--ring)";
+      color = "var(--foreground)";
+    } else if (event.type === "ongoing") {
+      backgroundColor = "var(--accent)";
+      color = "var(--accent-foreground)";
+    } else if (event.type === "upcoming") {
+      backgroundColor = "var(--primary)";
+      color = "var(--primary-foreground)";
+    }
     return {
       style: {
         backgroundColor,
         borderRadius: "8px 8px 0 0",
-        color: "#fff",
+        color,
         border: "none",
         padding: "3px 6px",
         fontSize: "0.9rem",
@@ -69,7 +98,7 @@ const Calendar = () => {
     };
   };
 
-  const handleMouseEnter = (event, e) => {
+  const handleMouseEnter = (event: TripEvent, e: React.MouseEvent<HTMLDivElement>) => {
     if (!isMobile) {
       setHoveredEvent(event);
       setMousePos({ x: e.clientX + 10, y: e.clientY + 10 });
@@ -82,15 +111,15 @@ const Calendar = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-start bg-[#1e1e1e] py-8 px-2"
+      className="min-h-screen flex flex-col items-center justify-start bg-background text-foreground py-8 px-2"
       style={{ width: "100%" }}
     >
       {/* Heading and description */}
       <div className="max-w-2xl w-full mx-auto mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight drop-shadow">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight drop-shadow">
            My Travel Calendar
         </h1>
-        <p className="text-gray-300 text-base md:text-lg">
+        <p className="text-muted-foreground text-base md:text-lg">
           All your trips, at a glance. Plan, track, and relive your journeys
           with this interactive calendar. Hover over events for details, or tap
           on mobile for a compact view.
@@ -99,34 +128,38 @@ const Calendar = () => {
 
       <style>{`
         .rbc-toolbar button {
-          color: white !important;
+          color: var(--foreground) !important;
           background: transparent !important;
-          border: 1px solid #6c5ce7 !important;
+          border: 1px solid var(--primary) !important;
           border-radius: 6px;
           padding: 5px 10px;
         }
         .rbc-toolbar button:hover {
-          background: #6c5ce7 !important;
+          background: var(--primary) !important;
+          color: var(--primary-foreground) !important;
         }
         .rbc-off-range-bg {
-          background: #3a3a4d !important;
+          background: color-mix(in oklab, var(--muted) 85%, transparent) !important;
         }
         .rbc-today {
-          background: linear-gradient(135deg, #2d2d44, #3a3a5a) !important;
-          border: 2px solid #6c5ce7 !important;
+          background: linear-gradient(135deg, color-mix(in oklab, var(--muted) 80%, transparent), color-mix(in oklab, var(--muted) 60%, transparent)) !important;
+          border: 2px solid var(--primary) !important;
         }
         .rbc-month-view, .rbc-time-view {
-          background: #1e1e2f;
-          border-color: #444;
+          background: var(--card);
+          border-color: var(--border);
         }
         .rbc-header {
-          background: #2c2c3e;
-          color: white;
+          background: var(--card);
+          color: var(--foreground);
           border: none;
         }
         .rbc-event {
           border-radius: 8px 8px 0 0 !important;
           margin: 2px 0 0 0 !important;
+        }
+        .rbc-time-content, .rbc-day-bg, .rbc-month-row, .rbc-date-cell, .rbc-time-slot, .rbc-timeslot-group {
+          border-color: var(--border) !important;
         }
       `}</style>
 
@@ -145,16 +178,16 @@ const Calendar = () => {
           endAccessor="end"
           style={{
             height: isMobile ? 440 : "80vh", // Increased height
-            color: "#fff",
+            color: "var(--foreground)",
             fontSize: isMobile ? "0.95rem" : "1.08rem",
             borderRadius: 18,
             boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-            background: "#1e1e2f",
+            background: "var(--card)",
           }}
           eventPropGetter={eventStyleGetter}
           views={["month"]}
           components={{
-            event: ({ event }) => (
+            event: ({ event }: { event: TripEvent }) => (
               <div
                 onMouseEnter={(e) => handleMouseEnter(event, e)}
                 onMouseLeave={handleMouseLeave}
@@ -176,8 +209,8 @@ const Calendar = () => {
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      background: "#23234a",
-                      color: "#fff",
+                      background: "var(--muted)",
+                      color: "var(--foreground)",
                       borderRadius: "50%",
                       width: "22px",
                       height: "22px",
@@ -185,7 +218,7 @@ const Calendar = () => {
                       fontWeight: 700,
                       marginLeft: "2px",
                       boxShadow: "0 2px 6px rgba(0,0,0,0.18)",
-                      border: "2px solid #6c5ce7",
+                      border: "2px solid var(--primary)",
                     }}
                   >
                     {event.badge}
@@ -204,13 +237,14 @@ const Calendar = () => {
             position: "fixed",
             top: mousePos.y,
             left: mousePos.x,
-            backgroundColor: "#2c2c2c",
+            backgroundColor: "var(--card)",
             padding: 12,
             borderRadius: 12,
             boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
             width: 250,
             zIndex: 1000,
-            color: "#fff",
+            color: "var(--foreground)",
+            border: "1px solid var(--border)",
           }}
         >
           <img
@@ -232,11 +266,14 @@ const Calendar = () => {
               display: "inline-block",
               backgroundColor:
                 hoveredEvent.type === "past"
-                  ? "#555"
+                  ? "var(--ring)"
                   : hoveredEvent.type === "ongoing"
-                  ? "#8e6dc4"
-                  : "#6c5ce7",
-              color: "white",
+                  ? "var(--accent)"
+                  : "var(--primary)",
+              color:
+                hoveredEvent.type === "ongoing"
+                  ? "var(--accent-foreground)"
+                  : "var(--primary-foreground)",
               borderRadius: 12,
               padding: "2px 10px",
               fontWeight: "600",
@@ -255,8 +292,8 @@ const Calendar = () => {
             style={{
               width: "100%",
               padding: "8px",
-              backgroundColor: "#6c5ce7",
-              color: "#fff",
+              backgroundColor: "var(--primary)",
+              color: "var(--primary-foreground)",
               border: "none",
               borderRadius: 6,
               cursor: "pointer",

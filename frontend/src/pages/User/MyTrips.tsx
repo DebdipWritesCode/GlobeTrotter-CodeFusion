@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import api from "@/api/axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
@@ -52,8 +53,13 @@ const MyTrips: React.FC = () => {
       try {
         const response = await api.get(`/trips/user?userId=${user_id}`);
         setTrips(response.data);
-      } catch (err: any) {
-        setError(err.response?.data?.message || err.message || "Unknown error");
+      } catch (err: unknown) {
+        const message = axios.isAxiosError(err)
+          ? err.response?.data?.message || err.message
+          : err instanceof Error
+          ? err.message
+          : "Unknown error";
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -114,9 +120,9 @@ const MyTrips: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-gray-800 py-8 px-2 md:px-8 font-sans">
+  <div className="min-h-screen bg-background py-8 px-2 md:px-8 font-sans">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-gray-100">My Trips</h1>
+    <h1 className="text-3xl font-bold mb-6 text-foreground">My Trips</h1>
 
         {/* Controls */}
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-8 sticky top-0 z-10 bg-transparent">
@@ -126,14 +132,14 @@ const MyTrips: React.FC = () => {
               placeholder="Search trips by name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-white/10 text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex-1"
+              className="px-4 py-2 rounded-lg bg-card text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-ring flex-1 placeholder:text-muted-foreground"
             />
             <div className="flex gap-2">
               <button
                 className={`px-4 py-2 rounded-lg font-semibold transition
                   ${sortKey === "date"
-                    ? "bg-white/20 text-indigo-400 shadow"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"}
+                    ? "bg-primary/20 text-primary shadow"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"}
                 `}
                 onClick={() => setSortKey("date")}
                 title="Sort by Date"
@@ -143,8 +149,8 @@ const MyTrips: React.FC = () => {
               <button
                 className={`px-4 py-2 rounded-lg font-semibold transition
                   ${sortKey === "name"
-                    ? "bg-white/20 text-indigo-400 shadow"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"}
+                    ? "bg-primary/20 text-primary shadow"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"}
                 `}
                 onClick={() => setSortKey("name")}
                 title="Sort by Name"
@@ -159,8 +165,8 @@ const MyTrips: React.FC = () => {
                 key={tab}
                 className={`px-4 py-2 rounded-lg font-semibold transition
                   ${activeTab === tab
-                    ? "bg-white/20 text-indigo-400 shadow"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"}
+                    ? "bg-primary/20 text-primary shadow"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"}
                 `}
                 onClick={() => setActiveTab(tab)}
               >
@@ -172,15 +178,15 @@ const MyTrips: React.FC = () => {
 
         {loading && (
           <div className="flex justify-center items-center py-10">
-            <span className="text-gray-400 text-lg">Loading trips...</span>
+            <span className="text-muted-foreground text-lg">Loading trips...</span>
           </div>
         )}
         {error && (
-          <div className="text-red-400 font-semibold mb-4">{error}</div>
+          <div className="text-destructive font-semibold mb-4">{error}</div>
         )}
 
         {!loading && filteredTrips.length === 0 && (
-          <p className="text-gray-400 text-center py-10">
+          <p className="text-muted-foreground text-center py-10">
             No {activeTab} trips found.
           </p>
         )}
@@ -192,7 +198,7 @@ const MyTrips: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               whileHover={{ scale: 1.03, boxShadow: "0 8px 32px rgba(0,0,0,0.25)" }}
-              className="relative bg-white/10 dark:bg-gray-900/70 backdrop-blur-lg border border-gray-700 rounded-xl shadow-lg overflow-hidden transition-all duration-300 flex flex-col"
+              className="relative bg-card backdrop-blur-lg border border-border rounded-xl shadow-lg overflow-hidden transition-all duration-300 flex flex-col"
             >
               <div className="relative h-40 w-full">
                 <img
@@ -200,15 +206,15 @@ const MyTrips: React.FC = () => {
                   alt={trip.title}
                   className="h-40 w-full object-cover rounded-t-xl transition-all duration-300"
                 />
-                <div className="absolute top-2 left-2 bg-gray-900/70 text-gray-100 px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                <div className="absolute top-2 left-2 bg-muted/80 text-foreground px-3 py-1 rounded-full text-xs flex items-center gap-1 border border-border">
                   <CalendarDays className="w-4 h-4" />
                   {getTripStatus(trip).toUpperCase()}
                 </div>
               </div>
               <div className="p-4 flex-1 flex flex-col">
-                <h3 className="text-lg font-semibold text-gray-100 mb-1">{trip.title}</h3>
-                <p className="text-sm text-gray-400 mb-2 line-clamp-2">{trip.description}</p>
-                <div className="text-xs text-gray-400 mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-1">{trip.title}</h3>
+                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{trip.description}</p>
+                <div className="text-xs text-muted-foreground mb-2">
                   <span>
                     <strong>Start:</strong>{" "}
                     {new Date(trip.startDate).toLocaleDateString()}
@@ -223,13 +229,13 @@ const MyTrips: React.FC = () => {
                   <div className="flex gap-2 mt-auto">
                     <button
                       onClick={() => handleDelete(trip._id)}
-                      className="flex items-center gap-1 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition"
+                      className="flex items-center gap-1 px-3 py-2 rounded-lg bg-destructive hover:opacity-90 text-primary-foreground font-semibold transition"
                     >
                       <Trash2 className="w-4 h-4" /> Delete
                     </button>
                     <button
                       onClick={() => setUpdateTrip(trip)}
-                      className="flex items-center gap-1 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition"
+                      className="flex items-center gap-1 px-3 py-2 rounded-lg bg-primary hover:opacity-90 text-primary-foreground font-semibold transition"
                     >
                       <Pencil className="w-4 h-4" /> Update
                     </button>
@@ -256,7 +262,7 @@ const MyTrips: React.FC = () => {
                 exit={{ scale: 0.95, y: 40 }}
                 transition={{ type: "spring", stiffness: 120, damping: 18 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border border-gray-700 rounded-xl shadow-2xl w-full max-w-md p-8 relative text-gray-900 dark:text-gray-100"
+                className="bg-card/95 backdrop-blur-lg border border-border rounded-xl shadow-2xl w-full max-w-md p-8 relative text-foreground"
               >
                 <h2 className="text-2xl font-semibold mb-4">Update Trip</h2>
                 <label className="block mb-2 font-medium">Title</label>
@@ -266,7 +272,7 @@ const MyTrips: React.FC = () => {
                   onChange={(e) =>
                     setUpdateTrip({ ...updateTrip, title: e.target.value })
                   }
-                  className="w-full mb-4 px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full mb-4 px-3 py-2 rounded bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
                 />
                 <label className="block mb-2 font-medium">Description</label>
                 <textarea
@@ -274,7 +280,7 @@ const MyTrips: React.FC = () => {
                   onChange={(e) =>
                     setUpdateTrip({ ...updateTrip, description: e.target.value })
                   }
-                  className="w-full mb-4 px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-vertical"
+                  className="w-full mb-4 px-3 py-2 rounded bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring resize-vertical placeholder:text-muted-foreground"
                 />
                 <label className="block mb-2 font-medium">Start Date</label>
                 <input
@@ -283,7 +289,7 @@ const MyTrips: React.FC = () => {
                   onChange={(e) =>
                     setUpdateTrip({ ...updateTrip, startDate: e.target.value })
                   }
-                  className="w-full mb-4 px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full mb-4 px-3 py-2 rounded bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 <label className="block mb-2 font-medium">End Date</label>
                 <input
@@ -292,7 +298,7 @@ const MyTrips: React.FC = () => {
                   onChange={(e) =>
                     setUpdateTrip({ ...updateTrip, endDate: e.target.value })
                   }
-                  className="w-full mb-4 px-3 py-2 rounded bg-white/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full mb-4 px-3 py-2 rounded bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 <label
                   htmlFor="coverPhotoUpload"
@@ -312,13 +318,13 @@ const MyTrips: React.FC = () => {
                 <div className="flex justify-end gap-3 mt-6">
                   <button
                     onClick={() => setUpdateTrip(null)}
-                    className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 transition"
+                    className="px-4 py-2 rounded bg-muted hover:bg-muted/80 text-foreground transition"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleUpdateSubmit}
-                    className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 transition font-semibold text-white"
+                    className="px-4 py-2 rounded bg-primary hover:opacity-90 transition font-semibold text-primary-foreground"
                   >
                     Save
                   </button>
