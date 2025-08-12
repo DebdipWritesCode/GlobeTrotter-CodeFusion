@@ -1,5 +1,3 @@
-import Login from "@/pages/Auth/Login";
-import Signup from "@/pages/Auth/Signup";
 import VerifyEmail from "@/pages/Auth/VerifyEmail";
 import NotFound from "@/pages/NotFound";
 import { Route, Routes } from "react-router-dom";
@@ -14,7 +12,7 @@ import MyProfile from "@/pages/User/MyProfile";
 import MyTrips from "@/pages/User/MyTrips";
 import CreateTrip from "@/pages/CreateTrip";
 import ItineraryBuild from "@/pages/ItineraryBuild";
-
+import Auth from "@/pages/Auth/Auth";
 import ManageUsers from "@/pages/Admin/ManageUsers";
 import ManageActivities from "@/pages/Admin/ManageActivities";
 import ManageCities from "@/pages/Admin/ManageCities";
@@ -28,8 +26,9 @@ const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Auth mode="signin" />} />
+      <Route path="/signup" element={<Auth mode="signup" />} />
+      <Route path="/register" element={<Auth mode="signup" />} />
       <Route path="/verify" element={<VerifyEmail />} />
       <Route path="/complete-profile" element={<CompleteProfile />} />
 

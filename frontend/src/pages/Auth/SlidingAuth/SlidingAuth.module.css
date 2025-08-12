@@ -20,38 +20,9 @@
   font-family: "Montserrat", sans-serif;
   min-height: 100vh;
   padding: 24px;
-  position: relative;
-  overflow: hidden;
+  background: #f0f2f5; /* page neutral */
   color: #1f2937; /* default text (dark slate) */
 }
-
-/* blurred background image layer */
-.sa-wrapper::before {
-  content: "";
-  position: fixed; /* cover viewport for nicer effect during scroll */
-  inset: 0;
-  background-image: url("../../../assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: blur(12px) saturate(1.05);
-  transform: scale(1.06); /* avoid edge bleed after blur */
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* subtle dark overlay for readability */
-.sa-wrapper::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.22) 100%);
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* ensure foreground content sits above the bg layers */
-.sa-wrapper > * { position: relative; z-index: 1; }
 
 /* title (optional if you add one) */
 .sa-heading {
@@ -99,7 +70,7 @@
   overflow: hidden;
   width: 820px;
   max-width: 100%;
-  min-height: 620px; /* taller to fit signup comfortably */
+  min-height: 520px;
 }
 
 /* panels (desktop) */
@@ -142,17 +113,15 @@
 .sa-rightPanelActive .sa-overlayContainer { transform: translateX(-100%); }
 
 .sa-overlay {
-  /* darker translucent green-tinted gradient over the bg image */
-  background: linear-gradient(90deg, rgba(6,95,70,0.45) 0%, rgba(21,128,61,0.45) 100%);
-  color: #111827; /* default text now dark */
+  /* explicit gradient — no variables used */
+  background: linear-gradient(90deg, #6A11CB 0%, #2575FC 100%);
+  color: #ffffff;
   position: relative;
   left: -100%;
   height: 100%;
   width: 200%;
   transform: translateX(0);
   transition: transform 0.6s ease-in-out;
-  backdrop-filter: saturate(1.05) blur(4px);
-  -webkit-backdrop-filter: saturate(1.05) blur(4px);
 }
 .sa-rightPanelActive .sa-overlay { transform: translateX(50%); }
 
@@ -179,12 +148,12 @@
   margin: 0 0 10px;
   font-size: 28px;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
 }
 .sa-overlayPanel p {
   margin: 0 0 18px;
   font-size: 15px;
-  color: rgba(17,24,39,0.85);
+  color: rgba(255,255,255,0.92);
   line-height: 1.4;
   max-width: 320px;
 }
@@ -196,7 +165,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 28px 40px;
+  padding: 20px 40px;
   height: 100%;
   text-align: center;
   width: 100%;
@@ -250,9 +219,9 @@
 /* overlay button styling (scoped) */
 .sa-overlayBtn {
   border-radius: 20px;
-  border: 1px solid rgba(0,0,0,0.5);
-  background-color: rgba(255,255,255,0.85);
-  color: #111827;
+  border: 1px solid #ffffff;
+  background-color: rgba(255,255,255,0.12);
+  color: #ffffff;
   font-size: 12px;
   font-weight: 700;
   padding: 12px 30px;
@@ -262,11 +231,11 @@
   cursor: pointer;
 }
 .sa-overlayBtn:hover {
-  background-color: rgba(255,255,255,0.95);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  background-color: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 20px rgba(37,117,252,0.12);
 }
 .sa-overlayBtn:active { transform: scale(0.97); }
-.sa-overlayBtn:focus { outline: 3px solid rgba(16,185,129,0.35); outline-offset: 2px; }
+.sa-overlayBtn:focus { outline: 3px solid rgba(99,102,241,0.22); outline-offset: 2px; }
 
 /* small accessibility helper for keyboard users when overlay is hidden */
 .sa-rightPanelActive .sa-overlayBtn[hidden] { display: none; }
@@ -348,14 +317,6 @@
 
   /* social icons slightly bigger for tapping */
   .sa-social a { width: 44px; height: 44px; }
-
-  .sa-container.sa-rightPanelActive .sa-signUpContainer .sa-googleBtn,
-  .sa-container:not(.sa-rightPanelActive) .sa-signInContainer .sa-googleBtn {
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: block !important;
-    pointer-events: auto !important;
-  }
 }
 
 /* footer (if used) */
@@ -381,62 +342,3 @@
 .sa-footer a:focus { text-decoration: underline; }
 .sa-heart { color: #FF4B91; margin: 0 4px; line-height: 1; }
 
-.sa-googleBtn {
-  width: 100%;
-  margin: 1.25rem 0 1rem;
-  position: relative;
-  z-index: 10; 
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-  overflow: visible !important; /* Ensure button doesn't get cut */
-  min-height: 40px; /* Minimum height to ensure visibility */
-}
-
-/* Add this to fix sign-up panel specifics */
-.sa-rightPanelActive .sa-signUpContainer .sa-googleBtn {
-  z-index: 20 !important; /* Higher z-index to prevent being cut off */
-  transform: translateX(0) !important; /* Prevent inheritance of transforms */
-}
-
-/* Fix inner container overflow handling: allow internal scroll so tall forms are not cut */
-.sa-inner {
-  position: relative;
-  z-index: 5;
-  overflow-y: auto !important; /* scroll inside panel */
-  overflow-x: hidden !important; /* avoid sideways scroll */
-  max-height: 100%;
-  padding-bottom: 24px; /* space for last field */
-  -webkit-overflow-scrolling: touch; /* smooth on iOS */
-}
-
-/* Fix for the sign-up container */
-.sa-signUpContainer {
-  overflow: visible !important; /* Ensure content isn't cut off */
-}
-
-/* Make sure the button is visible during animation */
-.sa-rightPanelActive .sa-signUpContainer {
-  overflow: visible !important;
-}
-
-/* visual separator under Google button */
-.sa-separator {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 8px 0 12px;
-}
-.sa-separator::before,
-.sa-separator::after {
-  content: "";
-  flex: 1 1 0%;
-  height: 1px;
-  background: rgba(0,0,0,0.08);
-}
-.sa-separator span {
-  font-size: 12px;
-  color: #6b7280;
-}
