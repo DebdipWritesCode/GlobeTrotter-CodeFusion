@@ -1,14 +1,13 @@
 import { useRef } from "react";
 import type { FC } from "react";
 import { ReactLenis } from "lenis/react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionTemplate,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { IoAirplaneOutline } from "react-icons/io5";
-// Import images so Vite bundles them correctly (absolute /src paths break in prod)
-import bgHero from "@/assets/images/kaja-reichardt-kLA5yRv0Gd4-unsplash.jpg";
-import imgAli from "@/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg";
-import imgCharlotte from "@/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg";
-import imgJean from "@/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg";
-import imgDavid from "@/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg";
 
 /**
  * SmoothScrollHero
@@ -66,26 +65,37 @@ const CenterImage: FC = () => {
   const bgScale = useTransform(scrollY, [0, SECTION_HEIGHT * 0.9], [1.40, 1.00]);
 
   // Fade later so shrink is visible first
-  // const fadeOpacity = useTransform(scrollY, [SECTION_HEIGHT * 0.75, SECTION_HEIGHT], [1, 0]);
+  const opacity = useTransform(scrollY, [SECTION_HEIGHT * 0.75, SECTION_HEIGHT], [1, 0]);
 
   // text transforms
   const textY = useTransform(scrollY, [0, SECTION_HEIGHT * 0.6], ["25vh", "75vh"]);
   const textScale = useTransform(scrollY, [0, SECTION_HEIGHT * 0.6], [1, 1.12]);
-  // const taglineOpacity = useTransform(scrollY, [0, SECTION_HEIGHT * 0.2, SECTION_HEIGHT * 0.6], [0, 1, 1]);
-  // const iconOpacity = useTransform(scrollY, [0, SECTION_HEIGHT * 0.3, SECTION_HEIGHT * 0.6], [0, 1, 0.5]);
+  const taglineOpacity = useTransform(scrollY, [0, SECTION_HEIGHT * 0.2, SECTION_HEIGHT * 0.6], [0, 1, 1]);
+  const iconOpacity = useTransform(scrollY, [0, SECTION_HEIGHT * 0.3, SECTION_HEIGHT * 0.6], [0, 1, 0.5]);
   const iconRotation = useTransform(scrollY, [0, SECTION_HEIGHT * 0.6], [0, 360]);
-  // const buttonOpacity = useTransform(scrollY, [0, SECTION_HEIGHT * 0.25, SECTION_HEIGHT * 0.4], [0, 1, 1]);
+  const buttonOpacity = useTransform(scrollY, [0, SECTION_HEIGHT * 0.25, SECTION_HEIGHT * 0.4], [0, 1, 1]);
   const buttonScale = useTransform(scrollY, [SECTION_HEIGHT * 0.25, SECTION_HEIGHT * 0.35], [0.95, 1]);
 
   return (
     <div style={{ height: "100vh" }} className="relative w-full">
       {/* Full-bleed background FIXED to viewport so it fills regardless of parent container */}
-      <motion.div aria-hidden className="absolute inset-0 z-0" style={{ scale: bgScale }}>
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${bgHero})` }}
-        />
-      </motion.div>
+      <motion.div
+        aria-hidden
+  style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          backgroundImage: 'url("/src/assets/images/kaja-reichardt-kLA5yRv0Gd4-unsplash.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+          transformOrigin: "center center",
+          scale: bgScale,
+          // separate opacity transform if you want only background to fade:
+          // opacity: opacity,
+          willChange: "transform, opacity",
+        }}
+      />
 
       {/* overlay gradient for better contrast; fixed as well so it sits on top of bg */}
       <div className="fixed inset-0 z-10 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none" />
@@ -93,9 +103,13 @@ const CenterImage: FC = () => {
       {/* content container above the fixed background */}
       <motion.div
         className="relative z-20 w-full h-screen flex flex-col items-center justify-center pointer-events-none"
-        style={{ y: textY, scale: textScale }}
+        style={{
+          y: textY,
+          scale: textScale,
+          top: 0,
+        }}
       >
-  <motion.div className="text-white/80 mb-4" style={{ rotate: iconRotation }}>
+        <motion.div className="text-white/80 mb-4" style={{ opacity: iconOpacity, rotate: iconRotation }}>
           <IoAirplaneOutline className="w-12 h-12" />
         </motion.div>
 
@@ -108,15 +122,16 @@ const CenterImage: FC = () => {
           GLOBE TROTTER
         </h1>
 
-        <p
+        <motion.p
           className="text-xl md:text-2xl font-light text-white mt-6 tracking-wide px-4 py-2 bg-black/20 backdrop-blur-sm rounded-full"
+          style={{ opacity: taglineOpacity }}
         >
           Empowering Personalized Travel Planning
-        </p>
+        </motion.p>
 
         <motion.button
           className="mt-8 bg-white text-zinc-900 px-8 py-3 rounded-full font-medium text-lg hover:bg-white/90 transition-colors pointer-events-auto"
-          style={{ scale: buttonScale }}
+          style={{ opacity: buttonOpacity, scale: buttonScale }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -127,7 +142,14 @@ const CenterImage: FC = () => {
       </motion.div>
 
       {/* optional: fade wrapper so whole section dissolves (keeps text visible while bg fades if you want both) */}
-  {/* Fade overlay removed to simplify motion types */}
+      <motion.div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 5,
+          pointerEvents: "none",
+          opacity: opacity, // fades the overlay layer (use if you want the whole hero to dissolve)
+      }} />
     </div>
   );
 };
@@ -142,7 +164,7 @@ const ParallaxImages: FC = () => {
       {/* First row of images */}
       <div className="mb-40 relative">
         <ParallaxImg
-          src={imgAli}
+          src="/src/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg"
           alt="Mountain landscape with snowcapped peaks"
           start={-200}
           end={200}
@@ -163,7 +185,7 @@ const ParallaxImages: FC = () => {
       {/* Second row of images with caption */}
       <div className="mb-40 relative">
         <ParallaxImg
-          src={imgCharlotte}
+          src="/src/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg"
           alt="Beach paradise with crystal blue waters"
           start={200}
           end={-250}
@@ -185,7 +207,7 @@ const ParallaxImages: FC = () => {
       <div className="flex items-start justify-between mb-40">
         <div className="w-[45%] relative">
           <ParallaxImg
-            src={imgJean}
+            src="/src/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg"
             alt="Historical architecture in ancient city"
             start={-200}
             end={200}
@@ -204,7 +226,7 @@ const ParallaxImages: FC = () => {
 
         <div className="w-[45%] relative">
           <ParallaxImg
-            src={imgDavid}
+            src="/src/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg"
             alt="Vibrant cultural experience"
             start={0}
             end={-300}
@@ -267,11 +289,14 @@ const ParallaxImg: FC<ParallaxImgProps> = ({
   });
 
   // Enhanced animations for more dramatic effect
+  const opacity = useTransform(scrollYProgress, [0, 0.1, 0.75, 1], [0, 1, 1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.9]);
   const y = useTransform(scrollYProgress, [0, 1], [start, end]);
 
   // Add slight rotation for more dynamic feel
   const rotate = useTransform(scrollYProgress, [0, 0.5, 1], [-1, 0, 1]);
+
+  const transform = useMotionTemplate`translateY(${y}px) scale(${scale}) rotate(${rotate}deg)`;
 
   return (
     <motion.img
@@ -279,7 +304,7 @@ const ParallaxImg: FC<ParallaxImgProps> = ({
       alt={alt}
       className={`${className} object-cover`}
       ref={ref}
-      style={{ y, scale, rotate }}
+      style={{ transform, opacity }}
       loading="lazy"
     />
   );
