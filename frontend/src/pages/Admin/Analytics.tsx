@@ -13,7 +13,8 @@ const BarChartCard = React.lazy(() => import('@/components/admin/AnalyticsCharts
 const DonutChartCard = React.lazy(() => import('@/components/admin/AnalyticsCharts/DonutChartCard'));
 
 const Analytics: React.FC = () => {
-  const [from, setFrom] = useState<string>(() => new Date(Date.now() - 6 * 86400000).toISOString());
+  // Default to a wider window so mock data (Feb 2025) appears relative to "today"
+  const [from, setFrom] = useState<string>(() => new Date(Date.now() - 200 * 86400000).toISOString());
   const [to, setTo] = useState<string>(() => new Date().toISOString());
   const [granularity, setGranularity] = useState<'day' | 'week' | 'month'>('day');
   const [loading, setLoading] = useState(true);
@@ -26,7 +27,7 @@ const Analytics: React.FC = () => {
     try {
       const res = await fetchAnalytics({ from, to, granularity });
       setData(res);
-    } catch (e) {
+    } catch {
       setError('Failed to load analytics');
     } finally {
       setLoading(false);
@@ -47,9 +48,15 @@ const Analytics: React.FC = () => {
 
   const onExportCsv = () => {
     if (!data) return;
-    const rows = [['ID', 'Title', 'City', 'Uses', 'Avg Cost']].concat(
-      data.topActivities.map((a) => [a.id, a.title, a.city, a.uses, a.avg_cost])
-    );
+    const header: string[] = ['ID', 'Title', 'City', 'Uses', 'Avg Cost'];
+    const body: string[][] = data.topActivities.map((a) => [
+      String(a.id),
+      a.title,
+      a.city,
+      String(a.uses),
+      String(a.avg_cost),
+    ]);
+    const rows: string[][] = [header, ...body];
     const csv = rows.map((r) => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -154,7 +161,13 @@ const Analytics: React.FC = () => {
         <div className="lg:col-span-2">
           <AnalyticsTable 
             title="Top Activities"
-            data={data?.topActivities || []} 
+            data={(data?.topActivities || []).map(a => ({
+              id: String(a.id),
+              title: a.title,
+              city: a.city,
+              uses: a.uses,
+              avg_cost: a.avg_cost,
+            }))} 
             icon={<Activity className="w-4 h-4" />}
           />
         </div>

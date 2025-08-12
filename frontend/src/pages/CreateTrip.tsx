@@ -139,7 +139,7 @@ const CreateTrip: React.FC = () => {
   const autofillFromDestination = (d: Destination) => {
     setTrip({
       title: d.name,
-      description: `${d.description} (Avg cost: $${d.avgCost ?? "—"} / day)`,
+      description: `${d.description} (Avg cost: ₹${d.avgCost ?? "—"} / day)`,
       startDate: undefined,
       endDate: undefined,
     });
@@ -173,14 +173,15 @@ const CreateTrip: React.FC = () => {
       navigate(`/build-itinerary/${data._id}`); // Redirect to the newly created trip page
       // Optionally clear the form or redirect to trip page
       setTrip({ title: "", description: "", startDate: undefined, endDate: undefined });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error creating trip:", err);
       // show a helpful message if axios gives a response
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Something went wrong while creating the trip";
-      alert(msg);
+      let msg = "Something went wrong while creating the trip";
+      if (typeof err === "object" && err !== null) {
+        const maybe = err as { response?: { data?: { message?: string } }; message?: string };
+        msg = maybe.response?.data?.message || maybe.message || msg;
+      }
+      alert(String(msg));
     } finally {
       setLoading(false);
     }
@@ -414,7 +415,7 @@ const CreateTrip: React.FC = () => {
                 <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-gray-400">
                   <div>
                     <div className="text-[11px]">Avg/day</div>
-                    <div className="text-sm text-gray-200">${place.avgCost ?? "—"}</div>
+                    <div className="text-sm text-gray-200">₹{place.avgCost ?? "—"}</div>
                   </div>
                   <div>
                     <div className="text-[11px]">Popularity</div>

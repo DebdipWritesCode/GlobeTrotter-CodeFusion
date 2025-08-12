@@ -1,12 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import Analytics from '@/pages/Admin/Analytics';
 
 vi.mock('@/services/api/analytics', async (orig) => {
   const actual = (await orig()) as object;
   return {
-    ...(actual as any),
+    ...(actual as unknown as Record<string, unknown>),
     fetchAnalytics: vi.fn().mockResolvedValue({
       kpis: [
         { key: 'dau', label: 'DAU', value: 1000, changePct: 5, sparkline: [1,2,3] },

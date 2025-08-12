@@ -26,8 +26,8 @@ const badgeTypes = [
   { key: "culture", label: "Culture", color: "bg-purple-600", icon: <MapPin className="w-4 h-4" /> },
   { key: "foodie", label: "Foodie", color: "bg-purple-400 text-gray-900", icon: <Star className="w-4 h-4" /> }
 ];
-function getDayBadge(day: any) {
-  const acts = day.activities.map((a: any) => a.type);
+function getDayBadge(day: Day) {
+  const acts = day.activities.map((a: Activity) => a.type);
   if (acts.includes("activity")) return badgeTypes[0];
   if (acts.includes("food")) return badgeTypes[2];
   return badgeTypes[1];
@@ -187,17 +187,17 @@ const SidePopup: React.FC<{
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { staggerChildren: 0.07 } },
-};
+} as const;
 
 const cardVariants = {
   hidden: { opacity: 0, y: 10, scale: 0.98 },
   show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 180, damping: 18 } },
   exit: { opacity: 0, y: -10, transition: { duration: 0.15 } },
-};
+} as const;
 
 const arrowVariants = {
   hidden: { opacity: 0, scale: 0.8 },
-  show: { opacity: 1, scale: 1, rotate: [0, 8, -6, 0], transition: { duration: 0.7, repeat: 0 } },
+  show: { opacity: 1, scale: 1, rotate: [0, 8, -6, 0] as number[], transition: { duration: 0.7, repeat: 0 } },
 };
 
 const budgetTypes = [
@@ -214,7 +214,7 @@ const ItineraryViewer: React.FC<{ data?: Itinerary }> = ({ data = sampleItinerar
   const [popups, setPopups] = useState<PopupData[]>([]);
   const autoRef = useRef<number | null>(null);
 
-  const days = data.days || [];
+  const days = useMemo(() => data.days || [], [data.days]);
 
   // Budget breakdown for current day
   const budgetBreakdown = useMemo(() => {
@@ -371,29 +371,35 @@ const ItineraryViewer: React.FC<{ data?: Itinerary }> = ({ data = sampleItinerar
 
         {/* Map */}
         <div className="mb-8 rounded-xl overflow-hidden border border-purple-900 shadow-lg">
-          <MapContainer
-            center={tripLocation}
-            zoom={12}
-            scrollWheelZoom={false}
-            style={{ height: "220px", width: "100%" }}
-            attributionControl={false}
-          >
+          {(() => {
+      const AnyMap = MapContainer as unknown as React.ComponentType<Record<string, unknown>>;
+            const AnyMarker = Marker as unknown as React.ComponentType<Record<string, unknown>>;
+            return (
+              <AnyMap
+        center={tripLocation}
+                zoom={12}
+                scrollWheelZoom={false}
+                style={{ height: "220px", width: "100%" }}
+                attributionControl={false}
+              >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={tripLocation} icon={L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [32, 32] })}>
+              <AnyMarker position={tripLocation} icon={L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", iconSize: [32, 32] })}>
               <LeafletPopup>
                 <strong>{data.location}</strong>
               </LeafletPopup>
-            </Marker>
-            {dayPins.map((pin, i) => (
-              <Marker key={i} position={pin} icon={L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/252/252025.png", iconSize: [24, 24] })}>
-                <LeafletPopup>
-                  <span>Day {i + 1}: {pin.label}</span>
-                </LeafletPopup>
-              </Marker>
-            ))}
-          </MapContainer>
+              </AnyMarker>
+              {dayPins.map((pin, i) => (
+                <AnyMarker key={i} position={pin} icon={L.icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/252/252025.png", iconSize: [24, 24] })}>
+                  <LeafletPopup>
+                    <span>Day {i + 1}: {pin.label}</span>
+                  </LeafletPopup>
+                </AnyMarker>
+              ))}
+              </AnyMap>
+            );
+          })()}
         </div>
 
         {/* Animated Day View */}
@@ -445,9 +451,9 @@ const ItineraryViewer: React.FC<{ data?: Itinerary }> = ({ data = sampleItinerar
               </div>
             </div>
 
-            <motion.div className="space-y-4" variants={containerVariants}>
+      <motion.div className="space-y-4" variants={containerVariants}>
               {days[activeDayIndex].activities.map((act, i) => (
-                <motion.div key={act.id} variants={cardVariants}>
+        <motion.div key={act.id} variants={cardVariants}>
                   <div className="flex gap-3 items-start bg-purple-950 border border-purple-900 rounded-xl p-3 shadow hover:shadow-md transition">
                     {/* left: time */}
                     <div className="w-14 flex-shrink-0 flex flex-col items-center">
@@ -504,7 +510,7 @@ const ItineraryViewer: React.FC<{ data?: Itinerary }> = ({ data = sampleItinerar
         <footer className="mt-10 bg-purple-950 border border-purple-900 rounded-xl p-4 flex items-center justify-between">
           <div>
             <div className="text-xs text-purple-200">Trip Total</div>
-            <div className="text-xl font-bold">€{grandTotal}</div>
+            <div className="text-xl font-bold">₹{grandTotal}</div>
           </div>
           <div className="flex items-center gap-2">
             <motion.button

@@ -65,7 +65,7 @@ const TripsTab: React.FC<{ trips: Trip[] }> = ({ trips }) => {
           </span>
           {trip.budget && (
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Budget: ${trip.budget}
+              Budget: ₹{trip.budget}
             </p>
           )}
         </motion.div>
@@ -85,7 +85,7 @@ const StatsTab: React.FC<{ trips: Trip[] }> = ({ trips }) => {
     { label: 'Total Trips', value: totalTrips },
     { label: 'Completed Trips', value: completedTrips },
     { label: 'Upcoming Trips', value: upcomingTrips },
-    { label: 'Total Budget', value: `$${totalBudget}` },
+    { label: 'Total Budget', value: `₹${totalBudget}` },
   ];
 
   return (
@@ -111,7 +111,8 @@ const StatsTab: React.FC<{ trips: Trip[] }> = ({ trips }) => {
 };
 
 const MyProfile: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "stats">("upcoming");
+  type TabKey = "upcoming" | "past" | "stats";
+  const [activeTab, setActiveTab] = useState<TabKey>("upcoming");
   const [user, setUser] = useState<User | null>(null);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,8 +186,12 @@ const MyProfile: React.FC = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setUser((prevUser) => (prevUser ? { ...prevUser, avatar: res.data.avatar } : res.data));
-    } catch (err: any) {
-      setAvatarError(err.response?.data?.message || "Failed to upload avatar.");
+    } catch (err: unknown) {
+      const msg =
+        (typeof err === "object" && err && (err as { response?: { data?: { message?: string } } }).response?.data?.message) ||
+        (typeof err === "object" && err && (err as { message?: string }).message) ||
+        "Failed to upload avatar.";
+      setAvatarError(msg);
     } finally {
       setUploadingAvatar(false);
       event.target.value = "";
@@ -289,10 +294,10 @@ const MyProfile: React.FC = () => {
 
       {/* Tabs */}
       <div className="w-full max-w-3xl mx-auto flex border-b border-gray-300 dark:border-gray-700 mb-8 text-lg bg-white/10 dark:bg-gray-900/40 backdrop-blur rounded-xl overflow-hidden">
-        {["upcoming", "past", "stats"].map((tab) => (
+    {(["upcoming", "past", "stats"] as TabKey[]).map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab as any)}
+      onClick={() => setActiveTab(tab)}
             className={`flex-1 px-6 py-3 font-medium capitalize transition-colors duration-300 ${
               activeTab === tab
                 ? "border-b-4 border-purple-500 text-purple-500 bg-white/20 dark:bg-gray-900/60"
