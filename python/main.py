@@ -8,6 +8,7 @@ app = FastAPI()
 # Add CORS middleware
 origins = [
     "http://localhost:5173",
+    "https://globe-trotter-code-fusion-rb2s7f4s3-nishantharkuts-projects.vercel.app",
 ]
 
 app.add_middleware(
