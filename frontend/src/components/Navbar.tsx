@@ -40,13 +40,12 @@ const Navbar = () => {
 
   return (
     <nav
-      className="sticky top-0 z-50 w-full border-b border-purple-100 dark:border-purple-800
-      bg-white/30 dark:bg-gray-900/30 backdrop-blur-lg shadow-md transition-colors"
+      className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/70 backdrop-blur-lg shadow-md transition-colors"
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Left: Logo & Links */}
         <div className="flex items-center gap-8">
-          <span className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+          <span className="text-2xl font-bold text-foreground">
             Munshiji
           </span>
           <div className="hidden md:flex items-center gap-4">
@@ -85,14 +84,12 @@ const Navbar = () => {
                   <AvatarImage src="" alt={userName} />
                   <AvatarFallback>{getInitials(userName)}</AvatarFallback>
                 </Avatar>
-                <ChevronDown className="w-4 h-4 text-purple-900 dark:text-purple-100" />
+                <ChevronDown className="w-4 h-4 text-foreground/80" />
               </button>
 
               {userMenuOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg
-                    bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-purple-100 dark:border-purple-700
-                    overflow-hidden animate-fadeIn"
+                  className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-card/90 backdrop-blur-md border border-border/60 overflow-hidden animate-fadeIn"
                 >
                   <Link
                     to="/profile"
@@ -109,7 +106,7 @@ const Navbar = () => {
                     <Settings className="w-4 h-4" /> Settings
                   </Link>
                   <button
-                    className="dropdown-item text-red-500"
+        className="dropdown-item text-destructive"
                     onClick={() => {
                       setUserMenuOpen(false);
                       handleLogout();
@@ -122,8 +119,8 @@ const Navbar = () => {
             </div>
           ) : (
             <Link
-              to="/login"
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+      to="/login"
+      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition"
             >
               Login
             </Link>
@@ -131,20 +128,18 @@ const Navbar = () => {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded bg-purple-100 dark:bg-purple-800 hover:bg-purple-200 dark:hover:bg-purple-700"
+            className="md:hidden p-2 rounded bg-muted hover:bg-muted/80"
             onClick={() => setMenuOpen((open) => !open)}
             aria-label="Open menu"
           >
-            <Menu size={28} className="text-purple-900 dark:text-purple-100" />
+            <Menu size={28} className="text-foreground" />
           </button>
         </div>
       </div>
 
       {/* Mobile dropdown menu */}
       {menuOpen && (
-        <div
-          className="md:hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-t border-purple-100 dark:border-purple-700 px-4 py-2"
-        >
+  <div className="md:hidden bg-card/90 backdrop-blur-lg border-t border-border/60 px-4 py-2">
           <Link
             to="/dashboard"
             className="block py-2 nav-link"
@@ -174,7 +169,7 @@ const Navbar = () => {
                 </div>
               </div>
               <button
-                className="mt-2 w-full text-left text-red-500 py-2 px-3 hover:bg-red-100 dark:hover:bg-red-800 rounded"
+                className="mt-2 w-full text-left text-destructive py-2 px-3 hover:bg-accent rounded"
                 onClick={handleLogout}
               >
                 <LogOut className="w-4 h-4 inline mr-2" /> Logout
