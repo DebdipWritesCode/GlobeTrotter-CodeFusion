@@ -5,7 +5,7 @@ import styles from "./SlidingAuth.module.css";
 import LoginForm from "@/components/auth/LoginForm";
 import SignupForm from "@/components/auth/SignupForm";
 import { useNavigate } from "react-router-dom";
-import { GoogleAuthButton } from '../GoogleAuthButton';
+import { FaFacebookF, FaGooglePlusG, FaLinkedinIn } from "react-icons/fa";
 
 type Props = {
   initialMode?: "signin" | "signup";
@@ -62,11 +62,12 @@ const SlidingAuth: FC<Props> = ({ initialMode = "signin" }) => {
         <div className={`${styles["sa-formContainer"]} ${styles["sa-signUpContainer"]}`}>
           <div className={styles["sa-inner"]}>
             <h1>Create Account</h1>
-            <div className={styles["sa-googleBtn"]}>
-              <GoogleAuthButton className="w-full py-3 font-medium flex items-center justify-center gap-2 bg-white border-2 hover:bg-gray-50 text-gray-700 rounded-lg transition duration-300 shadow-md" />
+            <div className={styles["sa-social"]}>
+              <a href="#" aria-label="Sign up with Facebook"><FaFacebookF /></a>
+              <a href="#" aria-label="Sign up with Google"><FaGooglePlusG /></a>
+              <a href="#" aria-label="Sign up with LinkedIn"><FaLinkedinIn /></a>
             </div>
-            <div className={styles["sa-separator"]}><span>or</span></div>
-            <span>Use your email for registration</span>
+            <span>or use your email for registration</span>
             <SignupForm />
           </div>
         </div>
@@ -74,11 +75,12 @@ const SlidingAuth: FC<Props> = ({ initialMode = "signin" }) => {
         <div className={`${styles["sa-formContainer"]} ${styles["sa-signInContainer"]}`}>
           <div className={styles["sa-inner"]}>
             <h1>Sign in</h1>
-            <div className={styles["sa-googleBtn"]}>
-              <GoogleAuthButton className="w-full py-3 font-medium flex items-center justify-center gap-2 bg-white border-2 hover:bg-gray-50 text-gray-700 rounded-lg transition duration-300 shadow-md" />
+            <div className={styles["sa-social"]}>
+              <a href="#" aria-label="Sign in with Facebook"><FaFacebookF /></a>
+              <a href="#" aria-label="Sign in with Google"><FaGooglePlusG /></a>
+              <a href="#" aria-label="Sign in with LinkedIn"><FaLinkedinIn /></a>
             </div>
-            <div className={styles["sa-separator"]}><span>or</span></div>
-            <span>Use your account</span>
+            <span>or use your account</span>
             <LoginForm />
           </div>
         </div>
@@ -103,6 +105,7 @@ const SlidingAuth: FC<Props> = ({ initialMode = "signin" }) => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };
