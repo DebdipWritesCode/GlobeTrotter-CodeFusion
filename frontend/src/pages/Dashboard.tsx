@@ -1343,7 +1343,7 @@ function Highlights({
       <Card className="border bg-gradient-to-br from-blue-50 to-transparent dark:from-blue-950/30">
         <CardContent className="py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <DollarSign className="h-4 w-4" /> Est. total budget
+            Est. total budget
           </div>
           <div className="text-2xl font-semibold">
             ₹ {totalBudget.toLocaleString()}
