@@ -373,7 +373,7 @@ const ItineraryBuild: React.FC = () => {
       if (editSection?._id) {
         res = await api.put(`/sections/${editSection._id}`, bodyData);
       } else {
-        res = await api.post(`/ sections`, bodyData);
+        res = await api.post(`/sections`, bodyData);
       }
 
       const saved = res.data as SectionApi;
