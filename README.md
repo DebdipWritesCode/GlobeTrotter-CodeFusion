@@ -99,24 +99,40 @@ The aim is to make travel planning as engaging as the journey itself, allowing u
 ## User Flow 
 
 ```mermaid
-flowchart TD
-    A["User visits GlobeTrotter"] --> B["Registers or Logs in"]
-    B -->|"Custom Login/Signup or Google Auth"| C["Dashboard"]
-    C --> D["Create New Trip"]
-    D --> E["Enter trip details: Name, Dates, Description"]
-    E --> F["Redirect to Itinerary Builder"]
-    F --> G["AI generates day-wise and time-wise itinerary based on description"]
-    G --> H{"User Action"}
-    H -->|"Modify"| I["User edits itinerary manually"]
-    H -->|"Accept"| J["Save itinerary directly"]
-    I --> J
-    J --> K["View Saved Itinerary"]
-    K --> L["Access other features: Ongoing, Upcoming, Past Trips"]
-    L --> C
-    C --> M["Admin Panel Access - Admin Users"]
-    M --> N["Manage Users, View Analytics, Add Cities and Activities"]
+flowchart LR
+    %% ===== USER FLOW =====
+    subgraph UserFlow["User Journey with AI"]
+        UA["User visits GlobeTrotter"] --> UB["Registers or Logs in"]
+        UB -->|"Custom Login/Signup or Google Auth"| UC["Dashboard"]
+        UC --> UD["Create New Trip"]
+        UD --> UE["Enter trip details: Name, Dates, Description"]
+        UE --> UF["AI generates regional & custom itinerary based on description and previous trips"]
+        UF --> UG{"User Action"}
+        UG -->|"Modify"| UH["User edits itinerary manually with AI suggestions"]
+        UG -->|"Accept"| UI["Save itinerary directly"]
+        UH --> UI
+        UI --> UJ["View Saved Itinerary with AI recommendations for nearby attractions"]
+        UJ --> UK["Access other features: Ongoing, Upcoming, Past Trips (AI highlights key experiences)"]
+        UK --> UC
+        UC --> UL["Book Now button – AI syncs best travel dates & deals with user preferences"]
+    end
 
+    %% ===== ADMIN FLOW =====
+    subgraph AdminFlow["Admin Journey with AI"]
+        AA["Admin logs into Admin Panel"]
+        AA --> AB["Manage Users with AI-driven engagement insights"]
+        AA --> AC["View Analytics: AI summarizes usage trends"]
+        AA --> AD["Add Cities and Activities"]
+        AD --> AE["AI suggests cities & activities based on recommendations, popularity & cost index"]
+        AE --> AF["Publish to user dashboards"]
+    end
 
+    %% Aligning side-by-side
+    UserFlow --- AdminFlow
+
+```
+
+---
 
 ## Installation & Setup
 
