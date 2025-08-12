@@ -1,3 +1,4 @@
+
 # GlobeTrotter – Empowering Personalized Travel Planning
 
 ## Introduction
@@ -30,6 +31,7 @@ The aim is to make travel planning as engaging as the journey itself, allowing u
 ### 1. Authentication & User Management
 
 * Secure login/signup system with email and password
+* Google OAuth integration
 * Forgot password functionality
 * User profile management and preferences
 
@@ -39,11 +41,11 @@ The aim is to make travel planning as engaging as the journey itself, allowing u
 * Add detailed descriptions and cover photos
 * Edit, view, or delete trips
 
-### 3. Itinerary Builder
+### 3. AI-Powered Itinerary Builder
 
-* Add stops, activities, and travel dates for each city
-* Assign activities with costs and durations
-* Reorder cities and activities interactively
+* AI-generated day-wise and time-wise itineraries based on trip description
+* Modify, accept, or manually add activities
+* Interactive city/activity ordering
 
 ### 4. Search & Discovery
 
@@ -62,62 +64,59 @@ The aim is to make travel planning as engaging as the journey itself, allowing u
 * Public itinerary sharing with a unique link
 * “Copy Trip” functionality for quick reuse
 
-### 7. Admin Dashboard (Optional)
+### 7. Admin Dashboard
 
-* Track user trends, trip statistics, and popular destinations
 * Manage users and platform data
+* View analytics, top cities, and most popular activities
+* Add cities and activities to assist users
 
 ---
 
 ## Tech Stack
 
-**Frontend:**
-
-* React.js / Next.js
-* Tailwind CSS / Material UI
-* Chart.js or Recharts for data visualization
-
-**Backend:**
-
-* Node.js with Express.js
-* RESTful API architecture
-
-**Database:**
-
-* PostgreSQL / MySQL (Relational database for structured trip data)
-
-**Authentication & Security:**
-
-* JWT (JSON Web Tokens)
-* Bcrypt for password hashing
-
-**Deployment:**
-
-* Vercel / Netlify for frontend
-* Render / Heroku for backend
+| Category           | Technologies Used                                          |
+| ------------------ | ---------------------------------------------------------- |
+| **Frontend**       | React.js, Vite, Tailwind CSS, Material UI, Recharts        |
+| **Backend**        | Node.js, Express.js                                        |
+| **Database**       | MongoDB (Mongoose ODM)                                     |
+| **Authentication** | JWT (JSON Web Tokens), Google OAuth 2.0                    |
+| **Security**       | Bcrypt password hashing, Environment variables with dotenv |
+| **File Storage**   | Cloudinary                                                 |
+| **Email Service**  | Gmail SMTP                                                 |
+| **Deployment**     | Vercel (Frontend), Render (Backend)                        |
+| **AI Integration** | Custom AI itinerary generation pipeline                    |
 
 ---
 
 ## System Architecture
 
-* **Client Layer:** Interactive UI for users to plan and view trips
-* **API Layer:** REST API for handling CRUD operations and data retrieval
-* **Database Layer:** Relational schema storing users, trips, cities, activities, and budgets
+* **Client Layer:** Responsive web interface for trip planning and viewing itineraries
+* **API Layer:** RESTful endpoints handling CRUD operations, AI itinerary generation, and authentication
+* **Database Layer:** MongoDB storing users, trips, cities, activities, and budget data
 
 ---
 
-## User Flow
+## User Flow 
 
-1. **Login / Signup** – Users authenticate and access their dashboard
-2. **Dashboard** – View upcoming trips and recommended destinations
-3. **Create Trip** – Add trip details, dates, and destinations
-4. **Itinerary Builder** – Add stops, activities, and arrange the plan
-5. **Budget Estimation** – View cost breakdowns and budget alerts
-6. **Visualization** – See the trip in calendar/timeline format
-7. **Sharing** – Share trips publicly or keep them private
-8. **Admin Panel** – Monitor app analytics and manage users (optional)
+```mermaid
+flowchart TD
+    A["User visits GlobeTrotter"] --> B["Registers or Logs in"]
+    B -->|"Custom Login/Signup or Google Auth"| C["Dashboard"]
+    C --> D["Create New Trip"]
+    D --> E["Enter trip details: Name, Dates, Description"]
+    E --> F["Redirect to Itinerary Builder"]
+    F --> G["AI generates day-wise and time-wise itinerary based on description"]
+    G --> H{"User Action"}
+    H -->|"Modify"| I["User edits itinerary manually"]
+    H -->|"Accept"| J["Save itinerary directly"]
+    I --> J
+    J --> K["View Saved Itinerary"]
+    K --> L["Access other features: Ongoing, Upcoming, Past Trips"]
+    L --> C
+    C --> M["Admin Panel Access - Admin Users"]
+    M --> N["Manage Users, View Analytics, Add Cities and Activities"]
 
----
+
 
 ## Installation & Setup
 
@@ -136,12 +135,13 @@ npm install
 cd ../frontend
 npm install
 
-# Setup environment variables (example .env)
-# FRONTEND: .env.local
+# Setup environment variables
+
+# FRONTEND (.env)
 VITE_BACKEND_URL=http://localhost:5000
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
 
-# BACKEND: .env
+# BACKEND (.env)
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
@@ -154,7 +154,6 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 GMAIL_USER=your_gmail_username
 GMAIL_APP_PASSWORD=your_gmail_app_password
 FRONTEND_URL=http://localhost:5173
-
 
 # Run backend
 cd backend
@@ -169,65 +168,68 @@ npm run dev
 
 ## Usage Guide
 
-* Sign up for a new account
-* Create a trip and add stops and activities
-* Review itinerary in calendar/timeline view
-* Check budget estimates and adjust plans
-* Share itinerary if desired
+1. Register or log in using email/password or Google Auth
+2. Create a trip by adding name, dates, and description
+3. AI generates an itinerary which you can accept or modify
+4. Save your itinerary and view it in timeline or calendar format
+5. Check budget breakdown and adjust activities as needed
+6. Share trip publicly or keep private
 
 ---
 
 ## Screenshots
 
-*(Add relevant screenshots here)*
+*(To be added)*
 
 1. Login Page
-2. Dashboard View
-3. Itinerary Builder
-4. Budget Breakdown
-5. Public Itinerary View
+2. Dashboard
+3. AI Itinerary Builder
+4. Budget Overview
+5. Admin Panel
 
 ---
 
 ## Demo Video
 
-*(Add link to demo video here, e.g., YouTube or Loom)*
+*(Add link here)*
 
 ---
 
 ## Database Schema
 
-**Key Tables:**
+**Collections:**
 
-* **Users** – Stores authentication and profile data
-* **Trips** – Trip metadata (name, description, dates)
-* **Stops** – Each city or location in a trip
+* **Users** – Authentication & profile data
+* **Trips** – Trip details (name, dates, description)
+* **Stops** – Cities included in the trip
 * **Activities** – Activities linked to stops
-* **Budgets** – Estimated costs per trip
+* **Budgets** – Estimated expenses
 
 ---
 
 ## Future Enhancements
 
-* AI-based itinerary suggestions based on preferences
-* Real-time currency conversion for budget
-* Integration with Google Maps & booking APIs
-* Offline access to saved trips
-* Collaborative trip editing with multiple users
+* Real-time currency conversion
+* Collaborative trip planning with multiple users
+* Integration with Google Maps & Booking APIs
+* Offline trip access
+* AI-powered recommendations for best travel seasons
 
 ---
 
 ## Contributing
 
-We welcome contributions to improve GlobeTrotter. Please follow these steps:
+We welcome contributions.
 
-1. Fork the repository
-2. Create a new branch for your feature
-3. Commit your changes and push to your fork
-4. Create a pull request with a clear description
+1. Fork this repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to your fork
+5. Create a pull request
 
 ---
 
 ## License
 
 This project is licensed under the MIT License.
+
