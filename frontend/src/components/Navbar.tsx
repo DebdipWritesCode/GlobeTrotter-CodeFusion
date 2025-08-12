@@ -17,6 +17,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const userName = useSelector((state: RootState) => state.auth.name);
   const userEmail = useSelector((state: RootState) => state.auth.email);
+  const role = useSelector((state: RootState) => state.auth.role);
 
   const getInitials = (name: string | null) => {
     if (!name) return "US";
@@ -64,6 +65,11 @@ const Navbar = () => {
             <Link to="/calendar" className="nav-link">
               Calendar
             </Link>
+            {role === "admin" && (
+              <Link to="/admin" className="nav-link">
+                Admin Panel
+              </Link>
+            )}
           </div>
         </div>
 
@@ -154,6 +160,36 @@ const Navbar = () => {
           >
             My Trips
           </Link>
+          <Link
+            to="/search"
+            className="block py-2 nav-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            Search Cities
+          </Link>
+          <Link
+            to="/community"
+            className="block py-2 nav-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            Community
+          </Link>
+          <Link
+            to="/calendar"
+            className="block py-2 nav-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            Calendar
+          </Link>
+          {role === "admin" && (
+            <Link
+              to="/admin"
+              className="block py-2 nav-link"
+              onClick={() => setMenuOpen(false)}
+            >
+              Admin Panel
+            </Link>
+          )}
           {userName && (
             <>
               <div className="flex items-center gap-3 mt-2">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { io, Socket } from "socket.io-client";
+import { getBackendUrl } from "@/utils/getBackendUrl";
 import {
   MessageSquare,
   X,
@@ -35,7 +36,10 @@ const Chat: React.FC<ChatProps> = ({ onClose }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const backend = getBackendUrl();
+    const base = backend?.replace(/\/$/, "");
+    const origin = base?.replace(/\/api$/, "");
+    const socket = io(origin || backend || "");
     socketRef.current = socket;
 
     socket.on("connect", () => {
@@ -55,7 +59,7 @@ const Chat: React.FC<ChatProps> = ({ onClose }) => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [currentUser?.name]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -65,7 +69,7 @@ const Chat: React.FC<ChatProps> = ({ onClose }) => {
     if (!input.trim() || !socketRef.current) return;
 
     const msg: Message = {
-      socketId: socketRef.current.id,
+      socketId: socketRef.current.id || "",
       username: currentUser?.name || "Guest",
       text: input.trim(),
       time: new Date().toISOString(),

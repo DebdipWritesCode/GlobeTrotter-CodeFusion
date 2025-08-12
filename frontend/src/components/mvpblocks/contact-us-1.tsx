@@ -20,7 +20,7 @@ export default function ContactUs1() {
   const formRef = useRef(null);
   const isInView = useInView(formRef, { once: true, amount: 0.3 });
 
-  const handleSubmit = async (e: React.FormEvent) => {};
+  const handleSubmit = async () => {};
 
   return (
     <section className="relative w-full overflow-hidden py-16 md:py-24">

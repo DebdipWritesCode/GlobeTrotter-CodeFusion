@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
 import LogoutDialog from '@/components/auth/LogoutMenuItem';
 import ChatBubble from '@/components/ChatBubble';
 import Header1 from '@/components/mvpblocks/header-1';
