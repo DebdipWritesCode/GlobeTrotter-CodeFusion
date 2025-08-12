@@ -4,7 +4,7 @@ import {
   Settings,
   Users,
   UserCheck,
-  Building,
+  BarChart3,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -14,24 +14,25 @@ const Dashboard = () => {
     { label: "Manage Cities", path: "/admin/cities", icon: Settings },
     { label: "Manage Users", path: "/admin/users", icon: UserCheck },
     { label: "Manage Activities", path: "/admin/activities", icon: Users },
-    { label: "See Analytics", path: "/admin/analytics", icon: Building },
+    { label: "See Analytics", path: "/admin/analytics", icon: BarChart3 },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-2xl">
-        <div className="absolute -top-4 -left-4 w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-8 -right-4 w-72 h-72 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background gradients */}
+      <div className="absolute -top-4 -left-4 w-72 h-72 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+      <div className="absolute -bottom-8 -right-4 w-72 h-72 bg-gradient-to-r from-primary/10 to-primary/20 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
 
-        <div className="relative bg-white/80 backdrop-blur-lg border border-white/20 rounded-3xl shadow-2xl p-8">
+      <div className="relative w-full max-w-2xl">
+        <div className="relative bg-card/80 backdrop-blur-lg border border-border/50 rounded-3xl shadow-2xl p-8">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
-              <Settings className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary to-primary/80 rounded-2xl mb-4 shadow-lg">
+              <Settings className="w-8 h-8 text-primary-foreground" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               Admin Dashboard
             </h1>
-            <p className="text-gray-600 text-sm">
+            <p className="text-muted-foreground text-sm">
               Manage your platform with ease
             </p>
           </div>
@@ -43,15 +44,15 @@ const Dashboard = () => {
                 <Button
                   key={route.path}
                   onClick={() => navigate(route.path)}
-                  className="group relative h-16 bg-white/60 hover:bg-white/80 border border-gray-200/50 hover:border-gray-300/50 text-gray-700 hover:text-gray-900 shadow-md hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden"
+                  className="group relative h-16 bg-card/60 hover:bg-card/80 border border-border/50 hover:border-border text-foreground hover:text-foreground shadow-md hover:shadow-lg transition-all duration-300 rounded-xl overflow-hidden"
                   style={{
                     animationDelay: `${index * 100}ms`,
                     animation: "fadeInUp 0.6s ease-out forwards",
                   }}>
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <div className="relative flex items-center justify-center gap-3 w-full">
-                    <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
-                      <Icon className="w-4 h-4 text-white" />
+                    <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg shadow-sm group-hover:scale-110 transition-transform duration-300">
+                      <Icon className="w-4 h-4 text-primary-foreground" />
                     </div>
                     <span className="font-medium text-sm group-hover:translate-x-1 transition-transform duration-300">
                       {route.label}
@@ -63,6 +64,19 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };

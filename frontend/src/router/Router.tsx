@@ -21,6 +21,9 @@ import Analytics from "@/pages/Admin/Analytics";
 import AdminRoute from "./AdminRoute";
 import AdminLayout from "@/layouts/AdminLayout";
 import Community from "@/pages/Community";
+import Calendar from "@/pages/Calendar";
+import MyTripsCalendar from "@/pages/Calendar";
+import SearchActivity from "../pages/SearchActivity";
 
 const Router = () => {
   return (
@@ -43,8 +46,10 @@ const Router = () => {
         <Route path="/profile" element={<MyProfile />} />
         <Route path="/trips" element={<MyTrips />} />
         <Route path="/create-trip" element={<CreateTrip/>} />
-        <Route path="/build-itinerary" element={<ItineraryBuild/>} />
+        <Route path="/build-itinerary/:tripId" element={<ItineraryBuild/>} />
         <Route path="/community" element={<Community/>}/>
+        <Route path="/calendar" element={<MyTripsCalendar/>} />
+        <Route path="/search" element={<SearchActivity />} />
       </Route>
 
       <Route
