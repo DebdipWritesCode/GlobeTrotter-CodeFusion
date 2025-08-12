@@ -96,6 +96,8 @@ const ManageActivities = () => {
     }
   };
 
+
+  
   const handleEdit = (activity: Activity) => {
     setEditingActivity(activity);
     setFormData({

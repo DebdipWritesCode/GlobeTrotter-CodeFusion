@@ -8,6 +8,8 @@ import { Plus, MapPin, Building2 } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/api/axios";
 
+const DEFAULT_CITY_IMAGE = 'https://drprem.com/travel/wp-content/uploads/sites/53/2020/06/Guide-to-cultural-tourism.jpg';
+
 interface City {
   _id: string;
   name: string;
@@ -239,6 +241,12 @@ const ManageCities = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {cities.map((city) => (
               <Card key={city._id} className="bg-card/50 dark:bg-card/30 border-border/50 hover:shadow-md transition-all duration-200">
+                <img
+                  src={DEFAULT_CITY_IMAGE}
+                  alt={city.name}
+                  className="w-full h-40 object-cover"
+                  loading="lazy"
+                />
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-foreground">
                     <MapPin className="w-5 h-5 text-primary" />
