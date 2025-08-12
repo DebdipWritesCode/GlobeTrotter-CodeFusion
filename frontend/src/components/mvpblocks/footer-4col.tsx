@@ -1,71 +1,72 @@
 import {
-  Dribbble,
   Facebook,
-  Github,
   Instagram,
+  Twitter,
   Mail,
   MapPin,
   Phone,
-  Twitter,
+  Globe,
+  Users,
+  Calendar,
+  Map,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { footerData as data } from '@/constants/landing';
 
 const socialLinks = [
-  { icon: Facebook, label: 'Facebook', href: data.facebookLink },
-  { icon: Instagram, label: 'Instagram', href: data.instaLink },
-  { icon: Twitter, label: 'Twitter', href: data.twitterLink },
-  { icon: Github, label: 'GitHub', href: data.githubLink },
-  { icon: Dribbble, label: 'Dribbble', href: data.dribbbleLink },
+  { icon: Facebook, label: 'Facebook', href: 'https://facebook.com/globetrotter' },
+  { icon: Instagram, label: 'Instagram', href: 'https://instagram.com/globetrotter_travels' },
+  { icon: Twitter, label: 'Twitter', href: 'https://twitter.com/globetrotter' },
 ];
 
-const aboutLinks = [
-  { text: 'Our Story', href: data.about.history },
-  { text: 'Meet the Team', href: data.about.team },
-  { text: 'Our Mission', href: data.about.mission },
-  { text: 'Careers', href: data.about.careers },
+const exploreLinks = [
+  { text: 'Destinations', href: '/search' },
+  { text: 'Community', href: '/community' },
+  { text: 'Travel Guides', href: '/guides' },
+  { text: 'Travel Stories', href: '/stories' },
 ];
 
-const serviceLinks = [
-  { text: 'Trip Planning', href: data.services.tripPlanning },
-  { text: 'Itinerary', href: data.services.itinerary },
-  { text: 'Community', href: data.services.community },
-  { text: 'Calendar', href: data.services.calendar },
+const planningLinks = [
+  { text: 'Create Trip', href: '/create-trip' },
+  { text: 'My Itineraries', href: '/dashboard' },
+  { text: 'Calendar', href: '/calendar' },
+  { text: 'Travel Budget', href: '/budget' },
 ];
 
-const helpfulLinks = [
-  { text: 'FAQs', href: data.help.faqs },
-  { text: 'Support', href: data.help.support },
-  { text: 'Live Chat', href: data.help.livechat, hasIndicator: true },
+const supportLinks = [
+  { text: 'Help Center', href: '/help' },
+  { text: 'FAQs', href: '/faqs' },
+  { text: 'Contact Support', href: '/support' },
+  { text: 'Live Chat', href: '/chat', hasIndicator: true },
 ];
 
 const contactInfo = [
-  { icon: Mail, text: data.contact.email },
-  { icon: Phone, text: data.contact.phone },
-  { icon: MapPin, text: data.contact.address, isAddress: true },
+  { icon: Mail, text: 'hello@globetrotter.com' },
+  { icon: Phone, text: '+1 (888) 456-7890' },
+  { icon: MapPin, text: 'San Francisco, CA', isAddress: true },
 ];
 
 export default function Footer4Col() {
   return (
-    <footer className="bg-secondary dark:bg-secondary/20 mt-16 w-full place-self-end rounded-t-xl">
+    <footer className="bg-gradient-to-br from-emerald-900/90 to-green-800/90 dark:from-emerald-950 dark:to-green-950 mt-16 w-full place-self-end rounded-t-xl backdrop-blur-sm">
       <div className="mx-auto max-w-screen-xl px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-24">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div>
-            <div className="text-primary flex justify-center gap-2 sm:justify-start">
+            <div className="text-white flex justify-center gap-2 sm:justify-start">
               <img
-                src={ '/logo.svg'}
-                alt="logo"
-                className="h-8 w-8 rounded-full"
+                src={'/logo.svg'}
+                alt="GlobeTrotter logo"
+                className="h-8 w-8 rounded-full bg-white/10 p-1"
                 width={32}
                 height={32}
               />
               <span className="text-2xl font-semibold">
-                {data.company.name}
+                GlobeTrotter
               </span>
             </div>
 
-            <p className="text-foreground/50 mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left">
-              {data.company.description}
+            <p className="text-emerald-100/80 mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left">
+              Your personalized travel companion. Discover, plan, and share your adventures with fellow travelers around the world.
             </p>
 
             <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
@@ -73,7 +74,9 @@ export default function Footer4Col() {
                 <li key={label}>
                   <Link
                     to={href}
-                    className="text-primary hover:text-primary/80 transition"
+                    className="text-emerald-200 hover:text-white transition-colors"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     <span className="sr-only">{label}</span>
                     <Icon className="size-6" />
@@ -83,87 +86,68 @@ export default function Footer4Col() {
             </ul>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:col-span-2">
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">About Us</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {aboutLinks.map(({ text, href }) => (
+              <p className="text-lg font-medium text-white flex items-center gap-2">
+                <Globe className="size-5" /> Explore
+              </p>
+              <ul className="mt-6 space-y-4 text-sm">
+                {exploreLinks.map(({ text, href }) => (
                   <li key={text}>
-                    <a
-                      className="text-secondary-foreground/70 transition"
-                      href={href}
+                    <Link
+                      className="text-emerald-100/80 hover:text-white transition-colors"
+                      to={href}
                     >
                       {text}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Our Services</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {serviceLinks.map(({ text, href }) => (
+              <p className="text-lg font-medium text-white flex items-center gap-2">
+                <Map className="size-5" /> Trip Planning
+              </p>
+              <ul className="mt-6 space-y-4 text-sm">
+                {planningLinks.map(({ text, href }) => (
                   <li key={text}>
-                    <a
-                      className="text-secondary-foreground/70 transition"
-                      href={href}
+                    <Link
+                      className="text-emerald-100/80 hover:text-white transition-colors"
+                      to={href}
                     >
                       {text}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Helpful Links</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {helpfulLinks.map(({ text, href, hasIndicator }) => (
+              <p className="text-lg font-medium text-white flex items-center gap-2">
+                <Users className="size-5" /> Support
+              </p>
+              <ul className="mt-6 space-y-4 text-sm">
+                {supportLinks.map(({ text, href, hasIndicator }) => (
                   <li key={text}>
-                    <a
-                      href={href}
+                    <Link
+                      to={href}
                       className={`${
                         hasIndicator
                           ? 'group flex justify-center gap-1.5 sm:justify-start'
-                          : 'text-secondary-foreground/70 transition'
+                          : 'text-emerald-100/80 hover:text-white transition-colors'
                       }`}
                     >
-                      <span className="text-secondary-foreground/70 transition">
+                      <span className="text-emerald-100/80 hover:text-white transition-colors">
                         {text}
                       </span>
                       {hasIndicator && (
                         <span className="relative flex size-2">
-                          <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-                          <span className="bg-primary relative inline-flex size-2 rounded-full" />
+                          <span className="bg-emerald-300 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+                          <span className="bg-emerald-400 relative inline-flex size-2 rounded-full" />
                         </span>
                       )}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Contact Us</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {contactInfo.map(({ icon: Icon, text, isAddress }) => (
-                  <li key={text}>
-                    <a
-                      className="flex items-center justify-center gap-1.5 sm:justify-start"
-                      href="#"
-                    >
-                      <Icon className="text-primary size-5 shrink-0 shadow-sm" />
-                      {isAddress ? (
-                        <address className="text-secondary-foreground/70 -mt-0.5 flex-1 not-italic transition">
-                          {text}
-                        </address>
-                      ) : (
-                        <span className="text-secondary-foreground/70 flex-1 transition">
-                          {text}
-                        </span>
-                      )}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -171,14 +155,16 @@ export default function Footer4Col() {
           </div>
         </div>
 
-        <div className="mt-12 border-t pt-6">
+        <div className="mt-12 border-t border-emerald-700/30 pt-6">
           <div className="text-center sm:flex sm:justify-between sm:text-left">
-            <p className="text-sm">
-              <span className="block sm:inline">All rights reserved.</span>
+            <p className="text-sm text-emerald-100/80">
+              <Link to="/privacy" className="hover:text-white">Privacy Policy</Link>
+              <span className="mx-2">•</span>
+              <Link to="/terms" className="hover:text-white">Terms of Service</Link>
             </p>
 
-            <p className="text-secondary-foreground/70 mt-4 text-sm transition sm:order-first sm:mt-0">
-              &copy; 2025 {data.company.name}
+            <p className="text-emerald-200/70 mt-4 text-sm transition sm:order-first sm:mt-0">
+              &copy; {new Date().getFullYear()} GlobeTrotter. All rights reserved.
             </p>
           </div>
         </div>

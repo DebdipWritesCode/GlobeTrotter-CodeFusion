@@ -1,308 +1,330 @@
-import React, { useEffect, useRef, useState, type JSX } from "react";
-import { motion, AnimatePresence, useTransform, useScroll } from "framer-motion";
-import { Menu, X, ChevronDown, ArrowRight, Globe, Map, Compass } from "lucide-react";
-import { Link } from "react-router-dom";
-import ThemeToggle from "../ThemeToggle";
-import { useTheme } from "../../hooks/useTheme";
+// NavbarCombined.tsx
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useScroll, motion, AnimatePresence } from "framer-motion";
+import { clearAccessToken } from "@/slices/authSlice";
+import type { RootState } from "@/redux/store";
+import api from "@/api/axios";
+import { toast } from "react-toastify";
 
-// Navigation items (travel platform)
-const navItems = [
-  {
-    name: "Destinations",
-    hasDropdown: true,
-    icon: <Globe className="h-4 w-4" />,
-    dropdownItems: [
-      { name: "Popular Cities", to: "/destinations/popular", description: "Explore trending travel destinations" },
-      { name: "Hidden Gems", to: "/destinations/hidden-gems", description: "Discover less-traveled but amazing places" },
-      { name: "Seasonal Picks", to: "/destinations/seasonal", description: "Best places to visit this season" }
-    ]
-  },
-  {
-    name: "Plan Trip",
-    hasDropdown: true,
-    icon: <Map className="h-4 w-4" />,
-    dropdownItems: [
-      { name: "Create Itinerary", to: "/plan/create", description: "Build your custom travel plan" },
-      { name: "My Trips", to: "/plan/my-trips", description: "View and manage your trips" },
-      { name: "Travel Calendar", to: "/plan/calendar", description: "Visualize your journey timeline" }
-    ]
-  },
-  {
-    name: "Explore",
-    hasDropdown: true,
-    icon: <Compass className="h-4 w-4" />,
-    dropdownItems: [
-      { name: "Activities", to: "/explore/activities", description: "Find things to do at your destination" },
-      { name: "Travel Guides", to: "/explore/guides", description: "Expert advice and local insights" },
-      { name: "Budget Tools", to: "/explore/budget", description: "Plan and track your travel expenses" }
-    ]
-  },
-  { name: "Community", to: "/community", hasDropdown: false }
+// UI Components
+import { Button } from "../ui/button";
+import ThemeToggle from "../ThemeToggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+// Icons
+import { 
+  Menu, X, ChevronDown, Globe, 
+  Settings, User as UserIcon, LogOut
+} from "lucide-react";
+
+// Navigation items
+const NAV_ITEMS = [
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "My Trips", path: "/trips" },
+  { name: "Community", path: "/community" },
+  { name: "Search Cities", path: "/search" },
+  { name: "Calendar", path: "/calendar" },
 ];
 
-export default function Header1(): JSX.Element {
-  const { theme } = useTheme();
-  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
-  const headerRef = useRef<HTMLElement | null>(null);
+import "./header-styles.css";
 
+export default function Navbar() {
+  // State management
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  
+  // Router and Redux
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const { name: userName, email: userEmail } = useSelector((state: RootState) => state.auth);
+  
+  // Detect if we're on the landing page for special styling
+  const isLandingPage = location.pathname === "/";
+  
+  // Monitor scroll position
   const { scrollY } = useScroll();
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    const unsubscribe = scrollY.onChange(y => setScrolled(y > 20));
+    return unsubscribe;
+  }, [scrollY]);
 
-  // lock background scroll when mobile menu open
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isMobileMenuOpen]);
-
-  const logoY = useTransform(scrollY, [0, 100], [0, -5]);
-  const navItemsY = useTransform(scrollY, [0, 100], [0, 5]);
-  const headerOpacity = useTransform(scrollY, [0, 100], [1, 0.97]);
-
-  const getMirrorEffect = () => {
-    if (isScrolled) {
-      return {
-        backdropFilter: "blur(20px)",
-        backgroundColor: isDark ? "rgba(15, 23, 42, 0.9)" : "rgba(255, 255, 255, 0.95)",
-        boxShadow: isDark ? "0 8px 32px rgba(0, 0, 0, 0.3)" : "0 8px 32px rgba(0, 0, 0, 0.1)",
-        borderBottom: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(0, 0, 0, 0.1)"
-      } as React.CSSProperties;
+  // Handle logout functionality
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+      dispatch(clearAccessToken());
+      toast.success("Logged out successfully");
+      setUserMenuOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to logout");
     }
-    return {
-      backdropFilter: "none",
-      backgroundColor: "transparent",
-      boxShadow: "none",
-      borderBottom: "none"
-    } as React.CSSProperties;
   };
 
+  // Get avatar initials from name
+  const getInitials = (name: string | null) => {
+    if (!name) return "GT";
+    return name.split(" ")
+      .map(part => part[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileMenuOpen]);
+
+  // Add this to set data-scroll attribute for parallax opacity
+  useEffect(() => {
+    const updateScrollAttribute = () => {
+      const scrollValue = Math.min(80, Math.floor(window.scrollY / 10) * 10);
+      document.documentElement.setAttribute('data-scroll', scrollValue.toString());
+    };
+    
+    window.addEventListener('scroll', updateScrollAttribute);
+    updateScrollAttribute(); // Initialize on mount
+    
+    return () => window.removeEventListener('scroll', updateScrollAttribute);
+  }, []);
+
+  // Replace your className strings with the new CSS classes
   return (
-    <motion.header
-      ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      style={{ ...(getMirrorEffect() as React.CSSProperties), opacity: headerOpacity as unknown as number }}
-      transition={{ duration: 0.35, ease: "easeInOut" }}
-      role="banner"
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between lg:h-20">
-          {/* Brand */}
-          <motion.div
-            className="flex items-center space-x-3"
-            style={{ y: logoY }}
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 400, damping: 14 }}>
-            <Link to="/" className="flex items-center space-x-3" aria-label="Go to homepage">
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg"
-              >
-                <Globe className="h-6 w-6 text-white" />
-              </div>
+    <>
+      <header className={`fixed top-0 left-0 right-0 z-50 w-full header-container ${
+        scrolled
+          ? "header-scrolled"
+          : isLandingPage
+            ? "header-transparent parallax-aware"
+            : "header-default"
+      }`}>
+        <div className="container mx-auto px-4 flex items-center justify-between h-14">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2 shrink-0">
+            <div className={`logo-container ${
+              isLandingPage && !scrolled ? "logo-transparent" : "logo-default"
+            }`}>
+              <Globe className="h-5 w-5" />
+            </div>
+            <span className={
+              isLandingPage && !scrolled ? "logo-text-transparent" : "logo-text-default"
+            }>GlobeTrotter</span>
+          </Link>
 
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                GlobeTrotter
-              </span>
-            </Link>
-          </motion.div>
-
-          {/* Desktop nav */}
-          <motion.nav
-            className="hidden lg:flex lg:items-center lg:space-x-8"
-            style={{ y: navItemsY }}
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            {navItems.map((item) => (
-              <div
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
+            {NAV_ITEMS.map(item => (
+              <Link
                 key={item.name}
-                className="relative"
-                onMouseEnter={() => item.hasDropdown && setActiveDropdown(item.name)}
-                onMouseLeave={() => setActiveDropdown(null)}>
-                <Link
-                  to={item.to ?? "/"}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 rounded-lg transition-all duration-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                to={item.path}
+                className={`nav-item ${
+                  location.pathname === item.path ? "nav-item-active" : ""
+                } ${
+                  isLandingPage && !scrolled ? "nav-item-transparent" : ""
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Link 
+              to="/book-a-call"
+              className={`btn-outline ${
+                isLandingPage && !scrolled ? "btn-outline-transparent" : "btn-outline-light"
+              }`}
+            >
+              Book a Call
+            </Link>
+
+            <ThemeToggle />
+            
+            {/* Auth Section */}
+            {userName ? (
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 py-1.5"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
-                  {item.icon}
-                  <span className="select-none">{item.name}</span>
-
-                  {item.hasDropdown && (
-                    <ChevronDown
-                      className="h-4 w-4 transition-transform duration-200"
-                      style={{ transform: activeDropdown === item.name ? "rotate(180deg)" : "rotate(0)" }}
-                    />
-                  )}
-                </Link>
-
-                {/* Desktop dropdown */}
-                {item.hasDropdown && (
-                  <AnimatePresence>
-                    {activeDropdown === item.name && (
-                      <motion.div
-                        className="absolute top-full left-0 mt-2 w-72 overflow-hidden rounded-xl border bg-white dark:bg-gray-900 shadow-xl"
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {item.dropdownItems?.map((dropdownItem) => (
-                          <Link
-                            key={dropdownItem.name}
-                            to={dropdownItem.to ?? "/"}
-                            className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-200 transition-all duration-200 hover:bg-blue-50 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
-                          >
-                            <div className="font-medium">{dropdownItem.name}</div>
-                            {dropdownItem.description && (
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{dropdownItem.description}</div>
-                            )}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <Avatar className="h-7 w-7 border-2 border-muted">
+                    <AvatarImage src="" alt={userName} />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {getInitials(userName)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </Button>
+                
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-1 w-56 rounded-md bg-background border shadow-lg py-1">
+                    <div className="px-4 py-2 border-b">
+                      <p className="font-medium">{userName}</p>
+                      <p className="text-xs text-muted-foreground">{userEmail}</p>
+                    </div>
+                    <Link to="/profile" className="flex items-center px-4 py-2 text-sm hover:bg-muted"
+                      onClick={() => setUserMenuOpen(false)}>
+                      <UserIcon className="h-4 w-4 mr-2" /> Profile
+                    </Link>
+                    <Link to="/settings" className="flex items-center px-4 py-2 text-sm hover:bg-muted"
+                      onClick={() => setUserMenuOpen(false)}>
+                      <Settings className="h-4 w-4 mr-2" /> Settings
+                    </Link>
+                    <button 
+                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="h-4 w-4 mr-2" /> Logout
+                    </button>
+                  </div>
                 )}
               </div>
-            ))}
-          </motion.nav>
-
-          {/* Desktop actions */}
-          <div className="hidden items-center space-x-4 lg:flex">
-            <ThemeToggle />
-            <Link
-              to="/login"
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-            >
-              Sign In
-            </Link>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                to="/signup"
-                className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:from-blue-700 hover:to-purple-700"
-              >
-                <span className="whitespace-nowrap">Plan Your Trip</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </motion.div>
+            ) : (
+              <>
+                <Link to="/login" className={`text-sm font-medium px-3 py-1.5 rounded-md ${
+                  isLandingPage && !scrolled 
+                    ? "text-white hover:bg-white/10" 
+                    : "hover:bg-muted"
+                }`}>
+                  Sign In
+                </Link>
+                <Link to="/signup" className="btn-primary">
+                  Plan Your Trip
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* Mobile actions */}
-          <div className="flex items-center gap-3 lg:hidden">
+          {/* Mobile menu button */}
+          <div className="flex md:hidden items-center space-x-2">
             <ThemeToggle />
-            <motion.button
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMobileMenuOpen}
-              className="rounded-lg p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
-              onClick={() => setIsMobileMenuOpen((s) => !s)}
-              whileTap={{ scale: 0.95 }}>
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </motion.button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1.5"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+              <span className="sr-only">Toggle menu</span>
+            </Button>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile dropdown menu */}
         <AnimatePresence>
-          {isMobileMenuOpen && (
+          {mobileMenuOpen && (
             <motion.div
-              key="mobile-menu"
-              className="lg:hidden"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}>
-
-              <div className="mt-4 rounded-xl border bg-white dark:bg-gray-900 py-4 shadow-xl">
-
-                <div className="max-h-[calc(100vh-6.25rem)] overflow-y-auto px-4">
-                  {navItems.map((item) => (
-                    <div key={item.name} className="relative">
-                      <div className="flex items-center justify-between py-3">
-                        {item.hasDropdown ? (
-                          <button
-                            className="flex items-center gap-3 font-medium text-gray-700 dark:text-gray-200 flex-1 text-left"
-                            aria-expanded={openMobileDropdown === item.name}
-                            onClick={() => setOpenMobileDropdown(openMobileDropdown === item.name ? null : item.name)}>
-                            {item.icon}
-                            <span>{item.name}</span>
-                            <ChevronDown
-                              className="h-4 w-4 transition-transform duration-200"
-                              style={{ transform: openMobileDropdown === item.name ? "rotate(180deg)" : "rotate(0)" }}
-                            />
-                          </button>
-                        ) : (
-                          <Link
-                            to={item.to ?? "/"}
-                            className="flex items-center gap-3 font-medium text-gray-700 dark:text-gray-200"
-                            onClick={() => setIsMobileMenuOpen(false)}>
-                            {item.icon}
-                            <span>{item.name}</span>
-                          </Link>
-                        )}
-                      </div>
-
-                      {/* Mobile dropdown */}
-                      {item.hasDropdown && (
-                        <AnimatePresence>
-                          {openMobileDropdown === item.name && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="overflow-hidden">
-                              {item.dropdownItems?.map((dropdownItem) => (
-                                <Link
-                                  key={dropdownItem.name}
-                                  to={dropdownItem.to ?? "/"}
-                                  className="block px-6 py-2 text-sm text-gray-600 dark:text-gray-300"
-                                  onClick={() => setIsMobileMenuOpen(false)}>
-                                  <div className="font-medium">{dropdownItem.name}</div>
-                                  {dropdownItem.description && (
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{dropdownItem.description}</div>
-                                  )}
-                                </Link>
-                              ))}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      )}
-                    </div>
+              className="mobile-menu md:hidden container mx-auto px-4 py-3"
+            >
+              <div className="py-3">
+                <nav className="space-y-1">
+                  {NAV_ITEMS.map(item => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`block px-3 py-2 rounded-md text-sm font-medium ${
+                        location.pathname === item.path 
+                          ? "bg-primary/10 text-primary" 
+                          : "hover:bg-muted"
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
                   ))}
-
-                  {/* Mobile actions */}
-                  <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
-                    <div className="flex flex-col space-y-3">
-                      <Link
-                        to="/login"
-                        className="flex items-center justify-center px-4 py-2 font-medium text-gray-700 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
-                        onClick={() => setIsMobileMenuOpen(false)}>
+                </nav>
+                
+                <div className="py-3">
+                  <Link to="/book-a-call" 
+                    className="block px-3 py-2 rounded-md text-sm font-medium text-primary hover:bg-primary/10"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Book a Call
+                  </Link>
+                </div>
+                
+                <div className="py-3">
+                  {userName ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 px-3 py-1.5">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src="" alt={userName} />
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            {getInitials(userName)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{userName}</p>
+                          <p className="text-xs text-muted-foreground">{userEmail}</p>
+                        </div>
+                      </div>
+                      
+                      <Link to="/profile" 
+                        className="flex items-center px-3 py-2 rounded-md text-sm hover:bg-muted"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <UserIcon className="h-4 w-4 mr-2" /> Profile
+                      </Link>
+                      <Link to="/settings" 
+                        className="flex items-center px-3 py-2 rounded-md text-sm hover:bg-muted"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Settings className="h-4 w-4 mr-2" /> Settings
+                      </Link>
+                      <button 
+                        className="w-full flex items-center px-3 py-2 rounded-md text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" /> Logout
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2 px-3">
+                      <Link to="/login"
+                        className="text-center py-2 border rounded-md hover:bg-muted"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                         Sign In
                       </Link>
-                      <Link
-                        to="/signup"
-                        className="flex items-center justify-center space-x-2 px-4 py-2 font-medium text-white rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg"
-                        onClick={() => setIsMobileMenuOpen(false)}>
-                        <span>Plan Your Trip</span>
-                        <ArrowRight className="h-4 w-4" />
+                      <Link to="/signup"
+                        className="text-center py-2 bg-primary text-primary-foreground rounded-md"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Plan Your Trip
                       </Link>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </motion.header>
+      </header>
+      
+      {/* Add spacer to prevent content from being hidden under navbar */}
+      <div className="header-spacer"></div>
+    </>
   );
 }
