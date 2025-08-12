@@ -4,20 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+// Drag & drop imports removed (not used currently)
 
 import {
   Plus,
@@ -25,8 +12,6 @@ import {
   DollarSign,
   X,
   Sparkles,
-  ChevronDown,
-  ChevronUp,
   Edit,
   Trash2,
 } from "lucide-react";
@@ -61,6 +46,10 @@ import ToastComponent from "@/components/ToastComponent";
 type ActivityOption = {
   _id: string;
   name: string;
+  category?: string;
+  description?: string;
+  cost?: number;
+  duration?: number;
 };
 
 type ActivityRef = {
@@ -95,13 +84,7 @@ type ActivityUI = {
   name: string;
 };
 
-const TimelineDot = ({ number }: { number: number }) => {
-  return (
-    <div className="absolute -left-8 top-6 w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-[0_0_14px_rgba(99,102,241,0.65)] flex items-center justify-center text-white font-bold text-base select-none hover:scale-105 transition-transform duration-300">
-      {number}
-    </div>
-  );
-};
+// TimelineDot removed (unused)
 
 const CardIcon = ({ index }: { index: number }) => {
   const icons = [
@@ -235,7 +218,7 @@ const ItineraryBuild: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [sections, setSections] = useState<Section[]>([]);
   const [allActivities, setAllActivities] = useState<ActivityOption[]>([]);
-  const [mode, setMode] = useState<"ai" | "manual">("manual");
+  const [mode] = useState<"ai" | "manual">("manual");
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editSection, setEditSection] = useState<Section | null>(null);
@@ -261,15 +244,17 @@ const ItineraryBuild: React.FC = () => {
     let mounted = true;
     const load = async () => {
       try {
-        const requests: Promise<any>[] = [api.get("/activities")];
-        if (tripId) {
-          requests.push(api.get(`/sections/trip/${tripId}`));
-          console.log(`request is sent to: /sections/trip/${tripId}`);
-        }
-        const [actsRes, sectionsRes] = await Promise.all(requests);
+        const sectionsPromise: Promise<{ data: SectionApi[] }> = tripId
+          ? api.get<SectionApi[]>(`/sections/trip/${tripId}`)
+          : Promise.resolve({ data: [] as SectionApi[] });
+
+        const [actsRes, sectionsRes] = await Promise.all([
+          api.get<ActivityOption[]>("/activities"),
+          sectionsPromise,
+        ]);
         if (!mounted) return;
         console.log("Fetched activities:", actsRes.data.length);
-        console.log("Fetched sections:", sectionsRes);
+        console.log("Fetched sections:", sectionsRes.data.length);
 
         setAllActivities(actsRes.data || []);
         if (sectionsRes) {
@@ -644,7 +629,7 @@ const ItineraryBuild: React.FC = () => {
 
                       {section.activities && section.activities.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {section.activities.map((activityRef, actIndex) => {
+                          {section.activities.map((activityRef) => {
                             // Find full activity details from allActivities
                             const activity = allActivities.find(
                               (a) => a._id === activityRef.activityId
