@@ -618,7 +618,7 @@ const ItineraryBuild: React.FC = () => {
                           <DollarSign className="w-4 h-4 text-indigo-500" />
                           <span className="text-muted-foreground">Budget:</span>
                           <span className="font-medium text-indigo-500">
-                            ${section.budget || "0"}
+                            ₹{section.budget || "0"}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
