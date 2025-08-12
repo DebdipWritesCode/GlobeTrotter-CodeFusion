@@ -196,48 +196,34 @@ npm run dev
 
 ## Screenshots
 
-<div className="grid grid-cols-3 gap-4">
-  <div>
-    <h3 className="font-semibold mb-2">1. Login Page</h3>
-    <img
-      src="https://github.com/user-attachments/assets/cb530455-af75-4489-9274-5cf14dc703ca"
-      alt="Login Page"
-      className="w-full h-auto rounded"
-    />
-  </div>
-  <div>
-    <h3 className="font-semibold mb-2">2. Dashboard</h3>
-    <img
-      src="https://github.com/user-attachments/assets/358457c8-4764-479b-9104-1366f1989f67"
-      alt="Dashboard"
-      className="w-full h-auto rounded"
-    />
-  </div>
-  <div>
-    <h3 className="font-semibold mb-2">3. AI Itinerary Builder</h3>
-    <img
-      src="https://github.com/user-attachments/assets/a09c8922-b7a8-463c-9a7b-c66ed67a613b"
-      alt="AI Itinerary Builder"
-      className="w-full h-auto rounded"
-    />
-  </div>
-  <div>
-    <h3 className="font-semibold mb-2">4. Budget Overview</h3>
-    <img
-      src="https://github.com/user-attachments/assets/eca8d0b3-fcb1-42a9-ba26-63e576f3dfff"
-      alt="Budget Overview"
-      className="w-full h-auto rounded"
-    />
-  </div>
-  <div>
-    <h3 className="font-semibold mb-2">5. Admin Panel</h3>
-    <img
-      src="https://github.com/user-attachments/assets/ac3b4982-725c-41e1-afcb-ae3b5fb6df6d"
-      alt="Admin Panel"
-      className="w-full h-auto rounded"
-    />
-  </div>
-</div>
+<table>
+  <tr>
+    <td>
+      <h3>1. Login Page</h3>
+      <img src="https://github.com/user-attachments/assets/cb530455-af75-4489-9274-5cf14dc703ca" alt="Login Page" width="300"/>
+    </td>
+    <td>
+      <h3>2. Dashboard</h3>
+      <img src="https://github.com/user-attachments/assets/358457c8-4764-479b-9104-1366f1989f67" alt="Dashboard" width="300"/>
+    </td>
+    <td>
+      <h3>3. AI Itinerary Builder</h3>
+      <img src="https://github.com/user-attachments/assets/a09c8922-b7a8-463c-9a7b-c66ed67a613b" alt="AI Itinerary Builder" width="300"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>4. Budget Overview</h3>
+      <img src="https://github.com/user-attachments/assets/eca8d0b3-fcb1-42a9-ba26-63e576f3dfff" alt="Budget Overview" width="300"/>
+    </td>
+    <td>
+      <h3>5. Admin Panel</h3>
+      <img src="https://github.com/user-attachments/assets/ac3b4982-725c-41e1-afcb-ae3b5fb6df6d" alt="Admin Panel" width="300"/>
+    </td>
+    <td></td>
+  </tr>
+</table>
+
 
 
    
