@@ -5,19 +5,7 @@ import api from "@/api/axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 import Chat from "@/components/Chat";
-import {
-  Send,
-  MessageSquare,
-  Heart,
-  HeartOff,
-  Image,
-  Trash2,
-  Edit,
-  Clock,
-  User,
-  CornerUpRight,
-  X,
-} from "lucide-react";
+import { Send, MessageSquare, Heart, HeartOff, Image, Trash2, Edit, Clock, User, X } from "lucide-react";
 
 Modal.setAppElement("#root");
 
@@ -44,8 +32,7 @@ const formatDate = (iso?: string) =>
   iso ? new Date(iso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" }) : "—";
 
 const Community: React.FC = () => {
-  const token = useSelector((s: RootState) => s.auth.accessToken);
-  const currentUser = useSelector((s: RootState) => (s as any).auth); 
+  const currentUser = useSelector((s: RootState) => s.auth);
 
 
   const [posts, setPosts] = useState<PostT[]>([]);
@@ -74,13 +61,13 @@ const Community: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get<PostT[]>("/community"); // GET /community
-        // console.log("API response:", res.data);
+        const res = await api.get<{ success: boolean; posts: PostT[] }>("/community"); // GET /community
         if (!mounted) return;
-        setPosts(res?.data?.posts?.sort((a, b) => +new Date(b.createdAt || 0) - +new Date(a.createdAt || 0)));
-      } catch (err: any) {
+        const sorted = (res.data.posts || []).slice().sort((a: PostT, b: PostT) => +new Date(b.createdAt || 0) - +new Date(a.createdAt || 0));
+        setPosts(sorted);
+      } catch (err) {
         console.error(err);
-        setError(err?.response?.data?.message || "Failed to load posts");
+        setError("Failed to load posts");
       } finally {
         if (mounted) setLoading(false);
       }
@@ -136,8 +123,8 @@ const Community: React.FC = () => {
         const form = new FormData();
         files.forEach((f) => form.append("files", f));
         // expects backend POST /uploads -> { urls: string[] }
-        const upRes = await api.post("/uploads", form, { headers: { "Content-Type": "multipart/form-data" } });
-        uploaded = upRes.data.urls || upRes.data || [];
+        const upRes = await api.post<{ urls: string[] }>("/uploads", form, { headers: { "Content-Type": "multipart/form-data" } });
+        uploaded = upRes.data.urls || [];
       }
 
       const payload = {
@@ -146,13 +133,13 @@ const Community: React.FC = () => {
         images: uploaded,
       };
 
-      const res = await api.post("/community", payload);
+      const res = await api.post<{ success: boolean; post: PostT }>("/community", payload);
       // optimistic: add to top
-      setPosts((prev) => [res.data, ...prev]);
+      setPosts((prev) => [res.data.post, ...prev]);
       closeModal();
-    } catch (err: any) {
+    } catch (err) {
       console.error("createPost error", err);
-      alert(err?.response?.data?.message || "Failed to create post");
+      alert("Failed to create post");
     } finally {
       setSubmitting(false);
     }
@@ -164,7 +151,7 @@ const Community: React.FC = () => {
     setPosts((prev) =>
       prev.map((p) => {
         if (p._id !== postId) return p;
-        const userId = currentUser?.user_id || (currentUser as any)?.id;
+        const userId = currentUser?.user_id || "";
         const has = p.likes?.includes(userId);
         return { ...p, likes: has ? p.likes?.filter((l) => l !== userId) : [...(p.likes || []), userId] };
       })
@@ -178,7 +165,7 @@ const Community: React.FC = () => {
       setPosts((prev) =>
         prev.map((p) => {
           if (p._id !== postId) return p;
-          const userId = currentUser?.user_id || (currentUser as any)?.id;
+          const userId = currentUser?.user_id || "";
           const has = p.likes?.includes(userId);
           return { ...p, likes: has ? p.likes?.filter((l) => l !== userId) : [...(p.likes || []), userId] };
         })
@@ -192,7 +179,7 @@ const Community: React.FC = () => {
     if (!commentText) return;
     const tempComment: CommentT = {
       _id: "tmp-" + Math.random().toString(36).slice(2),
-      userId: { _id: currentUser?.user_id || (currentUser as any)?.id, name: currentUser?.name || "You" },
+      userId: { _id: currentUser?.user_id || undefined, name: currentUser?.name || "You" },
       comment: commentText,
       createdAt: new Date().toISOString(),
     };
@@ -200,10 +187,10 @@ const Community: React.FC = () => {
     setCommentInputs((s) => ({ ...s, [postId]: "" }));
 
     try {
-      const res = await api.post(`/community/${postId}/comment`, { comment: commentText });
+      const res = await api.post<{ success: boolean; comments: CommentT[] }>(`/community/${postId}/comment`, { comment: commentText });
       // replace temp comment with server comment
       setPosts((prev) =>
-        prev.map((p) => (p._id === postId ? { ...p, comments: (p.comments || []).map((c) => (c._id?.startsWith("tmp-") ? res.data : c)) } : p))
+        prev.map((p) => (p._id === postId ? { ...p, comments: res.data.comments } : p))
       );
     } catch (err) {
       console.error("submitComment error", err);
@@ -250,7 +237,7 @@ const Community: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black text-gray-100 p-6">
+  <div className="min-h-screen bg-background text-foreground p-6">
       {/* Top bar with Chat button */}
       <div className="max-w-5xl mx-auto flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Community</h1>
@@ -259,18 +246,18 @@ const Community: React.FC = () => {
           <button
             onClick={() => setChatOpen((s) => !s)}
             aria-label="Open chat"
-            className="relative inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/6 hover:bg-white/10 transition"
+            className="relative inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-accent/30 hover:bg-accent/50 transition"
             title="Chat (Socket.io)"
           >
             <MessageSquare className="w-5 h-5 text-cyan-300" />
             <span className="hidden sm:inline text-sm text-gray-200">Chat</span>
             {/* unread badge placeholder */}
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full ring-2 ring-black" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full ring-2 ring-background" />
           </button>
 
           <button
             onClick={openModal}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition"
           >
             <Send className="w-4 h-4" />
             <span className="text-sm">New Post</span>
@@ -309,9 +296,9 @@ const Community: React.FC = () => {
       <main className="max-w-5xl mx-auto">
         {/* Create quick composer */}
         <div className="mb-6">
-          <div className="flex gap-3 items-start bg-white/2 border border-gray-800 rounded-xl p-3">
-            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-sm font-semibold text-white">
-              {currentUser?.name?.[0] || <User className="w-4 h-4 text-gray-200" />}
+          <div className="flex gap-3 items-start bg-card/80 border border-border/60 rounded-xl p-3">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-foreground">
+              {currentUser?.name?.[0] || <User className="w-4 h-4 text-foreground/80" />}
             </div>
             <div className="flex-1">
               <textarea
@@ -319,22 +306,22 @@ const Community: React.FC = () => {
                 placeholder="Share something with the community..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full p-3 rounded-lg bg-white/3 border border-gray-800 text-sm text-gray-100 placeholder-gray-400 outline-none"
+                className="w-full p-3 rounded-lg bg-background border border-input text-sm text-foreground placeholder-muted-foreground outline-none"
               />
               <div className="mt-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <label className="inline-flex items-center gap-2 px-2 py-1 rounded hover:bg-white/3 cursor-pointer">
-                    <Image className="w-4 h-4 text-gray-200" />
+                  <label className="inline-flex items-center gap-2 px-2 py-1 rounded hover:bg-accent/50 cursor-pointer">
+                    <Image className="w-4 h-4 text-foreground/80" />
                     <input type="file" accept="image/*" multiple onChange={handleFiles} className="hidden" />
-                    <span className="text-xs text-gray-300">Add images</span>
+                    <span className="text-xs text-muted-foreground">Add images</span>
                   </label>
-                  <button onClick={openModal} className="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-sm">Open Composer</button>
+                  <button onClick={openModal} className="px-3 py-1 rounded bg-primary hover:bg-primary/90 text-primary-foreground text-sm">Open Composer</button>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400 hidden sm:inline">Posting as {currentUser?.name ?? "you"}</span>
+                  <span className="text-xs text-muted-foreground hidden sm:inline">Posting as {currentUser?.name ?? "you"}</span>
                   <button
-                    className="inline-flex items-center gap-2 px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-sm"
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded bg-primary hover:bg-primary/90 text-primary-foreground text-sm"
                     onClick={createPost}
                   >
                     <Send className="w-4 h-4" /> Post
@@ -346,10 +333,10 @@ const Community: React.FC = () => {
               {previews.length > 0 && (
                 <div className="mt-2 flex gap-2 overflow-x-auto">
                   {previews.map((p, i) => (
-                    <div key={p} className="relative w-20 h-14 rounded overflow-hidden border border-gray-700">
+                    <div key={p} className="relative w-20 h-14 rounded overflow-hidden border border-border/60">
                       <img src={p} alt={`preview-${i}`} className="w-full h-full object-cover" />
-                      <button onClick={() => removePreview(i)} className="absolute top-1 right-1 bg-black/60 rounded p-0.5">
-                        <X className="w-3 h-3 text-rose-400" />
+                      <button onClick={() => removePreview(i)} className="absolute top-1 right-1 bg-background/70 rounded p-0.5">
+                        <X className="w-3 h-3 text-destructive" />
                       </button>
                     </div>
                   ))}
@@ -368,28 +355,32 @@ const Community: React.FC = () => {
             </div>
           )}
 
-          {error && <div className="text-rose-400 p-4 bg-white/3 rounded">{error}</div>}
+          {error && <div className="text-destructive p-4 bg-card/80 border border-border/60 rounded">{error}</div>}
 
           {!loading && posts.length === 0 && <EmptyState />}
 
           {!loading &&
             posts.map((post) => {
-              const userId = typeof post.userId === "string" ? post.userId : (post.userId as any)?._id;
-              const isOwner = currentUser && (currentUser?.user_id === userId || (currentUser as any)?.id === userId);
-              const likedByMe = !!(post.likes || []).includes(currentUser?._id || (currentUser as any)?.id);
+              const userId = typeof post.userId === "string" ? post.userId : (post.userId?._id || "");
+              const isOwner = !!(currentUser && currentUser.user_id === userId);
+              const likedByMe = !!(post.likes || []).includes(currentUser?.user_id || "");
 
               return (
-                <article key={post._id} className="bg-white/3 border border-gray-800 rounded-xl p-4">
+                <article key={post._id} className="bg-card/80 border border-border/60 rounded-xl p-4">
                   <header className="flex items-start gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-sm font-semibold">
-                      {(post.userId as any)?.name?.[0] || <User className="w-5 h-5 text-gray-200" />}
+                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-sm font-semibold">
+                      {(
+                        typeof post.userId !== "string" && post.userId?.name ? post.userId.name[0] : null
+                      ) || <User className="w-5 h-5 text-foreground/80" />}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <div className="font-semibold text-gray-100">{(post.userId as any)?.name || "Anonymous"}</div>
-                          <div className="text-xs text-gray-400 flex items-center gap-2">
-                            <Clock className="w-3 h-3 text-gray-400" />
+                          <div className="font-semibold text-foreground">
+                            {typeof post.userId !== "string" ? post.userId?.name || "Anonymous" : "Anonymous"}
+                          </div>
+                          <div className="text-xs text-muted-foreground flex items-center gap-2">
+                            <Clock className="w-3 h-3 text-muted-foreground" />
                             <span>{formatDate(post.createdAt)}</span>
                           </div>
                         </div>
@@ -397,13 +388,13 @@ const Community: React.FC = () => {
                         <div className="flex items-center gap-2">
                           {isOwner && (
                             <>
-                              <button title="Edit" className="p-1 hover:bg-white/5 rounded" aria-label="Edit">
+                              <button title="Edit" className="p-1 hover:bg-accent/50 rounded" aria-label="Edit">
                                 <Edit className="w-4 h-4" />
                               </button>
                               <button
                                 title="Delete"
                                 onClick={() => deletePost(post._id)}
-                                className="p-1 hover:bg-white/5 rounded text-rose-400"
+                                className="p-1 hover:bg-accent/50 rounded text-destructive"
                                 aria-label="Delete"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -413,14 +404,14 @@ const Community: React.FC = () => {
                         </div>
                       </div>
 
-                      {post.title && <h3 className="mt-3 font-semibold text-lg text-white">{post.title}</h3>}
-                      {post.content && <p className="mt-2 text-gray-200">{post.content}</p>}
+                      {post.title && <h3 className="mt-3 font-semibold text-lg text-foreground">{post.title}</h3>}
+                      {post.content && <p className="mt-2 text-foreground/90">{post.content}</p>}
 
                       {/* images grid */}
                       {post.images && post.images.length > 0 && (
                         <div className={`mt-3 grid gap-2 ${post.images.length === 1 ? "grid-cols-1" : post.images.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
                           {post.images.map((img, i) => (
-                            <img key={i} src={img} alt={`post-img-${i}`} className="w-full h-40 object-cover rounded-md border border-gray-700" />
+                            <img key={i} src={img} alt={`post-img-${i}`} className="w-full h-40 object-cover rounded-md border border-border/60" />
                           ))}
                         </div>
                       )}
@@ -430,47 +421,50 @@ const Community: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => toggleLike(post._id)}
-                            className="inline-flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5 transition"
+                            className="inline-flex items-center gap-2 px-2 py-1 rounded hover:bg-accent/50 transition"
                             aria-pressed={likedByMe}
                           >
-                            {likedByMe ? <Heart className="w-5 h-5 text-rose-400" /> : <HeartOff className="w-5 h-5 text-gray-200" />}
-                            <span className="text-sm text-gray-300">{post.likes?.length || 0}</span>
+                            {likedByMe ? <Heart className="w-5 h-5 text-destructive" /> : <HeartOff className="w-5 h-5 text-foreground/80" />}
+                            <span className="text-sm text-muted-foreground">{post.likes?.length || 0}</span>
                           </button>
 
-                          <div className="inline-flex items-center gap-2 px-2 py-1 rounded text-sm text-gray-300">
-                            <svg className="w-4 h-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>
+                          <div className="inline-flex items-center gap-2 px-2 py-1 rounded text-sm text-muted-foreground">
+                            <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>
                             <span>{post.comments?.length || 0}</span>
                           </div>
                         </div>
 
-                        <div className="text-xs text-gray-400">{/* placeholder for other meta */}</div>
+                        <div className="text-xs text-muted-foreground">{/* placeholder for other meta */}</div>
                       </div>
 
                       {/* comments list */}
                       <div className="mt-3 space-y-2">
                         {(post.comments || []).map((c) => {
                           const cid = c._id || Math.random().toString(36).slice(2);
-                          const commentUser = typeof c.userId === "string" ? { name: "User" } : (c.userId as any);
-                          const isCommentOwner = currentUser && ((c.userId as any)?._id === currentUser?.user_id || (c.userId as any)?.id === (currentUser as any)?.id);
+                          const commentUser: { name?: string; _id?: string } =
+                            typeof c.userId === "string" ? { name: "User" } : c.userId || {};
+                          const isCommentOwner = !!(
+                            currentUser && commentUser?._id && commentUser._id === currentUser.user_id
+                          );
 
                           return (
-                            <div key={cid} className="flex items-start gap-3 bg-white/2 p-2 rounded">
-                              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-xs font-semibold">
+                            <div key={cid} className="flex items-start gap-3 bg-accent/20 p-2 rounded">
+                              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold">
                                 {commentUser?.name?.[0] || <User className="w-3 h-3" />}
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-center justify-between gap-2">
                                   <div>
-                                    <div className="text-sm font-semibold text-gray-100">{commentUser?.name || "User"}</div>
-                                    <div className="text-xs text-gray-400">{formatDate(c.createdAt)}</div>
+                                    <div className="text-sm font-semibold text-foreground">{commentUser?.name || "User"}</div>
+                                    <div className="text-xs text-muted-foreground">{formatDate(c.createdAt)}</div>
                                   </div>
                                   {isCommentOwner && (
-                                    <button onClick={() => deleteComment(post._id, c._id!)} className="p-1 hover:bg-white/5 rounded text-rose-400" aria-label="Delete comment">
+                                    <button onClick={() => deleteComment(post._id, c._id!)} className="p-1 hover:bg-accent/50 rounded text-destructive" aria-label="Delete comment">
                                       <Trash2 className="w-4 h-4" />
                                     </button>
                                   )}
                                 </div>
-                                <div className="mt-1 text-sm text-gray-200">{c.comment}</div>
+                                <div className="mt-1 text-sm text-foreground/90">{c.comment}</div>
                               </div>
                             </div>
                           );
@@ -480,16 +474,18 @@ const Community: React.FC = () => {
                       {/* add comment */}
                       <div className="mt-3 flex gap-2">
                         <textarea
-                          ref={(el) => (commentRefs.current[post._id] = el)}
+                          ref={(el) => {
+                            commentRefs.current[post._id] = el;
+                          }}
                           value={commentInputs[post._id] || ""}
                           onChange={(e) => setCommentInputs((s) => ({ ...s, [post._id]: e.target.value }))}
-                          className="flex-1 p-2 bg-white/3 border border-gray-800 rounded-md text-sm text-gray-100 placeholder-gray-400 outline-none"
+                          className="flex-1 p-2 bg-background border border-input rounded-md text-sm text-foreground placeholder-muted-foreground outline-none"
                           placeholder="Write a comment..."
                           rows={1}
                         />
                         <button
                           onClick={() => submitComment(post._id)}
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded bg-cyan-500 hover:bg-cyan-400 transition text-white"
+                          className="inline-flex items-center gap-2 px-3 py-2 rounded bg-primary hover:bg-primary/90 transition text-primary-foreground"
                           aria-label="Post comment"
                         >
                           <Send className="w-4 h-4" /> <span className="hidden sm:inline text-sm">Comment</span>
@@ -507,37 +503,37 @@ const Community: React.FC = () => {
       <Modal
         isOpen={modalOpen}
         onRequestClose={closeModal}
-        className="max-w-3xl w-full mx-auto mt-20 bg-gray-900 p-6 rounded-xl shadow-xl outline-none"
+        className="max-w-3xl w-full mx-auto mt-20 bg-card p-6 rounded-xl shadow-xl outline-none border border-border/60 text-foreground"
         overlayClassName="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center z-50"
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Create a Post</h2>
-          <button onClick={closeModal} className="p-1 rounded hover:bg-white/5"><X className="w-4 h-4" /></button>
+          <button onClick={closeModal} className="p-1 rounded hover:bg-accent/50"><X className="w-4 h-4" /></button>
         </div>
 
-        <label className="text-sm text-gray-300 block mb-2">Title</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Short title (optional)" className="w-full p-3 rounded-lg bg-white/3 border border-gray-800 text-gray-100 mb-3" />
+        <label className="text-sm text-muted-foreground block mb-2">Title</label>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Short title (optional)" className="w-full p-3 rounded-lg bg-background border border-input text-foreground mb-3" />
 
-        <label className="text-sm text-gray-300 block mb-2">Content</label>
-        <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} placeholder="Write up your experience, ask questions, share tips..." className="w-full p-3 rounded-lg bg-white/3 border border-gray-800 text-gray-100 mb-3" />
+        <label className="text-sm text-muted-foreground block mb-2">Content</label>
+        <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} placeholder="Write up your experience, ask questions, share tips..." className="w-full p-3 rounded-lg bg-background border border-input text-foreground mb-3" />
 
         <div className="flex items-center gap-3 mb-3">
-          <label className="inline-flex items-center gap-2 px-3 py-2 rounded bg-white/3 cursor-pointer hover:bg-white/5">
+          <label className="inline-flex items-center gap-2 px-3 py-2 rounded bg-accent/30 cursor-pointer hover:bg-accent/50">
             <Image className="w-5 h-5" />
-            <span className="text-sm text-gray-200">Upload images</span>
+            <span className="text-sm text-foreground/80">Upload images</span>
             <input type="file" accept="image/*" multiple onChange={handleFiles} className="hidden" />
           </label>
 
-          <div className="text-sm text-gray-400">Max 6 images — JPG/PNG</div>
+          <div className="text-sm text-muted-foreground">Max 6 images — JPG/PNG</div>
         </div>
 
         {previews.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mb-4">
             {previews.map((p, i) => (
-              <div key={p} className="relative w-full h-28 rounded overflow-hidden border border-gray-700">
+              <div key={p} className="relative w-full h-28 rounded overflow-hidden border border-border/60">
                 <img src={p} alt={`preview-${i}`} className="w-full h-full object-cover" />
-                <button onClick={() => removePreview(i)} className="absolute -top-2 -right-2 bg-black/60 p-1 rounded-full">
-                  <X className="w-4 h-4 text-rose-400" />
+                <button onClick={() => removePreview(i)} className="absolute -top-2 -right-2 bg-background/70 p-1 rounded-full">
+                  <X className="w-4 h-4 text-destructive" />
                 </button>
               </div>
             ))}
@@ -545,8 +541,8 @@ const Community: React.FC = () => {
         )}
 
         <div className="flex items-center justify-end gap-3 mt-2">
-          <button onClick={closeModal} className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">Cancel</button>
-          <button onClick={createPost} disabled={submitting} className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-white">
+          <button onClick={closeModal} className="px-4 py-2 rounded bg-muted hover:bg-accent">Cancel</button>
+          <button onClick={createPost} disabled={submitting} className="px-4 py-2 rounded bg-primary hover:bg-primary/90 text-primary-foreground">
             {submitting ? "Posting..." : "Post"}
           </button>
         </div>

@@ -1,17 +1,5 @@
-import {
-  Facebook,
-  Instagram,
-  Twitter,
-  Mail,
-  MapPin,
-  Phone,
-  Globe,
-  Users,
-  Calendar,
-  Map,
-} from 'lucide-react';
+import { Facebook, Instagram, Twitter, Globe, Users, Map } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { footerData as data } from '@/constants/landing';
 
 const socialLinks = [
   { icon: Facebook, label: 'Facebook', href: 'https://facebook.com/globetrotter' },
@@ -40,23 +28,19 @@ const supportLinks = [
   { text: 'Live Chat', href: '/chat', hasIndicator: true },
 ];
 
-const contactInfo = [
-  { icon: Mail, text: 'hello@globetrotter.com' },
-  { icon: Phone, text: '+1 (888) 456-7890' },
-  { icon: MapPin, text: 'San Francisco, CA', isAddress: true },
-];
+// Note: contact info is maintained elsewhere; keep footer minimal and themed
 
 export default function Footer4Col() {
   return (
-    <footer className="bg-gradient-to-br from-emerald-900/90 to-green-800/90 dark:from-emerald-950 dark:to-green-950 mt-16 w-full place-self-end rounded-t-xl backdrop-blur-sm">
+  <footer className="bg-sidebar mt-16 w-full place-self-end rounded-t-xl border-t border-sidebar-border">
       <div className="mx-auto max-w-screen-xl px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-24">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div>
-            <div className="text-white flex justify-center gap-2 sm:justify-start">
+      <div className="text-sidebar-foreground flex justify-center gap-2 sm:justify-start">
               <img
                 src={'/logo.svg'}
                 alt="GlobeTrotter logo"
-                className="h-8 w-8 rounded-full bg-white/10 p-1"
+        className="h-8 w-8 rounded-full bg-muted p-1"
                 width={32}
                 height={32}
               />
@@ -65,7 +49,7 @@ export default function Footer4Col() {
               </span>
             </div>
 
-            <p className="text-emerald-100/80 mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left">
+      <p className="text-sidebar-foreground/80 mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left">
               Your personalized travel companion. Discover, plan, and share your adventures with fellow travelers around the world.
             </p>
 
@@ -74,7 +58,7 @@ export default function Footer4Col() {
                 <li key={label}>
                   <Link
                     to={href}
-                    className="text-emerald-200 hover:text-white transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
@@ -88,14 +72,14 @@ export default function Footer4Col() {
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:col-span-2">
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-white flex items-center gap-2">
+        <p className="text-lg font-medium text-foreground flex items-center gap-2">
                 <Globe className="size-5" /> Explore
               </p>
               <ul className="mt-6 space-y-4 text-sm">
                 {exploreLinks.map(({ text, href }) => (
                   <li key={text}>
                     <Link
-                      className="text-emerald-100/80 hover:text-white transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
                       to={href}
                     >
                       {text}
@@ -106,14 +90,14 @@ export default function Footer4Col() {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-white flex items-center gap-2">
+        <p className="text-lg font-medium text-foreground flex items-center gap-2">
                 <Map className="size-5" /> Trip Planning
               </p>
               <ul className="mt-6 space-y-4 text-sm">
                 {planningLinks.map(({ text, href }) => (
                   <li key={text}>
                     <Link
-                      className="text-emerald-100/80 hover:text-white transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
                       to={href}
                     >
                       {text}
@@ -124,7 +108,7 @@ export default function Footer4Col() {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-white flex items-center gap-2">
+        <p className="text-lg font-medium text-foreground flex items-center gap-2">
                 <Users className="size-5" /> Support
               </p>
               <ul className="mt-6 space-y-4 text-sm">
@@ -135,16 +119,16 @@ export default function Footer4Col() {
                       className={`${
                         hasIndicator
                           ? 'group flex justify-center gap-1.5 sm:justify-start'
-                          : 'text-emerald-100/80 hover:text-white transition-colors'
+              : 'text-muted-foreground hover:text-foreground transition-colors'
                       }`}
                     >
-                      <span className="text-emerald-100/80 hover:text-white transition-colors">
+            <span className="text-muted-foreground hover:text-foreground transition-colors">
                         {text}
                       </span>
                       {hasIndicator && (
                         <span className="relative flex size-2">
-                          <span className="bg-emerald-300 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-                          <span className="bg-emerald-400 relative inline-flex size-2 rounded-full" />
+              <span className="bg-primary/60 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+              <span className="bg-primary relative inline-flex size-2 rounded-full" />
                         </span>
                       )}
                     </Link>
@@ -155,15 +139,15 @@ export default function Footer4Col() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-emerald-700/30 pt-6">
+    <div className="mt-12 border-t border-sidebar-border pt-6">
           <div className="text-center sm:flex sm:justify-between sm:text-left">
-            <p className="text-sm text-emerald-100/80">
-              <Link to="/privacy" className="hover:text-white">Privacy Policy</Link>
+      <p className="text-sm text-muted-foreground">
+        <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
               <span className="mx-2">•</span>
-              <Link to="/terms" className="hover:text-white">Terms of Service</Link>
+        <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
             </p>
 
-            <p className="text-emerald-200/70 mt-4 text-sm transition sm:order-first sm:mt-0">
+      <p className="text-muted-foreground mt-4 text-sm transition sm:order-first sm:mt-0">
               &copy; {new Date().getFullYear()} GlobeTrotter. All rights reserved.
             </p>
           </div>
