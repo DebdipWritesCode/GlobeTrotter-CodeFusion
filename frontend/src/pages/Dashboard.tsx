@@ -477,7 +477,6 @@ const Dashboard = () => {
     console.log("Auth token status:", accessToken ? "Present" : "Missing");
 
     Promise.all([
-      // Remove /api prefix since it's in the baseURL
       api.get("/cities").catch((error) => {
         console.error("Error fetching cities:", error);
         toast.error("Failed to load cities");
@@ -1952,7 +1951,7 @@ function AllTrips({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => window.location.assign("/itinerary-view")}
+                  onClick={() => window.location.assign(`/itinerary-view/${t._id}`)}
                 >
                   View
                 </Button>

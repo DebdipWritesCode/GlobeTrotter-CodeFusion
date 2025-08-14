@@ -55,7 +55,7 @@ const Router = () => {
         <Route path="/community" element={<Community />} />
         <Route path="/calendar" element={<MyTripsCalendar />} />
         <Route path="/search" element={<SearchActivity />} />
-        <Route path="/itinerary-view" element={<ItineraryViewer />} />
+        <Route path="/itinerary-view/:tripId" element={<ItineraryViewer />} />
         <Route path="/book-a-call" element={<BookACall />} />
       </Route>
 
