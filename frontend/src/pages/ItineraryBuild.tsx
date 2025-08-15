@@ -9,7 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import {
   Plus,
   Calendar,
-  DollarSign,
+  IndianRupee ,
   X,
   Sparkles,
   Edit,
@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "react-toastify";
 import ToastComponent from "@/components/ToastComponent";
+import { formatINR } from "@/lib/utils";
 
 type ActivityOption = {
   _id: string;
@@ -90,7 +91,7 @@ const CardIcon = ({ index }: { index: number }) => {
   const icons = [
     <Plus key="p" />,
     <Calendar key="c" />,
-    <DollarSign key="d" />,
+    <IndianRupee  key="d" />,
     <Sparkles key="s" />,
     <Edit key="e" />,
     <Trash2 key="t" />,
@@ -600,10 +601,10 @@ const ItineraryBuild: React.FC = () => {
                       {/* Section Details */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center gap-2">
-                          <DollarSign className="w-4 h-4 text-indigo-500" />
+                          <IndianRupee  className="w-4 h-4 text-indigo-500" />
                           <span className="text-muted-foreground">Budget:</span>
                           <span className="font-medium text-indigo-500">
-                            ₹{section.budget || "0"}
+                            ₹{formatINR(section.budget || "0")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -661,10 +662,10 @@ const ItineraryBuild: React.FC = () => {
                                     )}
 
                                     <div className="space-y-2 text-xs text-muted-foreground">
-                                      {activity?.cost && (
+                    {activity?.cost && (
                                         <div className="flex items-center gap-2">
-                                          <DollarSign className="w-3 h-3" />
-                                          <span>Cost: ₹{activity.cost}</span>
+                                          <IndianRupee  className="w-3 h-3" />
+                      <span>Cost: ₹{formatINR(activity.cost)}</span>
                                         </div>
                                       )}
                                       {activity?.duration && (
@@ -750,7 +751,7 @@ const ItineraryBuild: React.FC = () => {
 
               <div className="grid sm:grid-cols-2 gap-3">
                 <div className="flex items-center gap-2 border border-input rounded-md px-2 py-1.5 dark:bg-input/30">
-                  <DollarSign className="w-4 h-4 text-muted-foreground" />
+                  <IndianRupee  className="w-4 h-4 text-muted-foreground" />
                   <Input
                     type="number"
                     placeholder="Budget"

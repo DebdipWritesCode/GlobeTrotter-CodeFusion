@@ -477,7 +477,6 @@ const Dashboard = () => {
     console.log("Auth token status:", accessToken ? "Present" : "Missing");
 
     Promise.all([
-      // Remove /api prefix since it's in the baseURL
       api.get("/cities").catch((error) => {
         console.error("Error fetching cities:", error);
         toast.error("Failed to load cities");
@@ -1343,7 +1342,7 @@ function Highlights({
       <Card className="border bg-gradient-to-br from-blue-50 to-transparent dark:from-blue-950/30">
         <CardContent className="py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <DollarSign className="h-4 w-4" /> Est. total budget
+            Est. total budget
           </div>
           <div className="text-2xl font-semibold">
             ₹ {totalBudget.toLocaleString()}
@@ -1952,7 +1951,7 @@ function AllTrips({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => window.location.assign("/itinerary-view")}
+                  onClick={() => window.location.assign(`/itinerary-view/${t._id}`)}
                 >
                   View
                 </Button>

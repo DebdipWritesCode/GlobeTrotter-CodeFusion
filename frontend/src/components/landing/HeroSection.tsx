@@ -2,6 +2,8 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import bgHero from '@/assets/images/chris-holgersson-iQKoSI25Lws-unsplash.jpg';
+import imgIsland from '@/assets/images/kaja-reichardt-kLA5yRv0Gd4-unsplash.jpg';
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -17,9 +19,7 @@ const HeroSection = () => {
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -150]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -250]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.1]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const textY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
-  const gradientOpacity = useTransform(scrollYProgress, [0, 0.6], [0.6, 1]);
 
   return (
     <div 
@@ -29,38 +29,34 @@ const HeroSection = () => {
       {/* Background image with parallax */}
       <motion.div 
         className="absolute inset-0 w-full h-full"
-        style={{
-          scale,
-          backgroundImage: 'url("/src/assets/images/chris-holgersson-iQKoSI25Lws-unsplash.jpg")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          y: y1
-        }}
-      />
+        style={{ scale, y: y1 }}
+      >
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${bgHero})` }}
+        />
+      </motion.div>
       
       {/* Overlay gradient */}
       <motion.div 
         className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"
-        style={{ opacity: gradientOpacity }}
       />
       
       {/* Floating island image with stronger parallax */}
-      <motion.img
-        src="/src/assets/images/kaja-reichardt-kLA5yRv0Gd4-unsplash.jpg"
-        alt="Tropical island"
-        className="absolute bottom-0 right-0 w-[60%] md:w-[40%] rounded-tl-3xl shadow-2xl object-cover hidden md:block"
-        style={{ 
-          y: y2,
-          clipPath: 'polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%)',
-          height: '60%'
-        }}
-      />
+      <motion.div className="absolute bottom-0 right-0 hidden md:block" style={{ y: y2 }}>
+        <img
+          src={imgIsland}
+          alt="Tropical island"
+          className="w-[60%] md:w-[40%] rounded-tl-3xl shadow-2xl object-cover"
+          style={{ clipPath: 'polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%)', height: '60%' }}
+        />
+      </motion.div>
       
       {/* Hero content */}
       <motion.div
         ref={textRef}
         className="absolute inset-0 flex flex-col items-center justify-center text-center px-4"
-        style={{ y: textY, opacity }}
+        style={{ y: textY }}
       >
         <motion.h1 
           className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4 md:mb-6"

@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import imgNick from '@/assets/images/nick-seagrave-1tpLdmxki-c-unsplash.jpg';
 
 const PlanningTools = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -13,7 +14,6 @@ const PlanningTools = () => {
   
   const y = useTransform(scrollYProgress, [0, 1], [100, -50]);
   const imgScale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1]);
-  const imgOpacity = useTransform(scrollYProgress, [0, 0.3], [0.6, 1]);
   
   return (
     <motion.div
@@ -27,12 +27,13 @@ const PlanningTools = () => {
           <motion.div 
             ref={imgRef}
             className="relative"
-            style={{ scale: imgScale, opacity: imgOpacity }}
+            style={{ scale: imgScale }}
           >
+            <div>
             <div className="bg-gradient-to-br from-purple-400 to-indigo-600 rounded-2xl p-1 shadow-xl">
               <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
                 <img 
-                  src="/src/assets/images/nick-seagrave-1tpLdmxki-c-unsplash.jpg" 
+                  src={imgNick} 
                   alt="Travel planning interface" 
                   className="w-full h-auto rounded-t-lg"
                 />
@@ -48,6 +49,7 @@ const PlanningTools = () => {
                   </div>
                 </div>
               </div>
+            </div>
             </div>
             
             {/* Floating elements */}

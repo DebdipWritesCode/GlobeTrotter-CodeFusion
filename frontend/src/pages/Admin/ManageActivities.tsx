@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, MapPin, Activity } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/api/axios";
+import { formatINR } from "@/lib/utils";
 
 interface Activity {
   _id: string;
@@ -55,7 +56,7 @@ const ManageActivities = () => {
     try {
       const response = await api.get("/activities");
       setActivities(response.data);
-    } catch (error) {
+  } catch {
       toast.error("Failed to fetch activities");
     } finally {
       setLoading(false);
@@ -66,7 +67,7 @@ const ManageActivities = () => {
     try {
       const response = await api.get("/cities");
       setCities(response.data);
-    } catch (error) {
+  } catch {
       toast.error("Failed to fetch cities");
     }
   };
@@ -91,7 +92,7 @@ const ManageActivities = () => {
       setIsDialogOpen(false);
       resetForm();
       fetchActivities();
-    } catch (error) {
+  } catch {
       toast.error(editingActivity ? "Failed to update activity" : "Failed to create activity");
     }
   };
@@ -118,7 +119,7 @@ const ManageActivities = () => {
         await api.delete(`/activities/${id}`);
         toast.success("Activity deleted successfully");
         fetchActivities();
-      } catch (error) {
+  } catch {
         toast.error("Failed to delete activity");
       }
     }
@@ -232,7 +233,7 @@ const ManageActivities = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-foreground">Cost ($)</label>
+                    <label className="text-sm font-medium text-foreground">Cost (₹)</label>
                     <Input
                       type="number"
                       value={formData.cost}
@@ -324,7 +325,7 @@ const ManageActivities = () => {
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">{activity.description}</p>
                         <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>${activity.cost}</span>
+                          <span>₹{formatINR(activity.cost)}</span>
                           <span>{activity.duration}h</span>
                           <span className="capitalize">{activity.category}</span>
                         </div>

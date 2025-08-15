@@ -2,6 +2,9 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import imgJean from '@/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg';
+import imgAli from '@/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg';
+import imgDavid from '@/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg';
 
 // Sample testimonial data
 const testimonials = [
@@ -10,21 +13,21 @@ const testimonials = [
     text: "GlobeTrotter made planning our honeymoon so easy! The budget tracking feature helped us stay on track while still enjoying luxury experiences.",
     author: "Sarah & Michael",
     location: "Paris & Rome Trip",
-    avatar: "/src/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg"
+  avatar: imgJean
   },
   {
     id: 2,
     text: "As someone who travels frequently for work, this app has been a game-changer. I can organize my meetings and sightseeing activities in one place.",
     author: "James Wilson",
     location: "Business Trip to Tokyo",
-    avatar: "/src/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg"
+  avatar: imgAli
   },
   {
     id: 3,
     text: "The collaborative planning feature was perfect for our group trip. Everyone could add their preferred activities and we avoided so many arguments!",
     author: "Emma Rodriguez",
     location: "Thailand Adventure",
-    avatar: "/src/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg"
+  avatar: imgDavid
   }
 ];
 

@@ -3,6 +3,12 @@ import { ReactLenis } from "lenis/react";
 import { motion, useMotionTemplate, useScroll, useTransform, MotionValue } from "framer-motion";
 import { ArrowDown, MapPin, Compass, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
+import bgCity from '@/assets/images/chris-holgersson-iQKoSI25Lws-unsplash.jpg';
+import imgAli from '@/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg';
+import imgJean from '@/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg';
+import imgCharlotte from '@/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg';
+import imgKaja from '@/assets/images/kaja-reichardt-kLA5yRv0Gd4-unsplash.jpg';
+import imgDavid from '@/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg';
 
 /**
  * Helpers & hooks
@@ -185,7 +191,7 @@ const CenterImage: FC<{ sectionHeight: number; isMobile: boolean; scrollY: Motio
   // simplified shadow (heavy multi-layer shadows are costly every frame)
   const textShadow = useMotionTemplate`0 6px 20px rgba(0,0,0,0.45)`;
 
-  const bgImagePath = "/src/assets/images/chris-holgersson-iQKoSI25Lws-unsplash.jpg";
+  const bgImagePath = bgCity as string;
 
   return (
     <motion.div
@@ -247,7 +253,7 @@ const ParallaxImages: FC<{ isMobile: boolean; scrollY: MotionValue<number> }> = 
     <div className="mx-auto max-w-6xl px-4 pt-[180px] sm:pt-[220px] md:pt-[280px] relative z-10">
       <div className="flex justify-between mb-12 md:mb-20">
         <ParallaxImg
-          src="/src/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg"
+          src={imgAli}
           alt="Beach destination"
           start={isMobile ? -120 : -250}
           end={isMobile ? 120 : 250}
@@ -259,7 +265,7 @@ const ParallaxImages: FC<{ isMobile: boolean; scrollY: MotionValue<number> }> = 
         />
 
         <ParallaxImg
-          src="/src/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg"
+          src={imgJean}
           alt="City skyline"
           start={isMobile ? -170 : -280}
           end={isMobile ? 170 : 280}
@@ -272,7 +278,7 @@ const ParallaxImages: FC<{ isMobile: boolean; scrollY: MotionValue<number> }> = 
       </div>
 
       <ParallaxImg
-        src="/src/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg"
+        src={imgCharlotte}
         alt="Mountain landscape"
         start={isMobile ? 120 : 230}
         end={isMobile ? -170 : -280}
@@ -286,7 +292,7 @@ const ParallaxImages: FC<{ isMobile: boolean; scrollY: MotionValue<number> }> = 
 
       <div className="flex justify-between mt-12 md:mt-20">
         <ParallaxImg
-          src="/src/assets/images/kaja-reichardt-kLA5yRv0Gd4-unsplash.jpg"
+          src={imgKaja}
           alt="Cultural destination"
           start={0}
           end={isMobile ? -220 : -350}
@@ -298,7 +304,7 @@ const ParallaxImages: FC<{ isMobile: boolean; scrollY: MotionValue<number> }> = 
         />
 
         <ParallaxImg
-          src="/src/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg"
+          src={imgDavid}
           alt="Adventure destination"
           start={isMobile ? 70 : 150}
           end={isMobile ? -320 : -550}

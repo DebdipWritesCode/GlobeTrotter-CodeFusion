@@ -2,6 +2,10 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import imgAli from '@/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg';
+import imgCharlotte from '@/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg';
+import imgJean from '@/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg';
+import imgDavid from '@/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg';
 
 // Sample inspiration categories
 const categories = [
@@ -14,12 +18,7 @@ const categories = [
 ];
 
 // Gallery images
-const galleryImages = [
-  "/src/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg",
-  "/src/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg",
-  "/src/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg",
-  "/src/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg",
-];
+const galleryImages = [imgAli, imgCharlotte, imgJean, imgDavid];
 
 const TravelInspirationSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);

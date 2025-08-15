@@ -2,6 +2,10 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import imgAli from '@/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg';
+import imgDavid from '@/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg';
+import imgCharlotte from '@/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg';
+import imgJean from '@/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg';
 
 // Sample destination data
 const destinations = [
@@ -9,28 +13,28 @@ const destinations = [
     id: 1,
     name: 'Bali',
     country: 'Indonesia',
-    image: '/src/assets/images/ali-kazal-YsrWdRIt5cs-unsplash.jpg',
+    image: imgAli,
     description: 'Tropical paradise with stunning beaches and rich culture',
   },
   {
     id: 2,
     name: 'Tokyo',
     country: 'Japan',
-    image: '/src/assets/images/david-kohler-VFRTXGw1VjU-unsplash.jpg',
+    image: imgDavid,
     description: 'Modern metropolis with ancient traditions',
   },
   {
     id: 3,
     name: 'Santorini',
     country: 'Greece',
-    image: '/src/assets/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg',
+    image: imgCharlotte,
     description: 'Breathtaking island with white-washed buildings',
   },
   {
     id: 4,
     name: 'New York',
     country: 'United States',
-    image: '/src/assets/images/jean-valjean-bUIXMVbHuHw-unsplash.jpg',
+    image: imgJean,
     description: 'The city that never sleeps',
   },
 ];
@@ -45,7 +49,6 @@ const DestinationsShowcase = () => {
   });
   
   const y = useTransform(scrollYProgress, [0, 1], [100, -50]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0.5]);
   
   // Card animation variants
   const cardVariants: Variants = {
@@ -57,7 +60,7 @@ const DestinationsShowcase = () => {
     <motion.div
       ref={containerRef}
       className="py-16 md:py-24 px-4 relative overflow-hidden"
-      style={{ opacity, y }}
+      style={{ y }}
     >
       {/* Section heading */}
       <div className="max-w-7xl mx-auto mb-10 md:mb-16">
