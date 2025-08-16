@@ -19,7 +19,7 @@ export const createCity = async (req, res) => {
 
     // === Call GPT service to generate activities for this city ===
     // Replace URL with your FastAPI endpoint
-    const response = await axios.post("https://globetrotter-codefusion-production.up.railway.app/v1/activities", {
+    const response = await axios.post("https://python.rjmun-backend.shop/v1/activities", {
       city_name: name
     });
 
