@@ -174,7 +174,7 @@ FRONTEND_URL=http://localhost:5173
 
 # Run backend
 cd backend
-npm start
+npm run dev
 
 # Run frontend
 cd ../frontend
@@ -214,13 +214,30 @@ npm run dev
   <tr>
     <td>
       <h3>4. Budget Overview</h3>
-      <img src="https://github.com/user-attachments/assets/eca8d0b3-fcb1-42a9-ba26-63e576f3dfff" alt="Budget Overview" width="300"/>
+      <img width="300" alt="image" src="https://github.com/user-attachments/assets/968c1ba4-cc71-4c8d-955e-f6cde33ff017" />
     </td>
     <td>
       <h3>5. Admin Panel</h3>
       <img src="https://github.com/user-attachments/assets/ac3b4982-725c-41e1-afcb-ae3b5fb6df6d" alt="Admin Panel" width="300"/>
     </td>
-    <td></td>
+    <td>
+       <h3>6. Community Section</h3>
+      <img width="300" alt="Community" src="https://github.com/user-attachments/assets/c1787b5c-2cb8-4f51-8d1e-f7f16eb7a5fd" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>7. Admin Activity Management</h3>
+      <img width="300"  alt="image" src="https://github.com/user-attachments/assets/d1bd0b82-a272-4658-94f8-54dce70f6e19" />
+    </td>
+    <td>
+      <h3>8. Activity/City Search</h3>
+      <img width="300"  alt="image" src="https://github.com/user-attachments/assets/9c916aa2-0ab3-4b6b-af2d-0461c297589f" />
+    </td>
+    <td>
+       <h3>9. Calendar View</h3>
+      <img width="300" alt="image" src="https://github.com/user-attachments/assets/9125dd2b-beb5-4a2f-94da-5d7173d7cb64" />
+    </td>
   </tr>
 </table>
 
