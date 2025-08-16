@@ -177,7 +177,7 @@ export const logoutUser = async (req, res) => {
     res.clearCookie("refresh_token", {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
     });
 
     res.status(200).json({ message: "Logged out successfully" });
@@ -244,7 +244,7 @@ export const googleAuth = async (req, res) => {
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 48 * 60 * 60 * 1000,
     });
 
